@@ -1,0 +1,9 @@
+<aura:component >
+	<aura:attribute name="oppData" type ="Opportunity"/>
+    <tr class="slds-hint-parent">
+        <td><a onclick="{!c.goToRecord}"><ui:outputText value ="{!v.oppData.Name}" /></a> </td>
+         <td>{!v.oppData.StageName}</td>
+         <td>{!v.oppData.CloseDate}</td>
+         <td>{!v.oppData.Amount}</td>
+       </tr>
+</aura:component>

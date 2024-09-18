@@ -1,0 +1,13 @@
+.THIS.c-container {
+    border: 1px solid #d8dde6;
+    margin: 10px 0 20px 0;
+    background:white;
+    width:100%;
+}
+.THIS.cstm_button {
+    margin-top: 20px;
+}
+.THIS.slds-spinner_container {  
+    z-index: 10000;
+    position: fixed;   
+}

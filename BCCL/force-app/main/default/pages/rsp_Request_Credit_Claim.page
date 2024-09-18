@@ -1,0 +1,26 @@
+<apex:page standardController="rsp_Achievement__c" lightningStylesheets="true" recordSetVar="achievements" action="{!processAchievements}" extensions="rsp_Request_Credit_Claim">
+   <style>
+   .message {width: 30%;}
+   </style>
+   <apex:slds />
+   <center>
+   <apex:pageMessages id="showmsg"></apex:pageMessages>
+    <apex:outputPanel rendered="{!!isNoRecordSelected && !isError}">
+        <p class="slds-p-horizontal_small" style="color:green">
+            Selected Claims have been processed successfully.
+        </p>    
+    </apex:outputPanel>
+    
+    <apex:outputPanel rendered="{!isNoRecordSelected}">
+       <p class="slds-p-horizontal_small" style="color:red">
+            Please select atleast one Achievement to create claim.
+        </p>
+    </apex:outputPanel>
+    <p class="slds-p-horizontal_small">
+    <!--<apex:outputLink value="/a0s"><b>Click here</b></apex:outputLink> to view Achievement Claims Or &nbsp;-->
+    <apex:outputLink value="/a0B"><b>Go Back</b></apex:outputLink>
+    
+    
+    </p>
+    </center>
+</apex:page>

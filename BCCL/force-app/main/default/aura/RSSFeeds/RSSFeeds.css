@@ -1,0 +1,53 @@
+.THIS.cRSSFeeds {
+    display: flex;
+    overflow-x: auto;
+    background: #fff;
+    padding: 1rem;
+    border: 1px solid rgb(221, 219, 218);
+    border-radius: .25rem;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1);
+}
+.THIS .slds-card{
+    min-width: 256px;
+    max-width: 256px;
+    margin: 0 .25rem 0 .25rem;
+    box-shadow: none;
+    position: relative;
+}
+.THIS .slds-card a,
+.THIS .slds-card a:hover{
+    color: #000;
+    text-decoration: none;
+}
+.THIS .slds-card:first-child{
+    margin-left: 0;
+}
+.THIS .slds-card+.slds-card{
+    margin-top: 0;
+}
+.THIS .slds-card .slds-card__body{
+    padding: 0 1rem;
+    text-align: center;
+}
+.THIS .slds-card .slds-card__body p{
+    text-align: left;
+}
+.THIS .slds-card .slds-card__footer{
+    border-top: 0;
+}
+.THIS .slds-card .slds-icon-share{
+    position: absolute;
+    left: 15px;
+    bottom: 15px;
+    cursor: pointer;
+}
+.THIS .newsImage{
+    max-height: 90px;
+    max-width: 192px;
+    height: auto;
+}
+.THIS.box
+{
+    border-style: solid;
+    border-color: red;
+}

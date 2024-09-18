@@ -1,0 +1,15 @@
+<design:component label="Custom four-Columne Layout">
+    
+	<flexipage:template>
+        
+       
+        <flexipage:region name="left_col" defaultWidth="Large" />
+        <flexipage:region name="leftmid_col" defaultWidth="Large" />
+        <flexipage:region name="rightmid_col" defaultWidth="Large" />
+        <flexipage:region name="right_col" defaultWidth="Large" />
+                
+        <flexipage:region name="footer" defaultWidth="Large" />
+        
+     </flexipage:template>
+    
+</design:component>

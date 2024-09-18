@@ -1,0 +1,49 @@
+<template>
+    <lightning-card>
+        <div class="slds-grid slds-grid_align-start slds-p-around_medium" style="margin-top: -30px;">
+        <lightning-combobox 
+                name="monthFilter" 
+                value={selectedMonth}
+                options={monthOptions}
+                onchange={handleMonthChange}
+                style="width:200px;"
+                label-hidden>
+            </lightning-combobox>
+        </div>
+        <hr style="margin: 0px;margin-top:-3px;"/>
+        <div if:true={spinner}>
+            <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+        </div>
+        <table style="margin-left: 10px; margin-top: 10px;margin-bottom:10px;">
+            <tr style="font-weight: bold;">
+                <td>User Target</td>
+                <td>Committed Pipline</td>
+                <td>Scheduled to Print</td>
+                <td>Published</td>
+                <td>%Committed Achievement</td>
+                <td>Invoice Billed</td>
+                <td>%Fixed Achievement</td>
+            </tr>
+            <template for:each={userWiseRevenue} for:item="item">
+                <tr key={item}>
+                    <td>{item.roleTarget} Cr</td>
+                    <td>{item.committedPipline} Cr</td>
+                    <td>{item.scheduledtoPrint} Cr</td>
+                    <td>{item.published} Cr</td>
+                    <td>{item.preCommittedAchievement}</td>
+                    <td>{item.invoiceBilled} Cr</td>
+                    <td>{item.perFixedAchievement}</td>
+                </tr>
+            </template>
+            
+        </table>
+        <div style="height: 49vh;">
+        <lightning-datatable
+            key-field="id"
+            data={roleWiseRevenue}
+            columns={tableColumns}
+            hide-checkbox-column="true">
+        </lightning-datatable>
+        </div>
+    </lightning-card>
+</template>

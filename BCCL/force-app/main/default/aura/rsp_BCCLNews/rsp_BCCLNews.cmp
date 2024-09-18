@@ -1,0 +1,122 @@
+<aura:component Controller="rsp_BCCLNewsController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:handler name="init"
+                  value="{!this}" 
+                  action="{!c.doInit}"/>
+    <aura:attribute name = "wrapLst" type = "rsp_BCCL_News__c[]"/>
+    <aura:attribute name="ChatterTitle" type="String" />
+    
+    <div class = "slds-scrollable,headcss">
+        <div class = "innerdivheadcss">
+			<!--Added by Gaurav Khandekar on 24-10-2019 to display Title in Lightning Container-->
+            <div class="slds-page-header" style="height: 34px;">
+				<div class="slds-page-header__row">
+					<div class="slds-page-header__col-title">
+						<div class="slds-media">
+							<div class="slds-media__figure">
+								<span title="BCCL News">
+									<span class="slds-assistive-text">BCCL News</span>
+								</span>
+							</div>
+						</div>
+						<div class="slds-media__body" style="margin-top: -9px;">
+							<div class="slds-page-header__name">
+								<div class="slds-page-header__name-title">
+									<h1>
+										<span class="slds-page-header__title slds-truncate" title="BCCL News" style="font-size:13px">BCCL News</span>
+									</h1>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+        <!--Original Code-->
+		<!--<h3><Strong>BCCL News</Strong></h3>-->
+		<!--Mod Ends-->
+            
+            <div class="slds-grid slds-gutters">
+        	<aura:iteration items="{!v.wrapLst}" var="item" indexVar = "index">
+                
+                <div class="slds-col">
+                <span><lightning:card>
+                <aura:set attribute="body">
+                    <p>                        
+                        <a href="{!item.rsp_SharePoint_URL__c}" target="_blank">
+                            <b>  <ui:outputText value="{!item.rsp_Title__c}" /> </b>
+                        </a>
+                    </p>
+                    <!--Changes made by Gaurav Khandekar on 30/Jan/2020 to have URL's embedded in the image-->
+                    <!--<img src="{!item.rsp_Image_URL__c}" class="newsImage" align="middle" alt="" width ="" height=""/>-->
+                    <a href="{!item.rsp_SharePoint_URL__c}" target="_blank">
+                        <img src="{!item.rsp_Image_URL__c}" class="newsImage" align="middle" alt="" width ="" height=""/>
+                    </a>
+                    <!--Mod Ends-->
+					<div id="{!index}"
+						 onclick="{!c.createFeedPost}">
+						<lightning:icon iconName="utility:share"
+										size="xx-small"
+										title="share"
+										class="slds-icon-share" />
+					</div>
+                </aura:set>
+                <aura:set attribute="footer">
+                    &nbsp;
+                </aura:set>
+            </lightning:card></span>
+                </div>                
+        </aura:iteration>
+    	</div>
+        </div>
+        
+        <!--<div class="slds-scrollable" style="width: 100%;">
+        <div style="margin-top:10px; border-top: 1px solid #DEDBDA; padding-top:6px; padding-bottom:6px; padding-right:20px;">
+        	<div class="" align="right">
+                <button class="btn" style="height: 30px; width: 30px; border-radius: 50%; border: 1px solid #DEDBDA; background:white; margin-right:10px;"  >
+                    &lt;
+                </button>
+                <button style="height: 30px; width: 30px; border-radius: 50%; border: 1px solid #DEDBDA; background:white;">
+                    &gt;
+                </button>
+            </div>
+        </div>
+    	</div>-->
+    </div>
+    
+    
+    
+    <!--<div class="slds-scrollable" style="width: 100%;">
+    	<div class="slds-grid slds-gutters">
+        	<aura:iteration items="{!v.wrapLst}" var="item" indexVar = "index">
+           
+  
+                <div class="slds-col">
+                <span><lightning:card>
+                <aura:set attribute="body">
+                    <p>                        
+                        <a href="{!item.rsp_SharePoint_URL__c}" target="_blank">
+                            <b>  <ui:outputText value="{!item.rsp_Title__c}" /> </b>
+                        </a>
+                    </p><br/>
+                    <img src="{!item.rsp_Image_URL__c}" class="newsImage" align="middle"/>
+                    <div id="{!index}"
+                         onclick="{!c.createFeedPost}">
+                        <lightning:icon iconName="utility:share"
+                                        size="xx-small"
+                                        title="share"
+                                        class="slds-icon-share" />
+                    </div>
+                </aura:set>
+                <aura:set attribute="footer">
+                    &nbsp;
+                </aura:set>
+            </lightning:card></span>
+                </div>
+        
+            
+                
+        </aura:iteration>
+    	</div>
+    </div>-->
+    
+    
+</aura:component>

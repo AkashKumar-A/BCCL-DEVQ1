@@ -1,0 +1,36 @@
+:host {
+    --slds-c-checkbox-toggle-color-background-checked-focus: green;
+    --sds-c-checkbox-toggle-color-background-checked: green;
+}
+
+.datatable-div {
+    height: calc(100vh - 19rem);
+    margin-top: var(--lwc-varSpacingMedium, 1rem);
+    overflow: auto;
+}
+
+.datatable-div::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+}
+
+.datatable-div::-webkit-scrollbar-track {
+    display: none !important;
+}
+
+.datatable-div::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: rgba(0,0,0,0.4);
+}
+
+.orange-color {
+    text-align: left;
+    color: rgb(251 139 38);
+    --slds-c-icon-color-foreground: rgb(251 139 38);
+}
+
+.green-color {
+    text-align: left;
+    color: green;
+    --slds-c-icon-color-foreground: green;
+}

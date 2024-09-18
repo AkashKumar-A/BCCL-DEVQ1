@@ -1,0 +1,39 @@
+<template>
+    <lightning-card>
+        <lightning-spinner lwc:if={showSipnner} size="large" variant="brand"></lightning-spinner>
+        <div class="slds-var-p-horizontal_medium">
+            <div>
+                <lightning-input
+                    style="display: inline-block;"
+                    type="file"
+                    accept=".csv"
+                    label="Select CSV"
+                    files={selectedCsvFiles}
+                    onchange={csvSelected}
+                ></lightning-input>
+                <span lwc:if={selectedFilename} class="slds-var-p-horizontal_medium">{selectedFilename}</span>
+            </div>
+            <div lwc:if={showMonthOptions}>
+                <lightning-combobox
+                    label="Select Month"
+                    value={selectedMonth}
+                    options={monthOptions}
+                    onchange={monthSelected}
+                ></lightning-combobox>
+                <template lwc:if={showStructureOptions}>
+                    <lightning-combobox
+                        label="Select KAM Structure"
+                        value={selectedStructure}
+                        options={structureOptions}
+                        onchange={structureChanged}
+                    ></lightning-combobox>
+                    <lightning-button
+                        label="Upload"
+                        variant="success"
+                        onclick={handleUploadAOP}
+                    ></lightning-button>
+                </template>
+            </div>
+        </div>
+    </lightning-card>
+</template>

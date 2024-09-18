@@ -1,0 +1,315 @@
+<aura:component >
+    <aura:attribute name="groupingKey" type="String" description="key so we know which data to access from factMap"/>
+    <aura:attribute name="factMap" type="Object" description="all data keyed to groupings so we can pull the correct data"/>
+    <aura:attribute name="dataRows" type="Object[]" description="rows of data from report"/>
+    <aura:attribute name="Column1" type="Boolean" description="test"/>
+    <aura:attribute name="Column2" type="Boolean" description="test"/>
+    <aura:attribute name="Column3" type="Boolean" description="test"/>
+    <aura:attribute name="Column4" type="Boolean" description="test"/>
+    <aura:attribute name="Column5" type="Boolean" description="test"/>
+    <aura:attribute name="Column6" type="Boolean" description="test"/>
+    <aura:attribute name="Column7" type="Boolean" description="test"/>
+    <aura:attribute name="Column8" type="Boolean" description="test"/>
+    <aura:attribute name="title1" type="string" description="test"/>
+    <aura:attribute name="title2" type="string" description="test"/>
+    <aura:attribute name="title3" type="string" description="test"/>
+    <aura:attribute name="title4" type="string" description="test"/>
+    <aura:attribute name="title5" type="string" description="test"/>
+    <aura:attribute name="title6" type="string" description="test"/>
+    <aura:attribute name="title7" type="string" description="test"/>
+    <aura:attribute name="title8" type="string" description="test"/>
+    <aura:attribute name="colValue1" type="String"/>
+    <aura:attribute name="colValue2" type="String"/>
+    <aura:attribute name="colValue3" type="String"/>
+    <aura:attribute name="colValue4" type="String"/>
+    <aura:attribute name="colValue5" type="String"/>
+    <aura:attribute name="colValue6" type="String"/>
+    <aura:attribute name="colValue7" type="String"/>
+    <aura:attribute name="colValue8" type="String"/>
+    <aura:attribute name="columnLabels" type="String[]" description="Labels of columns, order is assumed"/>
+    <aura:attribute name="TarValue" type="decimal"/>
+        <aura:attribute name="searchCriteria" type="string" description="test"/>
+    <aura:handler name="init" value="{!this}" action="c.doInit"/>
+    <aura:handler name="change" action="c.doInit" value="{!v.factMap}"/>
+    <aura:handler name="change" action="c.doInit" value="{!v.columnLabels}"/>
+    <!-- gives us access to edit modal -->
+    <aura:dependency resource="markup://force:editRecord" type="EVENT" />
+    <!--<aura:iteration items="{!v.dataRows}" var="aRow" end="1">
+        <tr>
+            <aura:iteration items="{!aRow.aggregates}" var="aCell">--> <!--dataCells-->
+               <!-- <td class="ab">-->
+                    <!-- quick way to check if this is a lookup field so we can handle differently with view and edit access-->
+                   <!-- <aura:if isTrue="{! (aCell.value != aCell.label) &amp;&amp; (aCell.value.length == 15 || aCell.value.length == 18)}">
+                        <a href="{!'/'+aCell.value}" target="_blank">{!aCell.label}</a>&nbsp;
+                        <a href="javascript:void(0);" onclick="{!c.editRecord}" data-recordid="{!aCell.value}">
+                            <lightning:icon iconName="utility:edit" size="x-small" class="slids-icon-text-error" alternativeText="Edit"/>
+                        </a>
+                        <aura:set attribute="else">
+                            {!aCell.label}
+                        </aura:set>
+                    </aura:if> 
+                </td>
+            </aura:iteration>
+            
+        </tr>
+    </aura:iteration>-->
+    <aura:if isTrue="{!v.TarValue!=''}">
+    <div class="slds-grid slds-wrap" style="margin: 4px 0px 10px 0px;">
+  <aura:if isTrue="{!v.Column1}">
+        <div class="slds-col slds-size_12-of-12" style="margin: 15px 0px 0px 0px;">
+            <aura:if isTrue="{!lessthan(((v.dataRows[0].aggregates[0].value*100)/(v.TarValue)),50)}" >
+            <div class="box-custom">
+                <div class="slds-text-heading_small" style="padding: 10px 0px 20px 10px; font-size: 14px; font-weight: bold; color: #363535;">{!v.title1}</div> <!--{!v.columnLabels[0]}-->
+                <div class="slds-text-heading_large slds-text-align_center" style="font-size: 32px; font-weight: 500; color: red;">{!v.colValue1}</div>
+            </div>
+            </aura:if>
+            <aura:if isTrue="{!and(greaterthanorequal(((v.dataRows[0].aggregates[0].value*100)/(v.TarValue)),50),lessthan(((v.dataRows[0].aggregates[0].value*100)/(v.TarValue)),75))}" >
+            <div class="box-custom">
+                <div class="slds-text-heading_small" style="padding: 10px 0px 20px 10px; font-size: 14px; font-weight: bold; color: #363535;">{!v.title1}</div> <!--{!v.columnLabels[0]}-->
+                <div class="slds-text-heading_large slds-text-align_center" style="font-size: 32px; font-weight: 500; color: orange;">{!v.colValue1}</div>
+            </div>
+            </aura:if>
+            <aura:if isTrue="{!greaterthanorequal(((v.dataRows[0].aggregates[0].value*100)/(v.TarValue)),75)}" >
+            <div class="box-custom">
+                <div class="slds-text-heading_small" style="padding: 10px 0px 20px 10px; font-size: 14px; font-weight: bold; color: #363535;">{!v.title1}</div> <!--{!v.columnLabels[0]}-->
+                <div class="slds-text-heading_large slds-text-align_center" style="font-size: 32px; font-weight: 500; color: green;">{!v.colValue1}</div>
+            </div>
+            </aura:if>
+  </div>
+      </aura:if>
+      <aura:if isTrue="{!v.Column2}">
+  <div class="slds-col slds-size_12-of-12" style="margin: 15px 0px 0px 0px;">
+            <aura:if isTrue="{!lessthan(((v.dataRows[0].aggregates[1].value*100)/(v.TarValue)),50)}" >
+            <div class="box-custom">
+                <div class="slds-text-heading_small" style="padding: 10px 0px 20px 10px; font-size: 14px; font-weight: bold; color: #363535;">{!v.title2}</div> <!--{!v.columnLabels[0]}-->
+                <div class="slds-text-heading_large slds-text-align_center" style="font-size: 32px; font-weight: 500; color: red;">{!v.colValue2}</div>
+            </div>
+            </aura:if>
+      <aura:if isTrue="{!and(greaterthanorequal(((v.dataRows[0].aggregates[1].value*100)/(v.TarValue)),50),lessthan(((v.dataRows[0].aggregates[1].value*100)/(v.TarValue)),75))}" >
+            <div class="box-custom">
+                <div class="slds-text-heading_small" style="padding: 10px 0px 20px 10px; font-size: 14px; font-weight: bold; color: #363535;">{!v.title2}</div> <!--{!v.columnLabels[0]}-->
+                <div class="slds-text-heading_large slds-text-align_center" style="font-size: 32px; font-weight: 500; color: orange;">{!v.colValue2}</div>
+            </div>
+            </aura:if>
+      <aura:if isTrue="{!greaterthanorequal(((v.dataRows[0].aggregates[1].value*100)/(v.TarValue)),75)}" >
+            <div class="box-custom">
+                <div class="slds-text-heading_small" style="padding: 10px 0px 20px 10px; font-size: 14px; font-weight: bold; color: #363535;">{!v.title2}</div> <!--{!v.columnLabels[0]}-->
+                <div class="slds-text-heading_large slds-text-align_center" style="font-size: 32px; font-weight: 500; color: green;">{!v.colValue2}</div>
+            </div>
+            </aura:if>
+        </div>
+        </aura:if>
+      <aura:if isTrue="{!v.Column3}">
+          <div class="slds-col slds-size_12-of-12" style="margin: 15px 0px 0px 0px;">
+            <aura:if isTrue="{!lessthan(((v.dataRows[0].aggregates[2].value*100)/(v.TarValue)),50)}" >
+            <div class="box-custom">
+                <div class="slds-text-heading_small" style="padding: 10px 0px 20px 10px; font-size: 14px; font-weight: bold; color: #363535;">{!v.title3}</div> <!--{!v.columnLabels[0]}-->
+                <div class="slds-text-heading_large slds-text-align_center" style="font-size: 32px; font-weight: 500; color: red;">{!v.colValue3}</div>
+            </div>
+            </aura:if>
+      <aura:if isTrue="{!and(greaterthanorequal(((v.dataRows[0].aggregates[2].value*100)/(v.TarValue)),50),lessthan(((v.dataRows[0].aggregates[2].value*100)/(v.TarValue)),75))}" >
+            <div class="box-custom">
+                <div class="slds-text-heading_small" style="padding: 10px 0px 20px 10px; font-size: 14px; font-weight: bold; color: #363535;">{!v.title3}</div> <!--{!v.columnLabels[0]}-->
+                <div class="slds-text-heading_large slds-text-align_center" style="font-size: 32px; font-weight: 500; color: orange;">{!v.colValue3}</div>
+            </div>
+            </aura:if>
+      <aura:if isTrue="{!greaterthanorequal(((v.dataRows[0].aggregates[2].value*100)/(v.TarValue)),75)}" >
+            <div class="box-custom">
+                <div class="slds-text-heading_small" style="padding: 10px 0px 20px 10px; font-size: 14px; font-weight: bold; color: #363535;">{!v.title3}</div> <!--{!v.columnLabels[0]}-->
+                <div class="slds-text-heading_large slds-text-align_center" style="font-size: 32px; font-weight: 500; color: green;">{!v.colValue3}</div>
+            </div>
+            </aura:if>
+        </div>
+   
+        </aura:if>
+      <aura:if isTrue="{!v.Column4}">
+  <div class="slds-col slds-size_12-of-12" style="margin: 15px 0px 0px 0px;">
+            <aura:if isTrue="{!lessthan(((v.dataRows[0].aggregates[3].value*100)/(v.TarValue)),50)}" >
+            <div class="box-custom">
+                <div class="slds-text-heading_small" style="padding: 10px 0px 20px 10px; font-size: 14px; font-weight: bold; color: #363535;">{!v.title4}</div> <!--{!v.columnLabels[0]}-->
+                <div class="slds-text-heading_large slds-text-align_center" style="font-size: 32px; font-weight: 500;color: red;">{!v.colValue4}</div>
+            </div>
+            </aura:if>
+      <aura:if isTrue="{!and(greaterthanorequal(((v.dataRows[0].aggregates[3].value*100)/(v.TarValue)),50),lessthan(((v.dataRows[0].aggregates[3].value*100)/(v.TarValue)),75))}" >
+            <div class="box-custom">
+                <div class="slds-text-heading_small" style="padding: 10px 0px 20px 10px; font-size: 14px; font-weight: bold; color: #363535;">{!v.title4}</div> <!--{!v.columnLabels[0]}-->
+                <div class="slds-text-heading_large slds-text-align_center" style="font-size: 32px; font-weight: 500; color: orange;">{!v.colValue4}</div>
+            </div>
+            </aura:if>
+      <aura:if isTrue="{!greaterthanorequal(((v.dataRows[0].aggregates[3].value*100)/(v.TarValue)),75)}" >
+            <div class="box-custom">
+                <div class="slds-text-heading_small" style="padding: 10px 0px 20px 10px; font-size: 14px; font-weight: bold; color: #363535;">{!v.title4}</div> <!--{!v.columnLabels[0]}-->
+                <div class="slds-text-heading_large slds-text-align_center" style="font-size: 32px; font-weight: 500; color: green;">{!v.colValue4}</div>
+            </div>
+            </aura:if>
+        </div>
+        </aura:if>
+      <aura:if isTrue="{!v.Column5}">
+          <div class="slds-col slds-size_12-of-12" style="margin: 15px 0px 0px 0px;">
+            <aura:if isTrue="{!lessthan(((v.dataRows[0].aggregates[4].value*100)/(v.TarValue)),50)}" >
+            <div class="box-custom">
+                <div class="slds-text-heading_small" style="padding: 10px 0px 20px 10px; font-size: 14px; font-weight: bold; color: #363535;">{!v.title5}</div> <!--{!v.columnLabels[0]}-->
+                <div class="slds-text-heading_large slds-text-align_center" style="font-size: 32px; font-weight: 500;color: red;">{!v.colValue5}</div>
+            </div>
+            </aura:if>
+      <aura:if isTrue="{!and(greaterthanorequal(((v.dataRows[0].aggregates[4].value*100)/(v.TarValue)),50),lessthan(((v.dataRows[0].aggregates[4].value*100)/(v.TarValue)),75))}" >
+            <div class="box-custom">
+                <div class="slds-text-heading_small" style="padding: 10px 0px 20px 10px; font-size: 14px; font-weight: bold; color: #363535;">{!v.title5}</div> <!--{!v.columnLabels[0]}-->
+                <div class="slds-text-heading_large slds-text-align_center" style="font-size: 32px; font-weight: 500; color: orange;">{!v.colValue5}</div>
+            </div>
+            </aura:if>
+      <aura:if isTrue="{!greaterthanorequal(((v.dataRows[0].aggregates[4].value*100)/(v.TarValue)),75)}" >
+            <div class="box-custom">
+                <div class="slds-text-heading_small" style="padding: 10px 0px 20px 10px; font-size: 14px; font-weight: bold; color: #363535;">{!v.title5}</div> <!--{!v.columnLabels[0]}-->
+                <div class="slds-text-heading_large slds-text-align_center" style="font-size: 32px; font-weight: 500; color: green;">{!v.colValue5}</div>
+            </div>
+            </aura:if>
+        </div>
+  
+      </aura:if>
+      <aura:if isTrue="{!v.Column6}">
+          <div class="slds-col slds-size_12-of-12" style="margin: 15px 0px 0px 0px;">
+            <aura:if isTrue="{!lessthan(((v.dataRows[0].aggregates[5].value*100)/(v.TarValue)),50)}" >
+            <div class="box-custom">
+                <div class="slds-text-heading_small" style="padding: 10px 0px 20px 10px; font-size: 14px; font-weight: bold; color: #363535;">{!v.title6}</div> <!--{!v.columnLabels[0]}-->
+                <div class="slds-text-heading_large slds-text-align_center" style="font-size: 32px; font-weight: 500;color: red;">{!v.colValue6}</div>
+            </div>
+            </aura:if>
+      <aura:if isTrue="{!and(greaterthanorequal(((v.dataRows[0].aggregates[5].value*100)/(v.TarValue)),50),lessthan(((v.dataRows[0].aggregates[5].value*100)/(v.TarValue)),75))}" >
+            <div class="box-custom">
+                <div class="slds-text-heading_small" style="padding: 10px 0px 20px 10px; font-size: 14px; font-weight: bold; color: #363535;">{!v.title6}</div> <!--{!v.columnLabels[0]}-->
+                <div class="slds-text-heading_large slds-text-align_center" style="font-size: 32px; font-weight: 500; color: orange;">{!v.colValue6}</div>
+            </div>
+            </aura:if>
+      <aura:if isTrue="{!greaterthanorequal(((v.dataRows[0].aggregates[5].value*100)/(v.TarValue)),75)}" >
+            <div class="box-custom">
+                <div class="slds-text-heading_small" style="padding: 10px 0px 20px 10px; font-size: 14px; font-weight: bold; color: #363535;">{!v.title6}</div> <!--{!v.columnLabels[0]}-->
+                <div class="slds-text-heading_large slds-text-align_center" style="font-size: 32px; font-weight: 500; color: green;">{!v.colValue6}</div>
+            </div>
+            </aura:if>
+        </div>
+  
+      </aura:if>
+              <aura:if isTrue="{!v.Column7}">
+          <div class="slds-col slds-size_12-of-12" style="margin: 15px 0px 0px 0px;">
+            <aura:if isTrue="{!lessthan(((v.dataRows[0].aggregates[6].value*100)/(v.TarValue)),50)}" >
+            <div class="box-custom">
+                <div class="slds-text-heading_small" style="padding: 10px 0px 20px 10px; font-size: 14px; font-weight: bold; color: #363535;">{!v.title7}</div> <!--{!v.columnLabels[0]}-->
+                <div class="slds-text-heading_large slds-text-align_center" style="font-size: 32px; font-weight: 500;color: red;">{!v.colValue7}</div>
+            </div>
+            </aura:if>
+      <aura:if isTrue="{!and(greaterthanorequal(((v.dataRows[0].aggregates[6].value*100)/(v.TarValue)),50),lessthan(((v.dataRows[0].aggregates[6].value*100)/(v.TarValue)),75))}" >
+            <div class="box-custom">
+                <div class="slds-text-heading_small" style="padding: 10px 0px 20px 10px; font-size: 14px; font-weight: bold; color: #363535;">{!v.title7}</div> <!--{!v.columnLabels[0]}-->
+                <div class="slds-text-heading_large slds-text-align_center" style="font-size: 32px; font-weight: 500; color: orange;">{!v.colValue7}</div>
+            </div>
+            </aura:if>
+      <aura:if isTrue="{!greaterthanorequal(((v.dataRows[0].aggregates[6].value*100)/(v.TarValue)),75)}" >
+            <div class="box-custom">
+                <div class="slds-text-heading_small" style="padding: 10px 0px 20px 10px; font-size: 14px; font-weight: bold; color: #363535;">{!v.title7}</div> <!--{!v.columnLabels[0]}-->
+                <div class="slds-text-heading_large slds-text-align_center" style="font-size: 32px; font-weight: 500; color: green;">{!v.colValue7}</div>
+            </div>
+            </aura:if>
+        </div>
+  
+      </aura:if>
+              <aura:if isTrue="{!v.Column8}">
+          <div class="slds-col slds-size_12-of-12" style="margin: 15px 0px 0px 0px;">
+            <aura:if isTrue="{!lessthan(((v.dataRows[0].aggregates[7].value*100)/(v.TarValue)),50)}" >
+            <div class="box-custom">
+                <div class="slds-text-heading_small" style="padding: 10px 0px 20px 10px; font-size: 14px; font-weight: bold; color: #363535;">{!v.title8}</div> <!--{!v.columnLabels[0]}-->
+                <div class="slds-text-heading_large slds-text-align_center" style="font-size: 32px; font-weight: 500;color: red;">{!v.colValue8}</div>
+            </div>
+            </aura:if>
+      <aura:if isTrue="{!and(greaterthanorequal(((v.dataRows[0].aggregates[7].value*100)/(v.TarValue)),50),lessthan(((v.dataRows[0].aggregates[7].value*100)/(v.TarValue)),75))}" >
+            <div class="box-custom">
+                <div class="slds-text-heading_small" style="padding: 10px 0px 20px 10px; font-size: 14px; font-weight: bold; color: #363535;">{!v.title8}</div> <!--{!v.columnLabels[0]}-->
+                <div class="slds-text-heading_large slds-text-align_center" style="font-size: 32px; font-weight: 500; color: orange;">{!v.colValue8}</div>
+            </div>
+            </aura:if>
+      <aura:if isTrue="{!greaterthanorequal(((v.dataRows[0].aggregates[7].value*100)/(v.TarValue)),75)}" >
+            <div class="box-custom">
+                <div class="slds-text-heading_small" style="padding: 10px 0px 20px 10px; font-size: 14px; font-weight: bold; color: #363535;">{!v.title8}</div> <!--{!v.columnLabels[0]}-->
+                <div class="slds-text-heading_large slds-text-align_center" style="font-size: 32px; font-weight: 500; color: green;">{!v.colValue8}</div>
+            </div>
+            </aura:if>
+        </div>
+  
+      </aura:if>
+</div>
+        
+        <aura:set attribute="else">
+      <div class="slds-grid slds-wrap" style="margin: 4px 0px 10px 0px;">
+  <aura:if isTrue="{!v.Column1}">
+        <div class="slds-col slds-size_12-of-12" style="margin: 15px 0px 0px 0px;">
+            <div class="box-custom">
+                <div class="slds-text-heading_small" style="padding: 10px 0px 20px 10px; font-size: 14px; font-weight: bold; color: #363535;">{!v.title1}</div> <!--{!v.columnLabels[0]}-->
+                <div class="slds-text-heading_large slds-text-align_center" style="font-size: 32px; font-weight: 500; color: gray;">{!v.colValue1}</div>
+            </div>
+  </div>
+      </aura:if>
+      <aura:if isTrue="{!v.Column2}">
+  <div class="slds-col slds-size_12-of-12" style="margin: 15px 0px 0px 0px;">
+            <div class="box-custom">
+                <div class="slds-text-heading_small" style="padding: 10px 0px 20px 10px; font-size: 14px; font-weight: bold; color: #363535;">{!v.title2}</div> <!--{!v.columnLabels[0]}-->
+                <div class="slds-text-heading_large slds-text-align_center" style="font-size: 32px; font-weight: 500; color: gray;">{!v.colValue2}</div>
+            </div>
+        </div>
+        </aura:if>
+      <aura:if isTrue="{!v.Column3}">
+          <div class="slds-col slds-size_12-of-12" style="margin: 15px 0px 0px 0px;">
+            <div class="box-custom">
+                <div class="slds-text-heading_small" style="padding: 10px 0px 20px 10px; font-size: 14px; font-weight: bold; color: #363535;">{!v.title3}</div> <!--{!v.columnLabels[0]}-->
+                <div class="slds-text-heading_large slds-text-align_center" style="font-size: 32px; font-weight: 500; color: gray;">{!v.colValue3}</div>
+            </div>
+        </div>
+   
+        </aura:if>
+      <aura:if isTrue="{!v.Column4}">
+  <div class="slds-col slds-size_12-of-12" style="margin: 15px 0px 0px 0px;">
+            <div class="box-custom">
+                <div class="slds-text-heading_small" style="padding: 10px 0px 20px 10px; font-size: 14px; font-weight: bold; color: #363535;">{!v.title4}</div> <!--{!v.columnLabels[0]}-->
+                <div class="slds-text-heading_large slds-text-align_center" style="font-size: 32px; font-weight: 500;color: gray;">{!v.colValue4}</div>
+            </div>
+        </div>
+        </aura:if>
+      <aura:if isTrue="{!v.Column5}">
+          <div class="slds-col slds-size_12-of-12" style="margin: 15px 0px 0px 0px;">
+            <div class="box-custom">
+                <div class="slds-text-heading_small" style="padding: 10px 0px 20px 10px; font-size: 14px; font-weight: bold; color: #363535;">{!v.title5}</div> <!--{!v.columnLabels[0]}-->
+                <div class="slds-text-heading_large slds-text-align_center" style="font-size: 32px; font-weight: 500;color: gray;">{!v.colValue5}</div>
+            </div>
+        </div>
+  
+      </aura:if>
+      <aura:if isTrue="{!v.Column6}">
+          <div class="slds-col slds-size_12-of-12" style="margin: 15px 0px 0px 0px;">
+            <div class="box-custom">
+                <div class="slds-text-heading_small" style="padding: 10px 0px 20px 10px; font-size: 14px; font-weight: bold; color: #363535;">{!v.title6}</div> <!--{!v.columnLabels[0]}-->
+                <div class="slds-text-heading_large slds-text-align_center" style="font-size: 32px; font-weight: 500;color: gray;">{!v.colValue6}</div>
+            </div>
+        </div>
+  
+      </aura:if>
+      <aura:if isTrue="{!v.Column7}">
+          <div class="slds-col slds-size_12-of-12" style="margin: 15px 0px 0px 0px;">
+            <div class="box-custom">
+                <div class="slds-text-heading_small" style="padding: 10px 0px 20px 10px; font-size: 14px; font-weight: bold; color: #363535;">{!v.title7}</div> <!--{!v.columnLabels[0]}-->
+                <div class="slds-text-heading_large slds-text-align_center" style="font-size: 32px; font-weight: 500;color: gray;">{!v.colValue7}</div>
+            </div>
+        </div>
+  
+      </aura:if>
+      <aura:if isTrue="{!v.Column8}">
+          <div class="slds-col slds-size_12-of-12" style="margin: 15px 0px 0px 0px;">
+            <div class="box-custom">
+                <div class="slds-text-heading_small" style="padding: 10px 0px 20px 10px; font-size: 14px; font-weight: bold; color: #363535;">{!v.title8}</div> <!--{!v.columnLabels[0]}-->
+                <div class="slds-text-heading_large slds-text-align_center" style="font-size: 32px; font-weight: 500;color: gray;">{!v.colValue8}</div>
+            </div>
+        </div>
+  
+      </aura:if>
+</div>
+    </aura:set>
+        </aura:if>
+</aura:component>

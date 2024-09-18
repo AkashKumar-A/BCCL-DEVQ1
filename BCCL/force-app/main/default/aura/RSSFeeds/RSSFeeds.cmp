@@ -1,0 +1,32 @@
+<aura:component Controller="RSSHandler" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:handler name="init"
+                  value="{!this}" 
+                  action="{!c.doInit}"/>
+    <aura:attribute name = "wrapLst" type = "RSSHandler.wrapItemData[]"/>
+    <aura:attribute name="ChatterTitle" type="String" />
+    
+    <div>
+        <aura:iteration items="{!v.wrapLst}" var="item" indexVar = "index">
+            <lightning:card>
+                <aura:set attribute="body">
+                    <p>                        
+                        <a href="{!item.link}" target="_blank">
+                            <b>  <ui:outputText value="{!item.title}" /> </b>
+                        </a>
+                    </p><br/>
+                    <img src="{!item.image}" class="newsImage" align="middle" alt="" height ="" width=""/>
+                    <div id="{!index}"
+                         onclick="{!c.createFeedPost}">
+                        <lightning:icon iconName="utility:share"
+                                        size="xx-small"
+                                        title="share"
+                                        class="slds-icon-share" />
+                    </div>
+                </aura:set>
+                <aura:set attribute="footer">
+                    &nbsp;
+                </aura:set>
+            </lightning:card>
+        </aura:iteration>
+    </div>
+</aura:component>

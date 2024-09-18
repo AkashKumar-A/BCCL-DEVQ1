@@ -1,0 +1,9 @@
+<apex:page sidebar="false">
+    <apex:form id="frm">        
+        <h1>            
+            <apex:outputText value="{!$Label.Tableau_Dashboard_Dynamic_User_Email}">
+                <apex:param value="{!$User.Email}" />
+            </apex:outputText>
+        </h1>
+    </apex:form>
+ </apex:page>

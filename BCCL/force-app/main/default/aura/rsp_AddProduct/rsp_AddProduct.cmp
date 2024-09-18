@@ -1,0 +1,374 @@
+<aura:component controller="rsp_AddProductforOpp"
+                implements="c:rsp_AddProductInterface,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction"
+                access="global">
+    <aura:attribute name="errmsg" type="String"/>
+    <aura:attribute name="customSettings" type="rsp_Global_Setting__c"/>
+    <aura:handler name="init" 
+                  action="{!c.doInit}" 
+                  value="{!this}"/>
+    <div class="spinnerContainer">
+        <lightning:spinner aura:id="mySpinner" 
+                           alternativeText="Processing.." 
+                           title="Processing.." 
+                           variant="brand" 
+                           size="large" 
+                           class="slds-hide"/>
+    </div>
+    <c:PickListComponent sObjectName="OpportunityLineItem" 
+                         fieldName="rsp_Ad_Position__c" 
+                         picklistValues="{!v.picklistValues}" />
+    <c:PickListComponent sObjectName="OpportunityLineItem" 
+                         fieldName="rsp_Ad_Size__c" 
+                         picklistValues="{!v.addSizepicklistValues}" />
+    <aura:handler event="c:rsp_CustomLookupEvent" 
+                  name="sendWrapperData" 
+                  action="{!c.handleWrapperEvent}"/>
+    <aura:handler event="c:rsp_deleteProductEvent" 
+                  name="removeProductRow" 
+                  action="{!c.removeRow}"/>
+    <aura:handler event="c:rsp_UpdateAdPostionValueToAllRows" 
+                  name="UpdatePositionValues" 
+                  action="{!c.updateValuesPositions}"/>
+    <aura:handler event="c:rsp_UpdateAdSizeValueToAllRows" 
+                  name="UpdateSizeValues" 
+                  action="{!c.updateValuesAdSize}"/>
+    <aura:handler event="c:rsp_UpdateSizeheightValues" 
+                  name="UpdateSizeheightValues" 
+                  action="{!c.updateValuesAdSizeHeight}"/>
+    <aura:handler event="c:rsp_UpdateSizeWidthValues" 
+                  name="UpdateSizeWidthValues" 
+                  action="{!c.updateValuesAdSizeWidth}"/>
+    <aura:handler event="c:rsp_AddRemoveChildClassEvent" 
+                  name="addClassOnRow" 
+                  action="{!c.addClassOnCurrentIndex}"/>
+    <force:recordData aura:id="record"
+                      layoutType ="FULL"
+                      recordId ="{!v.recordId}"
+                      targetError ="{!v.recordError}"
+                      targetRecord ="{!v.record}"
+                      targetFields ="{!v.simpleRecord}"
+                      mode="VIEW"/> 
+    
+    <div class="c-container">
+        <h2 class="tableHeading">Opportunity Details</h2>  
+        <ui:scrollerWrapper class="scrollerSize">
+            <lightning:layoutItem padding="around-small" class="layoutPadding">
+                <lightning:recordViewForm recordId="{!v.oppRecordId}" objectApiName="Opportunity">
+                    
+                    <div class="slds-grid slds-wrap divClass slds-show_large">
+                        <div class="slds-col">
+                            <lightning:outputField fieldName="Name" />
+                        </div>
+                        <div class="slds-col">
+                            <lightning:outputField fieldName="Vertical__c"/>
+                        </div>
+                        <div class="slds-col">
+                            <lightning:outputField fieldName="StageName" />
+                        </div>
+                       <div class="slds-col">
+                            <lightning:outputField fieldName="Horizontal__c" />
+                        </div>
+                    </div>
+                    <div class="slds-grid slds-wrap divClass slds-show_large">
+                         <div class="slds-col">
+                            <lightning:outputField fieldName="rsp_Projection_Amount_In_Rs__c" />
+                        </div>
+                        <div class="slds-col">
+
+                        </div>
+                        <div class="slds-col">
+                            
+                        </div>
+                        <div class="slds-col">
+                            
+                        </div>
+                        
+                    </div>
+                    <div class="slds-hide_medium  topHeadBox">
+                        <div class="innerCont slds-p-around_small"> 
+                            <h2>Add Products 
+                                <span class="iconTog ">
+                                    <lightning:icon iconName="utility:add" size="small"
+                                                    aura:id="addIconId" 
+                                                    alternativeText="sss"
+                                                    onclick="{!c.showOppInfo}"/>
+                                </span>
+                                <span aura:id="dashIconId" class="iconTog2 slds-hide">
+                                    <lightning:icon iconName="utility:dash" size="small" 
+                                                    alternativeText="" 
+                                                    onclick="{!c.hideOppInfo}"/>
+                                </span>
+                            </h2>
+                            <div aura:id="OppInfoId" class="slds-hide">
+                                <div class="slds-col slds-size--1-of-2 slds-p-bottom_large slds-p-right_small">
+                                    <lightning:outputField fieldName="Name" />
+                                </div>
+                                <div class="slds-col slds-size--1-of-2 slds-p-bottom_large">
+                                    <lightning:outputField fieldName="Vertical__c"/>
+                                </div>
+                                <div class="slds-col slds-size--1-of-2">
+                                    <lightning:outputField fieldName="StageName" />
+                                </div>
+                                <div class="slds-col slds-size--1-of-2">
+                                    <lightning:outputField fieldName="rsp_Projection_Amount_In_Rs__c"/>
+                                </div>
+                            </div>    
+                        </div>
+                    </div>
+                    
+                    <div class="slds-grid slds-wrap divClass">
+                        <div class="slds-col">
+                            <hr/>
+                        </div>  
+                    </div>
+                </lightning:recordViewForm>
+                
+                <div class="slds-grid slds-wrap slds-gutters slds-p-left_small slds-p-right_small">
+                    <div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--3-of-12 slds-p-bottom_small">
+                        <div>
+                            <lightning:select 
+                                              aura:id="adPositionId" label="Innovations/Ad Position Type"
+                                              onchange="{!c.onInnovationChange}"
+                                              value="{!v.selectedValuePosition}">
+                                <option value="">--None--</option>                        
+                                <aura:iteration items="{!v.adProductList}" var="item">
+                                    <option value="{!item.Id}"
+                                            selected="{!item.Id == v.selectedValuePosition}">
+                                        {!item.Name}
+                                    </option>
+                                </aura:iteration>                        
+                            </lightning:select>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--3-of-12 slds-p-bottom_small">
+                        <div>
+                            <lightning:input type="number" 
+                                             name="input" 
+                                             label="Insertions" 
+                                             value="{!v.insertionValue}"/>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--3-of-12 slds-p-bottom_small">
+                        <div>
+                            <lightning:select  
+                                              aura:id="categoryId" 
+                                              label="Ad Category" onchange="{!c.onCategoryChange}"
+                                              value="{!v.selectedValueCategory}"
+                                              disabled="{!v.disableCategoryPicklistFields}">
+                                <option value="">--None--</option>                        
+                                <aura:iteration items="{!v.adCategoryList}" var="item">
+                                    <option value="{!item.Id}"
+                                            selected="{!item.Id == v.selectedValueCategory}">{!item.Name}</option>
+                                </aura:iteration>                        
+                            </lightning:select>
+                        </div>
+                    </div>
+                    <aura:if isTrue="{!v.showSubCategoryList}">
+                        <div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--3-of-12 slds-p-bottom_small">
+                            <lightning:select  
+                                              aura:id="subCategoryId"
+                                              label="Sub Category"
+                                              value="{!v.selectedValueSubCategory}"
+                                              onchange = "{!c.onSubCategoryChange}"
+                                              disabled="{!v.disableCategoryPicklistFields}">
+                                <option value="">--None--</option>                        
+                                <aura:iteration items="{!v.adSubCategoryList}" 
+                                                var="item">
+                                    <option value="{!item.Id}" 
+                                            selected="{!item.Id == v.selectedValueSubCategory}">
+                                        {!item.Name}
+                                    </option>
+                                </aura:iteration>                        
+                            </lightning:select>
+                        </div>
+                    </aura:if>
+                    <!--Added by Gaurav Khandekar(BCCL) on 28-01-2020-->
+                    <!--To incorporate Sponsorship Code Field for "Win Easy"-->
+                    <aura:if isTrue="{!v.showSponsorValues}">
+                      <div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--3-of-12 slds-p-bottom_small">
+                          <ui:inputSelect label="Sponsorship Code" class="dynamic" aura:id="InputSponsorshipCode" change="{!c.onPicklistChange}"/>
+                      </div>
+                      <div type="hidden">{!v.InputSponsorshipCode}</div>
+                    </aura:if>
+                    <!--Mod Ends-->
+
+                </div>
+                <aura:if isTrue="{!v.showSearchBox}">
+                    <h2 class="tableHeading1 slds-show_large">Add Product/Packages</h2>
+                    <div class="slds-grid slds-wrap divClass slds-m-bottom_small">
+                        <div class="slds-size--1-of-1 slds-large-size--6-of-12">
+                            <c:rsp_CustomLookup objectName="Product2" 
+                                                oppId="{!v.roleRecordId}" 
+                                                searchProductsForCategory="{!v.searchProductsForCategory}"
+                                                alreadySelectedProducts = "{!v.alreadyAddedProductsAndPAckages}"
+                                                dealId = "{!v.idDeal}"
+                                                innName = "{!v.selectedValuePosition}"
+                                                productName = "{!v.productName}"
+                                                resultListNotEmpty =  "{!v.resultListNotEmpty}"
+                                                aura:id="customLookupCmpId"
+                                                oppRecordId="{!v.oppRecordId}"/>
+                        </div>
+                    </div>
+                </aura:if>
+                <aura:if isTrue="{!v.showTable}">
+                    <h2 class="tableHeading1">Product List</h2>
+                    <div class="slds-grid slds-wrap divClass">
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered customTable slds-show_large">
+                            <tr>
+                                <th class="slds-text-title_caps" scope="col">Media Type</th>
+                                <th class="slds-text-title_caps" scope="col">Product</th>
+                                <th class="slds-text-title_caps" scope="col">Package</th>
+                                <th class="slds-text-title_caps" scope="col">Ad Position</th>
+                                <th class="slds-text-title_caps" scope="col">Ad Size</th>
+                                <th class="slds-text-title_caps" scope="col" >Action</th>
+                            </tr>
+                            <aura:iteration items="{!v.productWrapper.productWrapperList}" 
+                                            var="objProductWrapper" indexVar="index">
+                                <c:rsp_IndividualProductData 
+                                                             productWrapperRecord = "{!objProductWrapper}" 
+                                                             picklistValues = "{!v.picklistValues}"
+                                                             addSizepicklistValues = "{!v.addSizepicklistValues}"
+                                                             rowIndex="{!index}"
+                                                             packageImage="{!v.packageImage}"
+                                                             indiCustomSettings = "{!v.customSettings}"/>
+                            </aura:iteration>
+                        </table>
+                    </div>
+                    <div class="footer-to-be-fixed custombottom slds-show_large buttonSUMIT">
+                        <div class="slds-text-align_center slds-p-around_medium">
+                            <lightning:button variant="neutral" label="Cancel" 
+                                              title="Cancel" 
+                                              onclick="{!c.returnToOpp}" />
+                            <lightning:button variant="neutral" label="Save and Close" 
+                                              title="Save and Close"
+                                              onclick="{!c.createOppProducts}" />
+                            <lightning:button variant="brand" label="Submit" 
+                                              title="Submit"
+                                              onclick="{!c.onSubmitClick}" />
+                        </div>
+                    </div>
+                    <div class="slds-hide_medium">
+                        <aura:iteration items= "{!v.productWrapper.productWrapperList}" 
+                                        var="objProductWrapper" indexVar="index"
+                                        >
+                            <div>
+                                <c:rsp_IndividualProductData 
+                                                             productWrapperRecord = "{!objProductWrapper}" 
+                                                             picklistValues = "{!v.picklistValues}"
+                                                             addSizepicklistValues = "{!v.addSizepicklistValues}"
+                                                             rowIndex="{!index}" aura:id="impChildCMP"
+                                                             packageImage="{!v.packageImage}"
+                                                             indiCustomSettings = "{!customSettings}"/>
+                            </div>
+                            
+                        </aura:iteration>
+                    </div>
+                    
+                    <div class="footer-to-be-fixed custombottom slds-hide_medium buttonSUMIT">
+                        
+                        <div class="slds-grid slds-wrap">
+                            <div class="slds-col">
+                                <lightning:button variant="brand" 
+                                                  label="Submit" 
+                                                  title="Submit"
+                                                  onclick="{!c.onSubmitClick}"
+                                                  class="slds-size--1-of-1"/>
+                            </div>
+                        </div>
+                        <div class="slds-text-align_center slds-m-top_medium">
+                            <div class="slds-grid slds-wrap">
+                                <div class="slds-col slds-m-right_medium">
+                                    <lightning:button variant="neutral" label="Cancel" 
+                                                      title="Cancel" 
+                                                      onclick="{!c.returnToOpp}"
+                                                      class="slds-size--1-of-1 slds-button slds-button_neutral"/>
+                                </div>
+                                <div class="slds-col">
+                                    <lightning:button variant="neutral" label="Save and Close" 
+                                                      title="Save and Close"
+                                                      onclick="{!c.createOppProducts}"
+                                                      class="slds-size--1-of-1 slds-button slds-button_neutral"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </aura:if>
+                <aura:if isTrue="{!v.isOpenModal}">
+                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" 
+                             aria-modal="true" aria-describedby="modal-content-id-1" 
+                             class="slds-modal slds-fade-in-open">
+                        <div class="slds-modal__container">
+                            <header class="slds-modal__header">
+                                <lightning:buttonIcon iconName="utility:close"
+                                                      onclick="{! c.closePackageDeletionModel}"
+                                                      alternativeText="close"
+                                                      variant="bare-inverse"
+                                                      class="slds-modal__close"/>
+                                <h2 class="slds-text-heading_medium slds-hyphenate"
+                                    id="modal-heading-01">
+                                    Delete Confirmation
+                                </h2>
+                            </header>
+                            <div class="slds-modal__content slds-p-around_medium" 
+                                 id="modal-content-id-1">
+                                <p><b>
+                                    This product belongs to a package, if you click on continue whole 
+                                    package will be removed
+                                    </b>
+                                </p>
+                            </div>
+                            <footer class="slds-modal__footer">
+                                <lightning:button variant="neutral" 
+                                                  label="Cancel"
+                                                  title="Cancel"
+                                                  onclick="{! c.closePackageDeletionModel}"/>
+                                <lightning:button variant="brand" 
+                                                  label="Continue"
+                                                  title="Continue"
+                                                  onclick="{!c.continuePackageDeletion }"/>
+                            </footer>
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>            
+                </aura:if>
+                <aura:if isTrue="{!v.isOpenModalCategoryChanged}">
+                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" 
+                             aria-modal="true" aria-describedby="modal-content-id-1" 
+                             class="slds-modal slds-fade-in-open">
+                        <div class="slds-modal__container">
+                            <header class="slds-modal__header">
+                                <lightning:buttonIcon iconName="utility:close"
+                                                      onclick="{! c.closeCategoryModel}"
+                                                      alternativeText="close"
+                                                      variant="bare-inverse"
+                                                      class="slds-modal__close"/>
+                                <h2 class="slds-text-heading_medium slds-hyphenate" 
+                                    id="modal-heading-01" >
+                                    Delete Confirmation
+                                </h2>
+                            </header>
+                            <div class="slds-modal__content slds-p-around_medium" 
+                                 id="modal-content-id-1">
+                                <p><b>
+                                    Your selection will disappear once you change Ad Category or Innovation. Do you still wish to continue?
+                                    </b>
+                                </p>
+                            </div>
+                            <footer class="slds-modal__footer">
+                                <lightning:button variant="neutral" 
+                                                  label="Cancel"
+                                                  title="Cancel"
+                                                  onclick="{! c.closeCategoryModel }"/>
+                                <lightning:button variant="brand" 
+                                                  label="Continue"
+                                                  title="Continue"
+                                                  onclick="{!c.continueCategoryChange }"/>
+                            </footer>
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>            
+                </aura:if>
+            </lightning:layoutItem>
+        </ui:scrollerWrapper>
+    </div>
+</aura:component>

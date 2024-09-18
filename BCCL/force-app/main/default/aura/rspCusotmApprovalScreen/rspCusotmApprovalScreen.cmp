@@ -1,0 +1,242 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" 
+                access="global"
+                controller = "rsp_CustomApprovalScreen">
+    <aura:handler name="init" 
+                  value="{!this}" 
+                  action="{!c.doInit}"/>
+    <aura:attribute name="lstOfProcessInstance" 
+                    type="CustomApprovalScreenController.wrapApprovalRecord[]"  
+                    description = "Holds lst of dealer record"/>
+    <aura:attribute name="lstOfProcessInstanceCloned" 
+                    type="CustomApprovalScreenController.wrapApprovalRecord[]"  
+                    description = "Holds lst of dealer record"/>
+    <aura:attribute name="lstOfProcessInstanceClonedToShow" 
+                    type="CustomApprovalScreenController.wrapApprovalRecord[]"  
+                    description = "Holds lst of dealer record"/>
+    <aura:attribute name="lstOfProcessInstanceBasedOnObject" 
+                    type="CustomApprovalScreenController.wrapApprovalRecord[]"  
+                    description = "Holds lst of dealer record"/>
+    <aura:attribute name="lstOfObjectName" 
+                    type="String[]"  
+                    description = "Holds lst of object Name"/>
+    <aura:attribute name="noOfRecord" 
+                    type="Integer"                    
+                    description = "This attribute is used to store default value to store no of record"/>   
+    <aura:attribute name="modalHeader" 
+                    type="String"  
+                    description = "Holds the modal header name"/>
+    <aura:attribute name="targetObjectId" 
+                    type="String"  
+                    description = "Holds the target object Id"/>
+    <aura:attribute name="isModalOpened" 
+                    type="Boolean"
+                    default = "false"
+                    description = "Holds whether modal is opened or not"/>
+    <aura:attribute name="modalButtonLabel" 
+                    type="String"                    
+                    description = "Holds label of modal button"/>    
+    <aura:attribute name="currentPageNumber" 
+                    type="Integer"  />
+    <aura:attribute name="maxPage" 
+                    type="Integer"  />
+    <aura:attribute type="Integer" 
+                    name="pageNumber"		
+                    default="1" />
+    <aura:handler name="cmpEvent" 
+                  event="c:rspCustomApproval" 
+                  action="{!c.doInit}"/>
+    <aura:handler name="change"	
+                  value="{!v.pageNumber}"	
+                  action="{!c.renderPage}"/>
+    <aura:attribute name="selectedUserId" 
+                    type="object"                      
+                    description="Use,for store SELECTED sObject Record"/>
+    <aura:attribute name="selectedObjectName" 
+                    type="string"                      
+                    description="Use,for store SELECTED sObject Record"/>
+    <aura:attribute name="selectedRoleId" 
+                    type="object"                      
+                    description="Use,for store SELECTED sObject Record"/>
+     <aura:handler name="getusers" event="c:rspGetuserEvt" action="{!c.filterBasedOnUser}"/>
+    <aura:registerEvent name="cmpEvent" 
+                        type="c:rspCustomApproval"
+                       />
+    <aura:if isTrue = "{!v.isModalOpened}">
+        <c:rspCommonCustomModal modalHeader = "{!v.modalHeader}"
+                                modalButtonLabel = "{!v.modalButtonLabel}"
+                                isModalOpened = "{!v.isModalOpened}"
+                                targetObjectId = "{!v.targetObjectId}"
+                                selectedObjectName = "{!v.selectedObjectName}"/>                               
+    </aura:if>
+    
+    <ui:scrollerWrapper class="scrollerSize">
+        <div class="slds-page-header">
+            <div class="slds-page-header__row">
+                <div class="slds-page-header__col-title">
+                    <div class="slds-media">
+                        <div class="slds-media__figure">
+                            <lightning:icon iconName="action:submit_for_approval" size="small" alternativeText="Indicates approval"/>
+                        </div>
+                        <div class="slds-media__body">
+                            <div class="slds-page-header__name">
+                                <div class="slds-page-header__name-title">
+                                    <h1>
+                                        <span class="slds-page-header__title slds-truncate" title="Items To Approve">Items To Approve</span>
+                                    </h1>
+                                </div>
+                            </div>
+                            <p class="slds-page-header__name-meta">Approval Request</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="headCont">
+            <div class="slds-grid slds-wrap slds-grid_align-center slds-gutters">
+                <div class="slds-col slds-size_1-of-1 slds-large-size_4-of-12">
+                    <lightning:select name="select1" label="Approval Type"
+                                      onchange = "{!c.filterBasedOnObject}"
+                                      value = "{!v.selectedObjectName}">
+                        <option value="All">All</option>
+                        <aura:iteration items="{!v.lstOfObjectName}" var="eachObjectName">
+                            <option value="{!eachObjectName.key}">{!eachObjectName.value}</option>
+                        </aura:iteration>
+                    </lightning:select>                
+                </div>
+               
+                <div class="slds-col slds-size_1-of-1 slds-large-size_4-of-12">
+                    <c:rspLookUp IconName="standard:user"
+                                  selectedRecord = "{!v.selectedUserId}"
+                                  label = ""
+                                  indexNumber = ""
+                                  aura:id = "userLookUpId"                                 
+                                  isLookUpDisabled = "{!v.selectedRoleId != undefined}"
+                                  placeHolder = "Search Submitter.."
+                        		  filterCondition = "select Id,name from user where IsActive = true and Name like : searchKey limit 5" />              
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-large-size_4-of-12">
+                   <c:rspLookUp IconName="standard:user"
+                                  selectedRecord = "{!v.selectedRoleId}"
+                                  label = ""
+                                  indexNumber = ""
+                                  aura:id = "roleLookupId"                                 
+                                  isLookUpDisabled = "{!v.selectedUserId != undefined}"
+                                  placeHolder = "Search Role.."
+                        		  filterCondition = "select Id,name from rsp_Role__c where rsp_Is_Active__c = true and Name like : searchKey limit 5"  />                
+                </div>
+            </div>
+        </div>
+      <aura:if isTrue = "{!v.lstOfProcessInstanceClonedToShow.length > 0}">
+        <table class="slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal">
+            <thead>
+                <tr class="slds-line-height_reset">
+                    
+                    <th class="slds-text-title_caps" scope="col">
+                        <div class="slds-truncate" title="RELATED TO">RELATED TO</div>
+                    </th>
+                    <th class="slds-text-title_caps" scope="col">
+                        <div class="slds-truncate" title="TYPE">TYPE</div>
+                    </th>
+                    <aura:if isTrue = "{!or(v.selectedObjectName == 'Quote',
+                                       v.selectedObjectName == 'All')}">
+                        <th class="slds-text-title_caps" scope="col">
+                            <div class="slds-truncate" title="TYPE">OPPORTUNITY NAME</div>
+                        </th>
+                    </aura:if>
+                    <th class="slds-text-title_caps" scope="col">
+                        <div class="slds-truncate" title="Role">Role</div>
+                    </th>
+                    <aura:if isTrue = "{!v.selectedObjectName == 'rsp_Target__c'}">
+                        <th class="slds-text-title_caps" scope="col">
+                            <div class="slds-truncate" title="Target">Total Target</div>
+                        </th>
+                    </aura:if>
+                    <th class="slds-text-title_caps" scope="col">
+                        <div class="slds-truncate" title="SUBMITTED BY">SUBMITTED BY</div>
+                    </th>
+                    <th class="slds-text-title_caps" scope="col">
+                        <div class="slds-truncate" title="DATE SUBMITTED">DATE SUBMITTED</div>
+                    </th>
+                    
+                    <th>
+                        
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <aura:iteration items="{!v.lstOfProcessInstanceClonedToShow}" var="eachProcessInstance" 
+                                indexVar = "index">
+                    <tr class="slds-hint-parent">                   
+                        <td data-label="RELATED TO">
+                            <u><ui:outputURL value="{!'/'+eachProcessInstance.objProcessInstance.Id}" 
+                                             label="{!eachProcessInstance.objProcessInstance.ProcessInstance.TargetObject.Name}" 
+                                             aura:id="detailContURL" target="_blank"/></u>
+                            
+                        </td>
+                        <td data-label="TYPE">
+                            {!eachProcessInstance.sObjectName}
+                        </td>
+                        <aura:if isTrue = "{!or(v.selectedObjectName == 'Quote',
+                                       v.selectedObjectName == 'All')}">
+                            <aura:if isTrue = "{!!empty(eachProcessInstance.Role.Opportunity.Name)}">
+                       <td data-label="OPPORTUNITY NAME">
+                            <u><ui:outputURL value="{!'/'+eachProcessInstance.Role.OpportunityId}" 
+                                             label="{!eachProcessInstance.Role.Opportunity.Name}" 
+                                             aura:id="detailContURL" target="_blank"/></u>
+                        </td>
+                                <aura:set attribute = "else">
+                                <td>--</td>
+                                </aura:set>
+                            </aura:if>
+
+                        </aura:if>
+                          
+                        <td data-label="ROLE">
+                                {!eachProcessInstance.Role.rsp_Role__r.Name}
+                            </td>
+                        <aura:if isTrue = "{!v.selectedObjectName == 'rsp_Target__c'}">
+                        <td data-label="Target">
+                            <ui:outputCurrency aura:id="amount" class="field" 
+                                              value="{!eachProcessInstance.Role.rsp_Total_Target__c}"/>
+                            </td>                            
+                        </aura:if>
+                        <td data-label="MOST RECENT APPROVER">
+                            <u><ui:outputURL value="{!'/'+eachProcessInstance.objProcessInstance.ProcessInstance.SubmittedById}" 
+                                             label="{!eachProcessInstance.objProcessInstance.ProcessInstance.SubmittedBy.Name}" 
+                                             aura:id="detailContURL" target="_blank"/></u>                        
+                        </td>
+                        <td data-label="DATE SUBMITTED">
+                            <ui:outputDateTime aura:id="oDate" 
+                                               value="{!eachProcessInstance.objProcessInstance.CreatedDate}" />
+                        </td>
+                        <td data-label="{!eachProcessInstance.objProcessInstance.ProcessInstance.createddate}">
+                            <lightning:buttonMenu iconName="utility:down" 
+                                                  iconSize="medium"
+                                                  variant="bare"
+                                                  name = "{!index}"
+                                                  alternativeText="Show 3 more action" 
+                                                  onselect="{!c.handleApprovalSelection}"
+                                                   menuAlignment = "right">
+                                <lightning:menuItem label="Approve" value="Approve" 
+                                                   />
+                                <lightning:menuItem label="Reject" value="Reject"
+                                                   />
+                                <lightning:menuItem label="Reassign" value="Reassign" 
+                                                    />
+                            </lightning:buttonMenu> 
+                        </td>
+                    </tr>
+                </aura:iteration>
+            </tbody>
+        </table>
+          <div style="padding:10px;" align="right">
+            <c:rspPagination currentPageNumber="{!v.pageNumber}" 
+                             maxPageNumber="{!v.maxPage}" />
+        </div>
+        	<aura:set attribute = "else">
+          	No Record Found!!
+          </aura:set>  
+        </aura:if>   
+    </ui:scrollerWrapper>
+</aura:component>

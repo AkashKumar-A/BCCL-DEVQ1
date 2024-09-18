@@ -1,0 +1,150 @@
+<aura:component controller="rsp_CustomLookupctrl" 
+                implements="flexipage:availableForRecordHome,force:hasRecordId" 
+                access="global">
+    <aura:attribute name="issearching" type="Boolean" default="false"/>
+    <aura:attribute name="oppRecordId" type="String" />
+    <aura:attribute name="productName" type="String"/>
+    <aura:attribute name="objectName" type="String"/>
+    <aura:attribute name="oppId" type="String"/>
+    <aura:attribute name="innName" type = "String"/>
+    <aura:attribute name="dealId" type="Id"/>
+    <aura:attribute name="alreadySelectedProducts" 
+                    type="rsp_CustomLookupctrl.CustomLookupWrapper[]"/>
+    <aura:attribute name="searchProductsForCategory" type="String"/>
+    <aura:attribute name="resultList" type="rsp_CustomLookupctrl.CustomLookupWrapper[]"/>
+    <aura:attribute name="printProducts" type="rsp_CustomLookupctrl.CustomLookupWrapper[]"/>
+    <aura:attribute name="nonPrintProducts" type="rsp_CustomLookupctrl.CustomLookupWrapper[]"/>
+    <aura:attribute name="resultListNotEmpty" type="Boolean" default="false"/>
+    <aura:attribute name="disableAddButton" type="Boolean" default="true"/>
+    <aura:registerEvent name="sendWrapperData" type="c:rsp_CustomLookupEvent"/>
+    <lightning:spinner aura:id="mySpinner" alternativeText="Processing.." title="Processing.." 
+                       variant="brand" size="large" class="slds-hide"/>
+    <aura:method name="refreshDataOnCategoryChange" action="{!c.refreshData}" access="PUBLIC">
+        <!--<aura:attribute name="hideSearchData" type="String" />-->
+    </aura:method>
+    <aura:method name="dealMandateProducts" action="{!c.getDealProducts}" access="PUBLIC">
+        <!--<aura:attribute name="hideSearchData" type="String" />-->
+    </aura:method>
+    <div>
+        <div class="slds-form-element">
+            <!--<label class="slds-form-element__label" for="combobox-id-1">Relate to</label>-->
+            <div class="slds-form-element__control">
+                <div class="slds-combobox_container">
+                    <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click posRel" 
+                         aura:id="listbox-id-22" aria-expanded="false" 
+                         aria-haspopup="listbox" role="combobox">
+                        <!--<div class="srchIcn">
+                            <lightning:icon iconName="utility:search" size="x-small" title="" />
+                        </div>-->
+                        <div class="slds-grid slds-gutters slds-m-bottom_x-small slds-hide_large"> 
+                            <div class="slds-small-size--9-of-12  ">  
+                                <h2 class="tableHeading1">Add Product/Packages</h2> 
+                            </div>
+                            <div class="slds-col slds-small-size--3-of-12   ">
+                                <lightning:button label="Add" 
+                                                  title="Add" 
+                                                  onclick="{!c.getSelectedProducts}"
+                                                  disabled="{!v.disableAddButton}"/>
+                            </div> 
+                        </div>
+                        <div class="slds-grid slds-gutters">
+                            <!--onkeyup="{! c.searchPoductsPackages }"-->
+                            <div onkeyup="{! c.searchPoductsPackages }" class="slds-col slds-size--6-of-6 slds-large-size--10-of-12">
+                                <lightning:input type="search" placeholder="Enter name.."
+                                                 variant="label-hidden" label=" "
+                                                 value="{!v.productName}" 
+                                                 onfocus="{!c.searchPoductsPackages}"
+                                                 aria-controls="listbox-id-1" 
+                                                 autocomplete="off"
+                                                 isLoading="{!v.issearching}"
+                                                 /><!--onfocus="{!c.searchPoductsPackages}"-->
+                                
+                                <div aura:id="listbox-id-1"
+                                     class=" slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid dropPos1" 
+                                     role="listbox">
+                                    <aura:if isTrue="{!v.resultListNotEmpty}">
+                                        <span id="iconId" onclick="{!c.closeList}">	
+                                            <lightning:icon class="CustomCrossIcon"
+                                                            iconName="utility:close" 
+                                                            alternativeText="Delete"
+                                                            size="x-small"/>
+                                        </span> 
+                                        <ul class="slds-listbox slds-listbox_vertical customListBox">
+                                            <li class="slds-listbox__item">
+                                                <div class="boxF">
+                                                    <h2>Print Product
+                                                        
+                                                        
+                                                    </h2> 
+                                                    <div class="innerCont">
+                                                        <aura:iteration items="{!v.printProducts}" var="oneRow">
+                                                            
+                                                            <div id="option1" 
+                                                                 class="posRel slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta" 
+                                                                 role="option">
+                                                                <span class="slds-media__body">
+                                                                    <span class="slds-listbox__option-text slds-listbox__option-text_entity disIn">
+                                                                        <lightning:input type="checkbox" 
+                                                                                         label="Basic option" 
+                                                                                         checked="{!oneRow.isSelected}" 
+                                                                                         variant="label-hidden" 
+                                                                                         name="input1" disabled="{!oneRow.isDisable}"/>
+                                                                    </span>
+                                                                    <span class="slds-listbox__option-meta slds-listbox__option-meta_entity lblTxt">
+                                                                        {!oneRow.nameProductOrPackage}
+                                                                    </span>
+                                                                </span>
+                                                            </div>
+                                                        </aura:iteration>
+                                                    </div>  
+                                                </div>
+                                                <div class="boxF">
+                                                    <h2>Non Print Product</h2> 
+                                                    <div class="innerCont">
+                                                        <aura:iteration items="{!v.nonPrintProducts}" var="oneRow">
+                                                            
+                                                            <div id="option1" 
+                                                                 class="posRel slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta" 
+                                                                 role="option">
+                                                                <span class="slds-media__body">
+                                                                    <span class="slds-listbox__option-text slds-listbox__option-text_entity disIn">
+                                                                        <lightning:input type="checkbox" 
+                                                                                         label="Basic option" 
+                                                                                         checked="{!oneRow.isSelected}" 
+                                                                                         variant="label-hidden" 
+                                                                                         name="input1"
+                                                                                         disabled="{!oneRow.isDisable}"/>
+                                                                    </span>
+                                                                    <span class="slds-listbox__option-meta slds-listbox__option-meta_entity lblTxt">
+                                                                        {!oneRow.nameProductOrPackage}
+                                                                    </span>
+                                                                </span>
+                                                            </div>
+                                                        </aura:iteration>
+                                                    </div> 
+                                                </div>
+                                            </li>
+                                        </ul>
+                                        
+                                        <!--<aura:set attribute="else">
+                                    No records found..
+                                </aura:set>-->
+                                    </aura:if>
+                                    <aura:if isTrue="{!(!v.resultListNotEmpty)}">
+                                        No records found..
+                                    </aura:if>
+                                </div>
+                            </div>
+                            <div class="slds-col1 slds-size--3-of-6 slds-large-size--2-of-12 slds-show_large cstMargin">
+                                <lightning:button label="Add" 
+                                                  title="Add" 
+                                                  onclick="{!c.getSelectedProducts}"
+                                                  disabled="{!v.disableAddButton}"/>
+                            </div> 
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</aura:component>

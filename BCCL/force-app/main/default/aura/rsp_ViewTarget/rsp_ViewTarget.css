@@ -1,0 +1,63 @@
+.THIS {
+  zoom: 90%;
+}
+.THIS.c-container {
+    border: 1px solid #d8dde6;
+    margin: 10px 0 20px 0;
+    background:white;
+    width:100%;
+}
+.THIS.cstm_button {margin-top: 20px;}
+.THIS.slds-spinner_container {  
+  z-index: 10000;
+  position: fixed;   
+}
+
+.THIS .customGrid{
+    position: relative;
+    padding: 0 15px 10px;
+     justify-content: flex-start;
+}
+.THIS .customGrid > div{
+    width: 20%;
+}
+
+
+
+.THIS .customGrid:after{
+    content: "";
+    position: absolute;
+    height: 1px;
+    background: #ccc;
+    bottom: 0;
+    left: 30px;
+    right: 30px;
+}
+.THIS .tableHeading{
+    padding: 30px 30px 10px;
+    font-size: 18px;
+    font-weight: bold;
+}
+.THIS .slds-table_col-bordered th+th,
+.THIS .slds-table_col-bordered td+td{
+    border-left: 0;
+}
+.THIS .slds-table_col-bordered th{
+    background: #e4e4e4;
+}
+.THIS .slds-table_col-bordered th,
+.THIS .slds-table_col-bordered td{
+    padding: 15px 10px;
+}
+.THIS .responsiveTable{
+    margin: 0 30px 30px;
+    border: 1px solid #ccc;
+}
+.THIS .cstm_mrgn{
+    margin-left:2%;
+}
+.THIS .zoom {
+  zoom: 30%;
+}
+.THIS table tr th {font-weight: 600;}
+.THIS .cstm_text_align_center {text-align: center;}

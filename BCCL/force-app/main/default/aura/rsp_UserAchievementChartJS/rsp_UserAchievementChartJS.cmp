@@ -1,0 +1,37 @@
+<aura:component implements="flexipage:availableForAllPageTypes" controller="rsp_UserAchievementChartControllerJS">
+    
+    <aura:attribute name="selectedMode" type="String" default="" />
+    <aura:attribute name="checkedIndividual" type="Boolean" />
+    <aura:attribute name="checkedCumulative" type="Boolean" />
+    <aura:attribute name="graphColorCodeList" type="String[]" />
+    
+    <aura:attribute name="showSpinner" type="Boolean" default="false" />
+    
+    <aura:attribute name="roleWiseWrapperList" type="rsp_UserAchievementChartControllerJS.finalWrapperData[]" />
+    <div class="main_div">
+        <Center><h2 class="tableHeading">Target vs Achievement</h2></Center>
+        <ltng:require scripts="{!$Resource.ChartJS23}" afterScriptsLoaded="{!c.generateChart}"/>
+        <div class="slds-box">        
+            <fieldset class="slds-form-element">
+                <lightning:input aura:id ="individualId" checked="{!v.checkedIndividual}" type="radio" label="Individual" name="options1" value="Individual" onclick="{!c.onClickIndividual}"/>
+                <lightning:input aura:id ="cumulativeId" checked="{!v.checkedCumulative}" type="radio" label="Cumulative" name="options2" value="Cumulative" onclick="{!c.onClickCumulative}"/>
+            </fieldset>   
+        </div>
+        <div class="slds-box">
+            <!--“name” attribute value can be: bars, spears, bubbles, spin, cyclone, cubes or spokes.-->
+            
+            
+            <aura:if isTrue="{!v.checkedIndividual}">
+                <div id="individualDivId" class="canvas_width">
+                    <canvas aura:id="linechart" ></canvas>
+                </div>
+                <aura:set attribute="else">
+                    <div class="canvas_width_cumulative">
+                        <canvas aura:id="linechart1"></canvas>
+                    </div>
+                </aura:set>
+            </aura:if>
+            <!--<c:Spinner type="bubbles" width="200" height="300" color="blue" show="{!showSpinner}" />-->
+        </div>
+    </div>
+</aura:component>

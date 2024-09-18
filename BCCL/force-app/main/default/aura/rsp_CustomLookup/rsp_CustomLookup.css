@@ -1,0 +1,74 @@
+.THIS .lblTxt{
+    display: inline-block;
+    position: absolute;
+    top: 10px;
+    left: 40px;
+}
+
+.THIS .dsIn 
+{
+    display:inline-block;
+}
+
+.THIS .srchIcn 
+{
+    position: absolute;
+    top: 5px;
+    z-index: 999;
+    right: 7px;
+}
+
+.THIS .posRel 
+{
+    position:relative;
+}
+
+.THIS .boxF h2 
+{
+    display: block;
+    background: #eee;
+    padding: 7px 10px;
+    margin: 10px;
+    color: #000;
+}
+
+
+ .THIS .dropPos 
+    {
+        left: 0px;
+        transform: translateX(0%);
+        width: 100%;
+        max-width: 100%;
+    }
+
+.THIS .innerCont 
+{
+    max-height: 100px;
+    overflow: auto;
+}
+
+.THIS .slds-dropdown_fluid 
+{
+  margin-bottom:30px;
+}
+
+@media only screen and (max-width: 30em) 
+ {
+    .THIS .dropPos 
+    {
+        left: 0px;
+        transform: translateX(0%);
+        width: 100%;
+        max-width: 100%;
+    }
+}
+.THIS .CustomCrossIcon{
+    float: right;
+    margin-right: 6px;
+}
+.THIS .customListBox{
+    margin-top: 20px;
+}
+.THIS .cstMargin {
+    margin-right:-10px;
+}

@@ -1,0 +1,20 @@
+/*
+ .THIS .searchLookUp .slds-grid > div
+{
+    width:100%;
+}
+*/
+.THIS table th div{
+    white-space: normal;
+    text-align: center;
+}
+
+.THIS .help-text-icon {
+    position: absolute;
+    text-align: right;
+    right: 0;
+}
+
+.THIS lightning-textarea .slds-form-element__help {
+    display: none;
+}

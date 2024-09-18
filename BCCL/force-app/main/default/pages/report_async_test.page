@@ -1,0 +1,41 @@
+<apex:page controller="AsyncReportController" readOnly="true">
+  <style>
+      table.reportResults { 
+          width: 100%;
+      }
+  </style>
+
+  <apex:form >
+     Select Report: 
+     <apex:selectList value="{!reportId}" multiselect="false" size="1">
+         <apex:selectOptions value="{!availableReports}"/>
+     </apex:selectList>
+
+     <apex:actionPoller action="{!checkForReportResults}" id="poller" reRender="reportResults" interval="5" enabled="{!reportIsRunning}" />
+     <apex:commandButton action="{!runReport}" reRender="poller,reportResults" value="Run Report"/>
+  </apex:form>
+
+  <apex:outputPanel id="reportResults" layout="block">
+      <apex:outputText value="Running..." rendered="{!reportIsRunning}"/>
+      <apex:outputPanel rendered="{!NOT(reportIsRunning)}">
+         <table class="reportResults">
+           <thead>
+               <apex:repeat value="{!reportResults.reportMetadata.detailColumns}" var="colName">
+                   <th><apex:outputText value="{!reportResults.reportExtendedMetadata.detailColumnInfo[colName].label}"/></th>
+               </apex:repeat>
+           </thead>
+
+           <tbody>
+               <apex:repeat value="{!reportResults.factMap['T!T'].rows}" var="row">
+                   <tr>
+                       <apex:repeat value="{!row.dataCells}" var="cell">
+                           <td><apex:outputText value="{!cell.label}"/></td>
+                       </apex:repeat>
+                   </tr>
+               </apex:repeat>
+           </tbody>
+         </table>
+      </apex:outputPanel>
+  </apex:outputPanel>
+
+</apex:page>

@@ -1,0 +1,193 @@
+<aura:component implements="force:appHostable,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction,lightning:actionOverride" access="global"  
+                			controller="rsp_ServiceViewTargetNonDev">
+
+    <aura:attribute name="geographyList" type="Object[]"/>
+    <aura:attribute name="roleList" type="Object[]"/>
+    <aura:attribute name="fiscalList" type="Object[]"/>
+    <aura:attribute name="selectedGeography" type="string"/>
+    <aura:attribute name="selectedRole" type="string"/>
+    <aura:attribute name="selectedFiscalYr" type="string"/>
+    <aura:attribute name="showDatePicklist" type="boolean"/>
+    <aura:attribute name="onRoleChange" type="boolean"/>
+    <aura:attribute name="allowSubmition" type="boolean"/>
+    <aura:attribute name="showAlreadyTargetExitsTable" type="boolean" default="false"/>
+    <aura:attribute name="showTargetTable" type="boolean" default="false"/>
+    <aura:attribute name="lstApprovedTargets" type="Object[]"/>
+    <aura:attribute name="lstTargets" type="Object[]"/>
+    <aura:attribute name="lstDeletedTargets" type="Object[]"/>
+    <aura:attribute name="KRAMaster" type="Object"/>
+    <aura:attribute name="AllowManagerEdit" type="Object"/>
+    <aura:attribute name="loggedInAsAdmin" type="Boolean" default="false" access="PRIVATE"/>
+    
+    
+    
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <div class="c-container">
+        
+        <h2 class="tableHeading"> View Goals</h2>
+        <div class="slds-grid slds-wrap">
+
+            <div class="slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-3">
+                <!--
+                                                           Show Geography List 
+                                                -->
+                <lightning:layoutItem padding="around-small">
+                    <lightning:select name="Function " label="Select Function:" aura:id="geographyName" 
+                                      	value="{!v.selectedGeography}" onchange="{!c.onGeographyChange}">
+                        <option value="" text="--NONE--"></option>
+                        <aura:iteration items="{!v.geographyList}" var="geography">
+                            <option value="{!geography}" text="{!geography}"></option>
+                        </aura:iteration>
+                    </lightning:select>
+                </lightning:layoutItem>
+            </div>
+			<div class="slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-3">
+            <lightning:layoutItem padding="around-small">
+                    <lightning:select name="roleName" label="Select Role:" aura:id="roleId" value="{!v.selectedRole}"
+                        disabled="{!v.disableRole}" onchange="{!c.onRoleChange}">
+                        <option value="" text="--NONE--"></option>
+                        <aura:iteration items="{!v.roleList}" var="role">
+                            <option value="{!role.Id}" text="{!role.Name}"></option>
+                        </aura:iteration>
+                    </lightning:select>
+                </lightning:layoutItem>
+            </div>
+            <div class="slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-3">
+                <lightning:layoutItem padding="around-small">
+                <aura:if isTrue="{!v.showDatePicklist}">
+                    <lightning:select name="Fiscal Year" label="Select Fiscal Year:" aura:id="fiscalId" value="{!v.selectedFiscalYr}"
+                            disabled="{!v.disableRole}" >
+                        <option value="" text="--NONE--"></option>
+                         <aura:iteration items="{!v.fiscalList}" var="fiscalYr">
+                            <option value="{!fiscalYr}" text="{!fiscalYr}"></option>
+                        </aura:iteration>
+                        </lightning:select>
+                 </aura:if>
+                </lightning:layoutItem>
+            </div>
+            <br /><br /><br />
+
+        </div>
+      <div class="cstm_align_center">
+            <div class="slds-button-group slds-m-top_large" >
+                <lightning:layoutItem padding="around-small">  
+                    <lightning:button variant="brand" label="Reset" title="Reset"
+                                      onclick="{!c.resetData}" />
+                </lightning:layoutItem>
+                <lightning:layoutItem padding="around-small">  
+                    <lightning:button variant="brand" label="Get Goals" title="Get Goals"
+                                      onclick="{!c.setTarget}" />
+                </lightning:layoutItem>
+            </div>
+        </div>
+     
+      <div class="cstm_div"></div>
+        
+        <br/>
+        <br/>
+     
+        <div class="">
+            <aura:if isTrue="{!v.showTargetTable}">
+                <center><div class="slds-text-heading_medium"><b>Target Assignment</b></div></center>
+                <br></br><br></br>
+                <div class="slds-scrollable--x responsiveTable">
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_col-bordered">
+                        <thead>
+                            <tr class="slds-text-title_caps">
+                                <th scope="col">
+                                    <div class="slds-truncate" title="KRA Behaviour"><b>KRA Behaviour</b></div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Measures"><b>Measures</b></div>
+                                </th> 
+                                <th scope="col">
+                                    <div class="slds-truncate" title="End Date"><b>Weightage</b></div>
+                                </th> 
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Performance Standard"><b>Performance Standard</b></div>
+                                </th> 
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Self Assessment">Self Assessment</div>
+                                </th>
+                              <aura:if isTrue="{!v.AllowManagerEdit}">
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Manager Assessment">Manager Assessment</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="KRA Rating">KRA Rating</div>
+                                </th>
+                            </aura:if>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:iteration items="{!v.lstTargets}" var="EachRowData" indexVar="index">
+                                <tr>                        
+                                    <td data-label="">
+                                        <div class="slds-truncate" title="{!EachRowData.objTarget.rsp_KRA_Name__c}">
+                                            <lightning:Input type="text" value="{!EachRowData.objTarget.rsp_KRA_Name__c}"  disabled ="true"/> 
+                                        </div>
+                                    </td>
+                                    <td data-label="">
+                                        <div class="slds-truncate" title="{!EachRowData.objTarget.rsp_Measure__c}">
+                                            <lightning:Input type="text" value="{!EachRowData.objTarget.rsp_Measure__c}"  disabled ="true"/>
+                                            
+                                        </div>
+                                    </td>
+                                    <td data-label="">
+                                        <div class="slds-truncate inputNum" title="{!EachRowData.objTarget.rsp_Weightage__c}">
+                                            <lightning:input type="number" value="{!EachRowData.objTarget.rsp_Weightage__c}" min="0"
+                                                             variant="label-hidden" step="0.01" disabled ="true"/>
+                                        </div>
+                                    </td>
+                                    <td data-label="">
+                                        <div class="slds-truncate" title="{!EachRowData.objTarget.rsp_Performance_Standard__c}">
+                                             <lightning:Input  type="text" value="{!EachRowData.objTarget.rsp_Performance_Standard__c}"  disabled ="true"/>
+                                            
+                                        </div>
+                                    </td>
+                                    <td data-label="">
+                                        <div class="slds-truncate" title="{!EachRowData.objTarget.rsp_Self_Assessment__c}">
+                                             <lightning:Input  type="text" value="{!EachRowData.objTarget.rsp_Self_Assessment__c}"  disabled ="{!or(index==0,or(v.AllowManagerEdit,EachRowData.isselfAssesmentDone))}"/>
+                                           
+                                        </div>
+                                    </td>
+                                    <aura:if isTrue="{!v.AllowManagerEdit}">
+                                    <td data-label="">
+                                        <div class="slds-truncate" title="{!EachRowData.objTarget.rsp_Manager_Assessment__c}">
+                                             <lightning:Input  type="text" value="{!EachRowData.objTarget.rsp_Manager_Assessment__c}"  disabled ="{!or(!EachRowData.AllowManagerEdit,!EachRowData.isselfAssesmentDone)}"/>
+                                            
+                                        </div>
+                                    </td>
+                                    <td data-label="">
+                                        <div class="slds-truncate inputNum" title="{!EachRowData.objTarget.rsp_Manager_Rating__c}">
+                                            <lightning:input type="number" value="{!EachRowData.objTarget.rsp_Manager_Rating__c}" min="0" max="5"
+                                                             variant="label-hidden" step="0.01" disabled ="{!or(!EachRowData.AllowManagerEdit,!EachRowData.isselfAssesmentDone)}"/>
+                                        </div>
+                                    </td>
+                                    </aura:if>
+                                    
+                                </tr>                            
+                            </aura:iteration>
+                        </tbody>
+                    </table>
+                </div>
+                
+               
+            </aura:if>
+        </div>
+    
+  	<aura:if isTrue="{!v.allowSubmition}">
+        <div class="footer-to-be-fixed custombottom cstm_padding">
+            <div class="slds-text-align_center slds-p-around_medium">
+               
+                <lightning:button variant="brand" label="Submit" 
+                                  title="Submit" disabled="{!v.showSaveTargetbtn}"
+                                  onclick="{!c.saveTargets}" />
+                <lightning:spinner aura:id="mySpinner" alternativeText="Loading.." title="Loading.." variant="brand" size="large" class="slds-hide"/>
+            </div>
+        </div>
+    </aura:if>
+       </div>
+</aura:component>

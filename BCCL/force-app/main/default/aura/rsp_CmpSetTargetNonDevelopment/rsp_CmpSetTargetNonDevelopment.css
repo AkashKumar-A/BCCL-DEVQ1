@@ -1,0 +1,100 @@
+.THIS.c-container {
+    border: 1px solid #d8dde6;
+    margin: 10px 0 0px 0;
+    background:white;
+    width:100%;
+   
+}
+.THIS.cstm_button {margin-top: 20px;}
+.THIS.slds-spinner_container {  
+  z-index: 10000;
+  position: fixed;   
+}
+
+.THIS .customGrid{
+    position: relative;
+    padding: 0 15px 10px;
+     justify-content: flex-start;
+}
+.THIS .customGrid > div{
+    width: 20%;
+}
+.THIS .slds-docked-form-footer{
+    padding:0rem;
+}
+.THIS .scrol-y{
+    height:200px;
+overflow-y:auto;
+}
+
+
+
+.THIS .customGrid:after{
+    content: "";
+    position: absolute;
+    height: 1px;
+    background: #ccc;
+    bottom: 0;
+    left: 30px;
+    right: 30px;
+}
+.THIS .tableHeading{
+    padding: 10px 10px 10px;
+    font-size: 18px;
+    font-weight: bold;
+}
+.THIS .slds-table_col-bordered th+th,
+.THIS .slds-table_col-bordered td+td{
+    border-left: 0;
+}
+.THIS .slds-table_col-bordered th{
+    background: #e4e4e4;
+}
+.THIS .slds-table_col-bordered th,
+.THIS .slds-table_col-bordered td{
+    padding: 15px 10px;
+}
+.THIS .responsiveTable{
+    margin: 0 10px 10px;
+    border: 1px solid #ccc;
+}
+.THIS .tableScroll{
+    overflow-y: auto;
+    height: calc(100vh - 400px) ;
+    display: block;
+}
+
+.THIS.custombottom {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgb(243, 242, 242);
+    box-shadow: 0 -2px 2px 0 rgba(0, 0, 0, 0.16);
+    z-index: 8000;
+    display: flex;
+    justify-content: center;
+    padding: .0rem 0;
+}
+.THIS .inputNum input
+{
+    margin-top:17px;
+}
+
+@media all and (min-width: 1024px) {
+.THIS.custombottom {
+    position: fixed;
+    bottom: -28px;
+    left: 0;
+    width: 100%;
+    background: rgb(243, 242, 242);
+    box-shadow: 0 -2px 2px 0 rgba(0, 0, 0, 0.16);
+    z-index: 8000;
+    display: flex;
+    justify-content: center;
+    padding: .5rem 0;
+}
+    
+}
+
+.THIS .cstm_align_txt {text-align: center;}

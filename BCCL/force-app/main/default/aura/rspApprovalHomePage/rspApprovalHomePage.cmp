@@ -1,0 +1,87 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" controller = "rsp_CustomApprovalScreen"
+                			access="global" >
+    <aura:attribute name="lstOfProcessInstance" 
+                    type="CustomApprovalScreenController.wrapApprovalRecord[]"  
+                    description = "Holds lst of dealer record"/>
+    <aura:attribute name="modalHeader" 
+                    type="String"  
+                    description = "Holds the modal header name"/>   
+    <aura:attribute name="isModalOpened" 
+                    type="Boolean"
+                    default = "false"
+                    description = "Holds whether modal is opened or not"/>
+    <aura:attribute name="modalButtonLabel" 
+                    type="String"                    
+                    description = "Holds label of modal button"/>
+    <aura:attribute name="targetObjectId" 
+                    type="String"  
+                    description = "Holds the target object Id"/>
+    <aura:handler name="init" 
+                  value="{!this}" 
+                  action="{!c.doInit}"/>
+    <aura:handler name="cmpEvent" 
+                      event="c:rspCustomApproval" 
+                      action="{!c.doInit}"/>
+    <aura:if isTrue = "{!v.isModalOpened}">
+    
+        <c:rspCommonCustomModal modalHeader = "{!v.modalHeader}"
+                                modalButtonLabel = "{!v.modalButtonLabel}"
+                                isModalOpened = "{!v.isModalOpened}"
+                                targetObjectId = "{!v.targetObjectId}"/>
+    </aura:if>
+    
+     <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+         <br/>
+         <header class="slds-media slds-media--center slds-has-flexi-truncate">
+        <div class="slds-media__body" >
+            <h2 class="header-title-container">
+                <span class="slds-card__header-title slds-truncate slds-p-left_small" title="Items to Approve"><b>Items to Approve</b></span>
+            </h2>
+        </div>
+    </header>
+    <br/>
+         <aura:if isTrue = "{!v.lstOfProcessInstance.length > 0}">
+         <aura:iteration items="{!v.lstOfProcessInstance}" var="eachProcessInstance" 
+                            indexVar = "index">
+             <tr>
+                 <td>
+                     <ui:outputURL value="{!'/'+eachProcessInstance.objProcessInstance.Id}" 
+                                   label="{!eachProcessInstance.objProcessInstance.ProcessInstance.TargetObject.Name}" 
+                                   aura:id="detailContURL" 
+                                   target="_blank"/>
+                     <br/>
+                     {!eachProcessInstance.sObjectName}  .  submitted by {!eachProcessInstance.objProcessInstance.ProcessInstance.SubmittedBy.Name}
+                     <br/>
+                     
+                 </td>
+                  <td data-label="{!eachProcessInstance.objProcessInstance.ProcessInstance.createddate}">
+                        <lightning:buttonMenu iconName="utility:down" 
+                                              iconSize="medium"
+                                              variant="bare"
+                                              name = "{!index}"
+                                              alternativeText="Show 3 more action" 
+                                              onselect="{!c.handleApprovalSelection}">
+                            <lightning:menuItem label="Approve" value="Approve" />
+                            <lightning:menuItem label="Reject" value="Reject"/>
+                            <lightning:menuItem label="Reassign" value="Reassign" />
+                        </lightning:buttonMenu> 
+					</td>
+             </tr>
+         </aura:iteration>
+          <div class = "slds-p-left_small" align="center">
+          <u><ui:outputURL value="" label="View All" 
+                                      aura:id="detailContURL" 
+                        click="{!c.viewAll}" /></u>
+         </div>
+             <aura:set attribute = "else">
+                 <div style="padding:10px;" align="center">
+                     No approval requests need your attention right now.
+                 </div>
+             </aura:set>
+              </aura:if>   
+         <!-- <a Id = "" 
+             onclick="{!c.viewAll}"><u>View All</u></a> -->
+         
+    </table>
+	
+</aura:component>

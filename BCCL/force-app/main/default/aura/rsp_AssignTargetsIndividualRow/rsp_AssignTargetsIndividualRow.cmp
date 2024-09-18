@@ -1,0 +1,12 @@
+<aura:component >
+    <aura:attribute name="targetValue" type="Decimal"/>
+    <aura:attribute name="currentIndex" type="Integer"/>
+    <aura:attribute name="rowValue" type="Integer"/>
+    <aura:attribute name="disableTheRow" type="Boolean"/>
+    <aura:attribute name="mainWrapper" type="rsp_AssignTargets.MainTargetWrapper"/>
+    <aura:attribute name="childWrapper" type="rsp_AssignTargets.IndividualTargetRowWrapper"/>
+    <aura:handler name="init" action="{!c.doinit}" value="this"/>
+	<ui:inputNumber value="{!v.targetValue}" change="{!c.updateTargetForKRA}" 
+                    disabled="{!v.disableTheRow}" format="0.#################################" />
+    
+</aura:component>

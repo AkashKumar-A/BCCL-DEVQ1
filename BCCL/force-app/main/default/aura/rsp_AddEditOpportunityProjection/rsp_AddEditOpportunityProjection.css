@@ -1,0 +1,35 @@
+@media screen and (max-width: 600px) {
+    .THIS {
+    zoom:90%;
+    }
+}
+  
+.THIS .c-container {
+    border: 1px solid #d8dde6;
+    margin: 10px 0 20px 0;
+    background:white;
+    width:100%;
+    overflow-y: auto;
+    height: 100%;
+    overflow-x: hidden;
+}
+
+.THIS .scrollerSize 
+{
+    height:100vh;
+    padding-bottom:100px;
+}
+
+.THIS .tableCont 
+{
+    table-layout:fixed;
+}
+.THIS .tableCont th {
+            font-size: smaller;
+    }
+.THIS .slds-truncate {
+    white-space: normal;
+}
+.THIS .cstm_div_projection_table {
+    max-height: 350px; width: auto;    
+}

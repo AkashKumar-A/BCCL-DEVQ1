@@ -1,0 +1,5 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes" access="global" >
+    <lightning:container src="{!$Resource.roleHierarchyJs +'/htmlRole.html'}"
+                         onmessage="{!c.handleMessage}" 
+                         onerror="{!c.handleError}"/>
+</aura:component>

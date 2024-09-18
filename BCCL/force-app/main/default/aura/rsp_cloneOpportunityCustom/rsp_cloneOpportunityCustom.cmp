@@ -1,0 +1,14 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader" access="global" controller="rsp_CustomCloneOpportunity">
+    <!--<aura:handler name="init" value="{!this}" action="{!c.doInit}" />-->
+    
+    <aura:attribute name="displayModal" type="Boolean" default="true"/>
+    <aura:if isTrue="{!v.displayModal}">
+        <div class="slds-modal__content slds-p-around_medium slds-align_absolute-center" id="modal-content-id-1">
+            <p>Do you want to clone this Opportunity?</p>
+        </div>
+        <footer class="slds-modal__footer slds-modal__footer_directional">
+            <lightning:button variant="neutral" label="Cancel" onclick="{!c.cancelClick }" />      
+            <lightning:button variant="brand" label="Clone" onclick="{!c.cloneClick }" />
+        </footer>
+    </aura:if>
+</aura:component>

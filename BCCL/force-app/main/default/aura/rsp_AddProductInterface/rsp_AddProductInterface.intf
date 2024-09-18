@@ -1,0 +1,45 @@
+<aura:interface description="Interface template">
+	<aura:attribute name="oppData" type="Opportunity" 
+                    default="" description="To hold oportunity Data."/>
+    <aura:attribute name="oppRecordId" type="String" />
+    <aura:attribute name="SelectedProductsAndPAckages" 
+                    type="rsp_CustomLookupctrl.CustomLookupWrapper[]"/>
+    <aura:attribute name="alreadyAddedProductsAndPAckages" 
+                    type="rsp_CustomLookupctrl.CustomLookupWrapper[]"/>
+    <aura:attribute name="addedOppLineItems" 
+                    type="object"/>
+    <aura:attribute name="productList" type="Product2[]"/>
+    <aura:attribute name="productIdList" type="String[]"/>
+    <aura:attribute name="adProductList" type="String[]"/>
+    <aura:attribute name="deleteLineItemsList" type="String[]"/>
+    <aura:attribute name="adCategoryList" type="String[]"/>
+    <aura:attribute name="adSubCategoryList" type="String[]"/>
+    <aura:attribute name="searchProductsForCategory" type="String"/>
+    <aura:attribute name="selectedValueCategory" type="String"/>
+    <aura:attribute name="selectedValuePosition" type="String"/>
+    <aura:attribute name="selectedValueSubCategory" type="String"/>
+    <aura:attribute name="idDeal" type="Id"/>
+    <aura:attribute name="showSubCategoryList" type="Boolean" default="false"/>
+    <aura:attribute name="subCategoryNotChangedManually" type="Boolean" default="true"/>
+    <aura:attribute name="showTable" type="Boolean" default="false"/>
+    <aura:attribute name="productWrapper" type="rsp_AddProductforOpp.MainProductWrapper"/>
+    <aura:attribute name="isOpenModal" type="boolean" default="false"/>
+    <aura:attribute name="isOpenModalCategoryChanged" type="boolean" default="false"/>
+    <aura:attribute name="currentIndex" type="Integer"/>
+    <aura:attribute name="picklistValues" type="Object" />
+    <aura:attribute name="addSizepicklistValues" type="Object" />
+    <aura:attribute name="insertionValue" type="Integer"/>
+    <aura:attribute name="storeTempSubCategoryValue" type="String"/>
+    <aura:attribute name="storeTempCategoryValue" type="String"/>
+    <aura:attribute name="showSearchBox" type="Boolean" default="true"/>
+    <aura:attribute name="resultList" type="rsp_CustomLookupctrl.CustomLookupWrapper[]"/>
+    <aura:attribute name="productName" type="String"/>
+    <aura:attribute name="resultListNotEmpty" type="Boolean" default="true"/>
+    <aura:attribute name="packageImage" type="String"/>
+    
+    <aura:attribute name="InputSponsorshipCode" type="String"/>
+    <aura:attribute name="showSponsorValues" type="Boolean" default="false"/>
+    <aura:attribute name="sponsorList" type="String[]"/>
+    
+    <aura:attribute name="disableCategoryPicklistFields" type="Boolean" default="false"/>    
+</aura:interface>

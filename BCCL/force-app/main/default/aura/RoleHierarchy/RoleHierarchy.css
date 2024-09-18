@@ -1,0 +1,44 @@
+.THIS.lgtCard  {
+    margin-bottom: 10px;
+}
+
+.THIS .kkltngHierarchy .rectNode{     
+	white-space: normal;
+    text-overflow: initial;
+    min-height: 35px;
+	height:auto;
+    line-height: normal;
+    padding: 10px;
+    border-color: #46A4F5;
+}
+.THIS .kkltngHierarchy .rectNodeSmall {
+    width: 100px;
+}
+.THIS .main.kkltngHierarchy{
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.THIS .kkltngHierarchy .ctablecellpad{
+    vertical-align: top;
+}
+.THIS .actionBtn{
+    background: #0067D9;
+    border-color: #0067D9;
+    
+}
+.THIS .divHeight{
+    padding-top: 39px;
+}
+.THIS .kkltngHierarchy .s{
+    width: 92%;
+    border-radius: .25rem;
+    margin: 0 auto;
+    background: #46A4F5;
+}
+.THIS .kkltngHierarchy .connector{
+    background: #46A4F5;
+    width: 1px;
+}
+.THIS .cstm_div1{overflow-x: auto;}
+.THIS .cstm_span_height {height: 600px;}

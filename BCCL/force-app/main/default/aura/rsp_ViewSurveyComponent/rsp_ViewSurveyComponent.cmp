@@ -1,0 +1,163 @@
+<aura:component implements="c:rsp_AssignTargetsInterface,force:appHostable,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction,lightning:actionOverride" access="global" controller = "Rsp_FetchSurveyController">
+    <aura:handler name="init" 
+                  value="{!this}" 
+                  action="{!c.doInit}"/> 
+    <aura:attribute name="lstOfSurvey" 
+                    type="Rsp_FetchSurveyController.wrapSurveyQuestionRecords[]"  
+                    description = "Holds lst of Survey Question record"/>
+    <aura:attribute name="objSurveyQuestion" 
+                    type="Rsp_FetchSurveyController.wrapSurveyData"  
+                    description = "Holds lst of Survey record"/>
+    <aura:attribute name="answerMap" type="Map"/>
+    <aura:attribute name="msg" type ="String" />
+    <aura:attribute name="answers" type="String[]" default="Yes,No,NA"/>
+    <aura:attribute name ="hideSubmitButton" type="Boolean" default="false" />
+    <aura:attribute name="isModalOpened" 
+                    type="Boolean"
+                    default = "false"
+                    description = "Holds whether modal is opened or not"/>
+    <!-- PAGE HEADER -->
+    <lightning:layout class="slds-page-header slds-page-header--object-home">
+        <lightning:layoutItem>
+            <lightning:icon iconName="standard:scan_card" alternativeText="My Expenses"/>
+        </lightning:layoutItem>
+        <lightning:layoutItem padding="horizontal-small">
+            <div class="page-section page-header">
+                <h1 class="slds-text-heading--label">Survey Form</h1>
+                <h2 class="slds-text-heading--medium" >Profile Name : <span style="font-weight: bold;">{!v.objSurveyQuestion.profileName}</span> </h2>
+     			<h3>
+                    <p><!--<b>Start Date:  <ui:outputDate value="{!v.objSurveyQuestion.objOCASurvey.rsp_From_Date__c}" format="dd/MM/YYYY"/></b> &nbsp;-&nbsp;--><b>Duration: <ui:outputText value="{!v.objSurveyQuestion.objOCASurvey.rsp_Duration__c}"/></b> &nbsp;&nbsp;<b>Expiry Date: <ui:outputDate value="{!v.objSurveyQuestion.objOCASurvey.rsp_Last_Submission_Date__c}" format="dd/MMM/YYYY"/></b> </p>
+                </h3>
+            </div>
+        </lightning:layoutItem>
+    </lightning:layout>
+    <div style ="background : #fff">
+    <table class="slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal ">
+            <thead>
+                <tr class="slds-line-height_reset">
+                    <th class="slds-text-title_caps slds-col slds-size_3-of-12" scope="col">
+                        Control
+                    </th> 
+                    <th class="slds-text-title_caps slds-col slds-size_1-of-12" scope="col">
+                        Risk Category
+                    </th> 
+                    <th class="slds-text-title_caps slds-col slds-size_0.5-of-12" scope="col">
+                        Risk Statement
+                    </th> 
+                    <th class="slds-text-title_caps slds-col slds-size_0.5-of-12" scope="col">
+                        Sample Size
+                    </th> 
+					<th class="slds-text-title_caps slds-col slds-size_2-of-12" scope="col">
+                        Feedback
+                    </th>                    
+					<th class="slds-text-title_caps slds-col slds-size_2-of-12" scope="col">
+						Remarks(if Any)
+                    </th>
+					<th class="slds-text-title_caps slds-col slds-size_3-of-12" scope="col">
+						Attachment
+                    </th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                <aura:iteration items="{!v.lstOfSurvey}" var="surveyRecord1" indexVar = "index">
+                    <aura:renderIf isTrue= "{!if(surveyRecord1.headerValue != null ,true,false)}">
+						<tr style ="background: rgb(215, 218, 233);font-weight: bold;">
+							<td class="height: 10%;background:grey" colspan ="7">
+							<h2 class="font-style: bold">{!surveyRecord1.headerValue}</h2>
+							</td>
+						</tr> 
+					</aura:renderIf>
+					<aura:iteration items="{!surveyRecord1.lstSubHeaderQuestions}" var="surveyRecord" indexVar = "index1">
+						<aura:renderIf isTrue= "{!if(surveyRecord.subHeaderValue != null ,true,false)}">
+							<tr style ="background: rgb(232, 235, 250);font-weight: bold;">
+								<td class="height: 10%;background:grey " colspan ="7">
+								<h3>{!surveyRecord.subHeaderValue}</h3>
+								</td>
+							</tr>
+						</aura:renderIf>	
+						<aura:iteration items="{!surveyRecord.lstQuestions}" var="surveyQuestionRecord" indexVar = "index2">    
+						<tr>
+							<td data-label="" style="white-space:normal;">
+								<ui:outputText value="{!surveyQuestionRecord.rsp_Question__c}" aura:id="detailContURL12"/>
+							</td>
+                            <td data-label="Risk Category">
+								<ui:outputText value="{!surveyQuestionRecord.rsp_OCA_Question_Master__r.rsp_Risk_Category__c}"/>
+							</td>
+                            <td data-label="Risk Statement">
+								<ui:outputText value="{!surveyQuestionRecord.rsp_OCA_Question_Master__r.rsp_Risk_Statement__c}"/>
+							</td>
+                            <td data-label="Sample Size">
+								<ui:outputText value="{!surveyQuestionRecord.rsp_OCA_Question_Master__r.rsp_Sample_Size__c}"/>
+							</td>
+							<td data-label="Feedback">
+							   <lightning:select name="ansId1" aura:id="ansId1" value="{!surveyQuestionRecord.rsp_Answer__c}" disabled ="{!v.objSurveyQuestion.objOCASurvey.rsp_Is_submitted__c || v.objSurveyQuestion.isExpired}">
+									<aura:iteration items="{!v.answerMap}" var="ind" indexVar="key">
+										<option text="{!ind.value}" value="{!ind.key}" selected="{!ind.key==v.acc.rsp_Answer__c}" />
+									</aura:iteration>
+								</lightning:select>
+							</td>
+							<td data-label="Remarks(if Any)">
+								<lightning:textarea name="input1"  value="{!surveyQuestionRecord.rsp_Reason__c}" disabled="{!v.objSurveyQuestion.objOCASurvey.rsp_Is_submitted__c || v.objSurveyQuestion.isExpired}" required = "{!if(surveyQuestionRecord.rsp_Answer__c == 'No',true,false)}" />  
+								<div id ="{!surveyQuestionRecord.Id + index2}" style="color: red;">
+                                </div>
+                            </td>
+							<td style="white-space: normal" data-label="">
+								<div class="slds-grid slds-gutters">
+									<div class="slds-col slds-size_1-of-3">
+										<div class="customFileUpload">
+											<lightning:fileUpload
+																  label=  ""
+																  disabled="{!v.objSurveyQuestion.objOCASurvey.rsp_Is_submitted__c || v.objSurveyQuestion.isExpired}"
+																  recordId ="{!surveyQuestionRecord.Id}"
+																  name = "{!surveyQuestionRecord.Id}"
+																  onuploadfinished="{!c.handleUploadFinished}"                   
+																  />
+										</div>
+									</div>
+									<div class="slds-col slds-size_2-of-3 fileViewDiv">
+										<aura:iteration items="{!v.objSurveyQuestion.lstdoc}" var="docVar" indexVar = "docIndex">
+											<aura:renderIf isTrue= "{!if(surveyQuestionRecord.Id == docVar.LinkedEntityId,true,false)}">
+												<lightning:fileCard fileId="{!docVar.ContentDocumentId}" hideDescription = "true" />
+											</aura:renderIf>
+										</aura:iteration>
+										<div id ="{!surveyQuestionRecord.Id}" style="color: red;">
+										</div>
+									</div>
+								</div>
+							</td>
+						</tr>
+						</aura:iteration>
+					</aura:iteration>	
+                </aura:iteration>
+            </tbody>
+        </table>
+        <div style = "display: block;margin-left: auto;margin-right: auto;width: fit-content;margin-top: 2%;margin-bottom:2%">
+            <aura:renderIf isTrue="{!if(!(v.objSurveyQuestion.objOCASurvey.rsp_Is_submitted__c || v.objSurveyQuestion.isExpired),true,false)}">
+            <lightning:button variant="brand" label="Submit" title="Brand action" onclick="{!c.submitQuestion}"/>
+            <lightning:button variant="brand" label="Save As Draft" title="Brand action" onclick="{!c.saveLaterQuestion}" />
+            </aura:renderIf>
+        </div>
+        <aura:if isTrue = "{!v.isModalOpened}">
+          	<div class="demo-only" style="height: 640px;">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+            <header class="slds-modal__header">
+            <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+            </button>
+            <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Submitted for Approval</h2>
+            </header>
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+            <p>{!v.msg}</p>
+            </div>
+            <footer class="slds-modal__footer">
+            	<lightning:button variant="brand" label="Ok" title="Brand action" onclick="{! c.closeBtn}" />
+            </footer>
+            </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+            </div>
+          </aura:if>
+    </div>
+    <!-- / PAGE HEADER -->  
+</aura:component>

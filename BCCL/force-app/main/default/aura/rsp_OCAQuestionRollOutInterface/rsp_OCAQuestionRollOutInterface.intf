@@ -1,0 +1,21 @@
+<aura:interface description="Interface template">
+	<aura:attribute name="example" type="String" default="" description="An example attribute."/>
+    
+    <aura:attribute name="profileList" type="Profile__c[]"/>
+    <aura:attribute name="selectedProfile" type="String" access="PRIVATE"/>
+    
+    <aura:attribute name="durationList" type="String[]"/>
+    <aura:attribute name="selectedDuration" type="String" access="PRIVATE"/>
+    
+    <aura:attribute name="slotText" type="String" access="PRIVATE" default=""/>
+    <aura:attribute name="surveySlotList" type="String[]"/>
+    <aura:attribute name="selectedSurveySlot" type="String" access="PRIVATE"/>
+    
+    <aura:attribute name="startDate" type="Date"/>
+    <aura:attribute name="endDate" type="Date"/>
+    
+    <aura:attribute name="showSetDuration" type="boolean" access="PRIVATE" default="False"/>
+    
+    <aura:attribute name="listOCAQuestProfMapp" type="rsp_OCA_Question_Profile_Mapping__c[]"/>
+    <aura:attribute name="mapOCAQuestProfMapp" type="map"/>
+</aura:interface>

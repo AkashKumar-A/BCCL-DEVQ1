@@ -1,0 +1,51 @@
+<apex:page standardController="Event" extensions="bccl_OpportunityCheckInController" lightningStylesheets="true" showheader="false" sidebar="false">
+     <apex:form >
+  <apex:includeScript value="{!$Resource.gmap}"/>
+  <apex:slds />
+  
+  <script>
+     window.onload= function onLoad(){
+          
+          var OppId='{!OppId}';
+          GMaps.geolocate({
+          success: function(position) {
+            //alert('Doing Checkin for following lat: ' + position.coords.latitude +' and long: ' + position.coords.longitude );
+            document.getElementById("{!$Component.hdnField}").value = position.coords.latitude;
+            document.getElementById("{!$Component.hdnField1}").value = position.coords.longitude;
+            alert(position.coords.latitude);
+            var latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+            var address='';
+            CallApexMethod();
+            //var geocoder = geocoder = new google.maps.Geocoder();
+            //geocoder.geocode({ 'latLng': latlng }, function (results, status) {
+            //console.log('**'+google.maps.GeocoderStatus);
+            //});
+
+          },
+          /*error: function(error) {
+            alert('Geolocation failed: '+error.message);
+          },
+          not_supported: function() {
+            alert("Your browser does not support geolocation");
+          },
+          always: function() {
+           // alert("Done!");
+          }*/
+        });
+        
+      }
+      
+  </script>
+  <script src="https://maps.googleapis.com/maps/api/js">
+    </script>
+      <apex:outputText value="{!callfunc}" escape="false"></apex:outputText>
+    <apex:inputHidden id="hdnField" value="{!lattitude}" />
+    <apex:inputHidden id="hdnField1" value="{!longitude}" />
+    <apex:actionFunction name="CallApexMethod" action="{!addCheckIns}" />
+    <apex:actionFunction name="CallApexMethodOut" action="{!addCheckOuts}"/>
+  <!--<div id="map"/>-->
+  <apex:map width="600px" height="400px" mapType="hybrid" >
+        <apex:mapMarker title="Client Location" position="{!lattitude},{!longitude}"/>
+    </apex:map>
+  </apex:form>
+</apex:page>

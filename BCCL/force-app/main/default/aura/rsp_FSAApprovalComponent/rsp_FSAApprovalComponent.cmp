@@ -1,0 +1,270 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global"  controller = "rsp_FsaApprovalCompController">
+	
+    <aura:handler name="init" 
+                  value="{!this}" 
+                  action="{!c.doInit}"/> 
+    <aura:attribute name="Spinner" type="boolean" default="false"/>
+    <aura:attribute name="CheckVal" type="boolean" default="false"/>
+    <aura:attribute name="lstOfEventToShow" 
+                    type="rspFSACustomApprovalScrCont.wrapApprovalRecord[]"  
+                    description = "Holds lst of FSA record"/>
+	<aura:attribute name="lstOfEventToShowCloned" 
+                    type="rspFSACustomApprovalScrCont.wrapApprovalRecord[]"  
+                    description = "Holds lst of FSA record"/>
+	<aura:attribute name="lstOfEventToShowOpportunity" 
+                    type="rspFSACustomApprovalScrCont.wrapApprovalRecord[]"  
+                    description = "Holds lst of FSA record"/>
+	<aura:attribute name="lstOfEventToShowUse" 
+                    type="rspFSACustomApprovalScrCont.wrapApprovalRecord[]"  
+                    description = "Holds lst of FSA record"/>					
+    <aura:attribute name="today" type="Date" default=""/>
+    <aura:attribute name="endDate" type="Date" default=""/>
+    <!-- <aura:handler event="aura:waiting" action="{!c.showSpinner}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/> -->
+    <aura:attribute name="lstOfObjectName" 
+                    type="String[]"  
+                    description = "Holds lst of object Name"/>
+    <aura:attribute name="noOfRecord" 
+                    type="Integer"                    
+                    description = "This attribute is used to store default value to store no of record"/>   
+    <aura:attribute name="modalHeader" 
+                    type="String"  
+                    description = "Holds the modal header name"/>
+    <aura:attribute name="Msg" 
+                    type="String"  
+                    description = "popUp Msg"/>
+    <aura:attribute name="ErrorMessage" 
+                    type="String"  
+                    description = "popUp Msg"/>
+    <aura:attribute name="targetObjectId" 
+                    type="String"  
+                    description = "Holds the target object Id"/>
+    <aura:attribute name="isModalOpened" 
+                    type="Boolean"
+                    default = "false"
+                    description = "Holds whether modal is opened or not"/>
+    <aura:attribute name="modalButtonLabel" 
+                    type="String"                    
+                    description = "Holds label of modal button"/>    
+    <aura:attribute name="currentPageNumber" 
+                    type="Integer"  />
+    <aura:attribute name="maxPage" 
+                    type="Integer"  />
+    <aura:attribute type="Integer" 
+                    name="pageNumber"		
+                    default="1" />
+    <aura:handler name="change"	
+                  value="{!v.pageNumber}"	
+                  action="{!c.renderPage}"/>
+    <aura:attribute name="selectedUserId" 
+                    type="object"                      
+                    description="Use,for store SELECTED sObject Record"/>
+    <aura:attribute name="selectedObjectName" 
+                    type="string"                      
+                    description="Use,for store SELECTED sObject Record"/>
+    <aura:attribute name="selectedOpptyId" 
+                    type="object"                      
+                    description="Use,for store SELECTED sObject Record"/>
+     
+    <aura:registerEvent name="cmpEvent" 
+                        type="c:rspCustomApproval"
+                       />
+    <aura:if isTrue="{!v.Spinner}">        
+            <div >
+              <lightning:spinner aura:id="mySpinner" variant="brand"/>
+            </div> 
+    </aura:if>
+    <ui:scrollerWrapper class="scrollerSize">
+        <div class="slds-page-header">
+            <div class="slds-page-header__row">
+                <div class="slds-page-header__col-title">
+                    <div class="slds-media">
+                        <div class="slds-media__figure">
+                            <lightning:icon iconName="action:submit_for_approval" size="small" alternativeText="Indicates approval"/>
+                        </div>
+                        <div class="slds-media__body">
+                            <div class="slds-page-header__name">
+                                <div class="slds-page-header__name-title">
+                                    <h1>
+                                        <span class="slds-page-header__title slds-truncate" title="Items To Approve">FSA Items To Approve</span>
+                                    </h1>
+                                </div>
+                            </div>
+                            <p class="slds-page-header__name-meta">FSA Approval Request</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="headCont">
+            <div class="slds-grid slds-wrap slds-grid_align-center slds-gutters">
+                
+				<div class="slds-col slds-size_1-of-1 slds-large-size_3-of-12">
+                    <ui:inputDate aura:id="expdate" label="FSA Start Date" class="field" value="{!v.today}" displayDatePicker="true"  />                
+                </div>
+               
+                <div class="slds-col slds-size_1-of-1 slds-large-size_3-of-12">
+                    <ui:inputDate aura:id="expenddate" label="FSA End Date" class="field" value="{!v.endDate}" displayDatePicker="true"  />                
+                </div>
+                
+                <div class="slds-col slds-size_1-of-1 slds-large-size_3-of-12">
+                    <c:rspLookUp IconName="standard:user"
+                                  selectedRecord = "{!v.selectedUserId}"
+                                  label = ""
+                                  indexNumber = ""
+                                  aura:id = "userLookUpId"                                 
+                                  placeHolder = "Search Submitter.."
+                        		  filterCondition = "select Id,name from user where IsActive = true and Name like : searchKey limit 5" />              
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-large-size_3-of-12">
+                   <c:rspLookUp IconName="standard:user"
+                                  selectedRecord = "{!v.selectedOpptyId}"
+                                  label = ""
+                                  indexNumber = ""
+                                  aura:id = "opptyLookupId"                                 
+                                  placeHolder = "Search Opportunity"
+                        		  filterCondition = "select Id,name from Opportunity where Name like : searchKey limit 5"  />                
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-large-size_3-of-12" style="margin-top: 20px;">
+                	<!-- Brand variant: Identifies the primary action in a group of buttons -->
+    				<lightning:button variant="brand" label="Apply Filter" title="Brand action" onclick="{! c.filterBasedOnUser}" />
+                    <lightning:button variant="brand" label="Reset" title="Brand action" onclick="{! c.refreshComp}" />
+                    <aura:renderIf isTrue="{!not(empty(v.lstOfEventToShow))}">
+                    	<lightning:button variant="brand" label="Approve All" title="Brand action" onclick="{! c.handleBulkApprovalSelection}" />
+                    </aura:renderIf>
+                </div>
+            </div>
+        </div>
+      <aura:if isTrue = "{!v.lstOfEventToShow.length > 0}">
+        <table class="slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal ">
+            <thead>
+                <tr class="slds-line-height_reset">
+                    <th class="slds-text-title_caps" scope="col">
+                        <ui:inputCheckbox aura:id="box3" change="{!c.selectAll}" />
+                    </th> 
+					<th class="slds-text-title_caps" scope="col">
+                        <div class="slds-truncate" title="SUBJECT">SUBJECT</div>
+                    </th>                    
+					<th class="slds-text-title_caps" scope="col">
+						<div class="slds-truncate" title="OPPORTUNITY NAME">OPPORTUNITY NAME</div>
+                    </th>
+					<th class="slds-text-title_caps" scope="col">
+						<div class="slds-truncate" title="ACCOUNT NAME">ACCOUNT NAME</div>
+                    </th>
+					<th class="slds-text-title_caps" scope="col">
+						<div class="slds-truncate" title="LEAD CODE">LEAD NAME</div>
+                    </th>
+                    <th class="slds-text-title_caps" scope="col">
+                        <div class="slds-truncate" title="DESCRIPTION">DESCRIPTION</div>
+                    </th>
+                    <th class="slds-text-title_caps" scope="col">
+                        <div class="slds-truncate" title="SUBMITTED BY">FSA ASSIGNED TO</div>
+                    </th>
+                    <th class="slds-text-title_caps" scope="col">
+                        <div class="slds-truncate" title="DATE SUBMITTED">DATE SUBMITTED</div>
+                    </th>
+                    
+                    <th>
+                        
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+               
+                <aura:iteration items="{!v.lstOfEventToShow}" var="eachProcessInstance" 
+                                indexVar = "index">
+                    <tr class="slds-hint-parent">                   
+                        <td data-label="Check for Approval">
+						   <ui:inputCheckbox value ="{!eachProcessInstance.checked}" text="{!eachProcessInstance}" aura:id="boxPack"  change="{!c.checkboxSelect}"/>
+                           <span class="slds-checkbox--faux"></span>
+                           <span class="slds-form-element__label text"></span>
+                        </td>
+						<td data-label="SUBJECT">
+                            
+                            <u><ui:outputURL value="{!'/'+eachProcessInstance.objEvent.Id}" 
+                                             label="{!eachProcessInstance.objEvent.Subject}" 
+                                             aura:id="EventUrl" target="_blank"/></u>
+                        </td>
+                       <td data-label="OPPORTUNITY NAME">
+                            <u><ui:outputURL value="{!'/'+eachProcessInstance.objOpportunity.Id}" 
+                                             label="{!eachProcessInstance.objOpportunity.Name}" 
+                                             aura:id="detailContURL" target="_blank"/></u>
+                        </td>
+                        <td data-label="ACCOUNT NAME">
+                            <u><ui:outputURL value="{!'/'+eachProcessInstance.objAccount.Id}" 
+                                             label="{!eachProcessInstance.objAccount.Name}" 
+                                             aura:id="detailContURL" target="_blank"/></u>
+                        </td>
+                        <td data-label="LEAD NAME">
+                            <u><ui:outputURL value="{!'/'+eachProcessInstance.objLead.Id}" 
+                                             label="{!eachProcessInstance.objLead.Name}" 
+                                             aura:id="detailContURL" target="_blank"/></u>
+                        </td>
+                        <td data-label="DESCRIPTION">
+                            <p class= "slds-truncate">{!eachProcessInstance.objOpportunity.Description}</p>	
+                            <!--<u><ui:outputText value="{!eachProcessInstance.objOpportunity.Description}" aura:id="detailContURL12"/></u>-->
+                        </td>
+                        <td data-label="MOST RECENT APPROVER">
+                            <u><ui:outputURL value="{!'/'+eachProcessInstance.CreatedId}" 
+                                             label="{!eachProcessInstance.UserName}" 
+                                             aura:id="detailContURL3" target="_blank"/></u>                        
+                        </td>
+                        <td data-label="DATE SUBMITTED">
+                            <ui:outputDate aura:id="oDate" format="dd/MM/yyyy" 
+                                               value="{!eachProcessInstance.objEvent.ActivityDate}" />
+                        </td>
+                        <td data-label="Approve" width="8%">
+                            <lightning:buttonMenu iconName="utility:down" 
+                                                  iconSize="medium"
+                                                  variant="bare"
+                                                  name = "{!index}"
+                                                  alternativeText="Show action" 
+                                                  onselect="{!c.handleApprovalSelection}">
+                                <lightning:menuItem label="Approve" value="Approve" />
+                            </lightning:buttonMenu> 
+                        </td>
+                    </tr>
+                </aura:iteration>
+                
+            </tbody>
+        </table>
+          <aura:if isTrue = "{!v.isModalOpened}">
+          	<div class="demo-only" style="height: 640px;">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+            <header class="slds-modal__header">
+            <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+            </button>
+            <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">FSA Approval</h2>
+            </header>
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+            <p>{!v.Msg}</p>
+            <aura:if isTrue="{!v.ErrorMessage != null}">
+                <div style="color: red;">{!v.ErrorMessage}</div>
+            </aura:if>
+            </div>
+            <footer class="slds-modal__footer">
+            	<lightning:button variant="brand" label="Ok" title="Brand action" onclick="{! c.closeBtn}" />
+            </footer>
+            </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+            </div>
+          </aura:if>
+          <div style="padding:10px;" align="right">
+            <c:rspPagination currentPageNumber="{!v.pageNumber}" 
+                             maxPageNumber="{!v.maxPage}" />
+        </div>
+        	<aura:set attribute = "else">
+                <p>Hi ! Please enter one of the filters to search through the FSA meetings:<br></br>
+                1. Start Date<br></br>
+                2. End Date<br></br>
+                3. Submitter<br></br>
+                4. Opportunity<br></br>
+            </p>
+          </aura:set>  
+        </aura:if>      
+    </ui:scrollerWrapper>
+
+</aura:component>

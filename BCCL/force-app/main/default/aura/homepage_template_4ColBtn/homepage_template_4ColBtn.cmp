@@ -1,0 +1,61 @@
+<aura:component implements="lightning:homeTemplate" description="Custom Four-ColumneBTN Layout">
+   <!-- Top four Columne BTN row  -->
+    <aura:attribute name="BTN1_col" type="Aura.Component[]" />
+    <aura:attribute name="BTN2_col" type="Aura.Component[]" />
+    <aura:attribute name="BTN3_col" type="Aura.Component[]" />
+	<aura:attribute name="BTN4_col" type="Aura.Component[]" />
+
+    <!-- four Columne -->
+    <aura:attribute name="left_col" type="Aura.Component[]" />
+    <aura:attribute name="leftmid_col" type="Aura.Component[]" />
+    <aura:attribute name="rightmid_col" type="Aura.Component[]" />
+	<aura:attribute name="right_col" type="Aura.Component[]" />
+        
+    <!-- footer -->
+    <aura:attribute name="footer" type="Aura.Component[]" />
+	
+    <!-- layout -->
+    <div>
+        <!-- row 1  Buttons"  -->
+        <lightning:layout>
+       		<lightning:layoutitem flexibility="auto, no-grow" class="slds-p-around_xx-small col-custom">
+            	{!v.BTN1_col}
+            </lightning:layoutitem>
+            <lightning:layoutitem flexibility="auto, no-grow" class="slds-p-around_xx-small col-custom">
+            	{!v.BTN2_col}
+            </lightning:layoutitem>
+            <lightning:layoutitem flexibility="auto, no-grow" alignmentBump="left" class="slds-p-around_xx-small col-custom">
+            	{!v.BTN3_col}
+            </lightning:layoutitem>
+            <lightning:layoutitem flexibility="auto, no-grow" class="slds-p-around_xx-small col-custom">
+            	{!v.BTN4_col}
+            </lightning:layoutitem>
+         
+        </lightning:layout>
+        
+        <!-- row 2   size="{! $Browser.isDesktop ? '3' : '12' }"  -->
+        <lightning:layout>
+            
+    		<lightning:layoutitem flexibility="auto"  class="slds-p-around_xx-small col-custom">
+            	{!v.left_col}
+            </lightning:layoutitem>
+            <lightning:layoutitem flexibility="auto"  class="slds-p-around_xx-small col-custom">
+            	{!v.leftmid_col}
+            </lightning:layoutitem>
+            <lightning:layoutitem flexibility="auto"  class="slds-p-around_xx-small col-custom">
+            	{!v.rightmid_col}
+            </lightning:layoutitem>
+            <lightning:layoutitem flexibility="auto" class="slds-p-around_xx-small col-custom">
+            	{!v.right_col}
+            </lightning:layoutitem>
+         
+        </lightning:layout>
+        <!-- row 3 -->
+        <lightning:layout>
+    		<lightning:layoutitem size="12" class="slds-m-vertical_xx-small">
+            	{!v.footer}
+            </lightning:layoutitem>
+         </lightning:layout>
+
+    </div>
+</aura:component>

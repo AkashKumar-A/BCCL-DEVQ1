@@ -1,0 +1,70 @@
+<template>
+
+    <lightning-record-edit-form
+    record-id = {recordId}
+    object-api-name={accountobject}
+    density ="compact"
+    onsuccess={handleCaseCreated}
+    
+    >
+
+  
+   
+    <h3
+            class="
+                slds-section__title
+                slds-theme_shade
+                slds-var-p-horizontal_small
+                slds-var-m-bottom_x-small
+            "
+        >
+            Edit Record v2
+
+            <lightning-messages></lightning-messages> 
+
+        </h3>
+
+        <div class="slds-grid slds-gutters">
+            <div class="slds-col slds-size_1-of-2">
+                <lightning-input-field
+                    field-name={name}
+                >
+            </lightning-input-field>
+
+             
+            <lightning-input-field
+            field-name={phone}
+        >
+           </lightning-input-field>
+
+            <lightning-input-field
+               field-name={mobile}
+       >
+             </lightning-input-field>
+
+             <lightning-input-field
+             field-name={uniquecode}
+     >
+           </lightning-input-field>
+      
+                               
+            </div>
+
+           
+
+            
+            </div>
+
+            <div class="slds-var-m-top_medium slds-text-align_center">
+                <lightning-button
+                    class="submit-button slds-text-heading_small"
+                    type="submit"
+                    variant="brand"
+                    label="Submit"
+                ></lightning-button>
+            </div>
+
+
+    </lightning-record-edit-form>
+    
+</template>

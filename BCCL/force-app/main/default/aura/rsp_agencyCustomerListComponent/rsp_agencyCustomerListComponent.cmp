@@ -1,0 +1,72 @@
+<aura:component controller="rsp_ViewAgencyAccountsController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:handler name="init" action="{!c.getAgencyCustomerList}" value="{!this}" />
+    <aura:attribute name="agencyList" type="Opportunity[]"/>
+    <aura:attribute name="customerList" type="Opportunity[]" />
+    <aura:attribute name="countAgency" type="Integer" />
+    <aura:attribute name="countCustomer" type="Integer" />
+    <aura:attribute name="displayAgencyTable" type="Boolean" default="false"/>
+    <aura:attribute name="displayCustomerTable" type="Boolean" default="false"/>
+    <aura:attribute name="accId" type="Id"/>
+    <lightning:workspaceAPI aura:id="workspace" />  
+    
+    <div>
+        <aura:if isTrue="{!v.displayAgencyTable}">  
+            <div class="slds-page-header">
+                <div class="slds-page-header__row">
+                    <div class="slds-page-header__col-title">
+                        <div class="slds-media__body">
+                            <div class="slds-page-header__name">
+                                <div class="slds-page-header__name-title">
+                                    <h1>
+                                        <span class="slds-page-header__title slds-truncate" title="Agencies">Agencies({!v.countAgency})</span>
+                                    </h1>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <aura:iteration items="{!v.agencyList}" var="item" >
+                    <ul class="slds-has-dividers_around slds-has-block-links_space">
+                        <li class="slds-item">
+                            <c:rsp_ViewAgencyAccountsChild opportunityObject="{!item}"/>
+                        </li>
+                    </ul>
+                </aura:iteration>
+            </div>
+        </aura:if>
+        
+        
+        <aura:if isTrue="{!v.displayCustomerTable}">  
+            <div class="slds-page-header">
+                <div class="slds-page-header__row">
+                    <div class="slds-page-header__col-title">
+                        <div class="slds-media__body">
+                            <div class="slds-page-header__name">
+                                <div class="slds-page-header__name-title">
+                                    <h1>
+                                        <span class="slds-page-header__title slds-truncate" title="Customers">Customers({!v.countCustomer})</span>
+                                    </h1>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <aura:iteration items="{!v.customerList}" var="item" >
+                    <ul class="slds-has-dividers_around slds-has-block-links_space">
+                        <li class="slds-item">
+                            <c:rsp_ViewAgencyAccountsChild opportunityObject="{!item}"/>
+                        </li>
+                    </ul>
+                </aura:iteration>
+            </div>
+        </aura:if> 
+    </div>
+    
+    
+    
+    
+</aura:component>

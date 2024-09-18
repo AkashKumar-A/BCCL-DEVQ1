@@ -1,0 +1,181 @@
+<apex:page showHeader="false" sidebar="false" standardController="Event" extensions="bccl_GetGeoLocation">
+    <head>
+        <meta content="width = device-width"/>
+        <script src="/mobileclient/api/mobileforce.js"></script>
+        <script>
+            var x = document.getElementById("demo");
+            var options = {
+                enableHighAccuracy: true,
+                timeout: 5000,
+                maximumAge: 0
+            };
+
+        function success(pos) {
+          var crd = pos.coords;
+          console.log(crd.latitude+'This-'+crd.longitude);
+
+        }
+
+        function error(err) {
+          console.warn(err.message);
+        }
+
+        function call1()
+        {
+            navigator.geolocation.watchPosition(showPosition, error, options);
+            var watchId = navigator.geolocation.watchPosition(showPosition, error, options);
+            navigator.geolocation.clearWatch(watchId);
+
+        }
+        
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition, error, options);
+            } else { 
+                x.innerHTML = "Geolocation is not supported by this browser.";
+            }
+        }
+        
+        function showPosition(position) {
+            var x = document.getElementById("demo");
+            var str = document.getElementById("addGeoLocationClassic");
+            var a = document.getElementById("addr");
+            var b = document.getElementById("addr1");
+            var c = document.getElementById("addr2");
+            //alert(position.coords.latitude);
+            console.log(position);
+            var d = new Date(position.timestamp);
+            x.innerHTML = "Latitude: " + position.coords.latitude + 
+  "<br>Longitude: " + position.coords.longitude;
+            str="Latitude: " + position.coords.latitude + 
+  "<br>Longitude: " + position.coords.longitude+"<br>Accuracy: "+position.coords.accuracy+"<br>Heading: "+position.coords.heading+"<br>Speed: "+position.coords.speed+"<br>TimeStamp: "+d;
+            passToController(str);
+            document.getElementById("buttonOne").disabled=true;
+            alert('Location Successfully fetched');
+            b.style.display = "none";
+            c.style.display = "none";
+        }
+
+
+        function getLocationCIN() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPositionCIN, error, options);
+            } else { 
+                x.innerHTML = "Geolocation is not supported by this browser.";
+            }
+        }
+        
+        function showPositionCIN(position) {
+            var x = document.getElementById("demo");
+            var str = document.getElementById("addCheckInsClassic");
+            var y = document.getElementById("buttonTwo");
+
+            var a = document.getElementById("addr");
+            var b = document.getElementById("addr1");
+            var c = document.getElementById("addr2");
+            //alert(position.coords.latitude);
+            //alert(position.coords.longitude);
+            console.log(position);
+            var d = new Date(position.timestamp);
+            x.innerHTML = "Latitude: " + position.coords.latitude + 
+  "<br>Longitude: " + position.coords.longitude;
+            str="Latitude: " + position.coords.latitude + 
+  "<br>Longitude: " + position.coords.longitude+"<br>Accuracy: "+position.coords.accuracy+"<br>Heading: "+position.coords.heading+"<br>Speed: "+position.coords.speed+"<br>TimeStamp: "+d;
+            passToController1(str);
+
+            document.getElementById("buttonTwo").disabled=true;
+            document.getElementById("buttonOne").disabled=true;
+            alert('Check In time logged along with Location.');
+            y.style.display = "none";
+            a.style.display = "none";
+            c.style.display = "none";
+        }
+
+
+        function getLocationCOUT() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPositionCOUT, error, options);
+            } else { 
+                x.innerHTML = "Geolocation is not supported by this browser.";
+            }
+        }
+        
+        function showPositionCOUT(position) {
+            var x = document.getElementById("demo");
+            var str = document.getElementById("addNewCheckOutsClssic");
+            var y = document.getElementById("buttonThree");
+            var a = document.getElementById("addr");
+            var b = document.getElementById("addr1");
+            var c = document.getElementById("addr2");
+            var d= document.getElementById("a1");
+            //alert(position.coords.latitude);
+            //alert(position.coords.longitude);
+            console.log(position);
+            var d = new Date(position.timestamp);
+            x.innerHTML = "Latitude: " + position.coords.latitude + 
+  "<br>Longitude: " + position.coords.longitude;
+            str="Latitude: " + position.coords.latitude + 
+  "<br>Longitude: " + position.coords.longitude+"<br>Accuracy: "+position.coords.accuracy+"<br>Heading: "+position.coords.heading+"<br>Speed: "+position.coords.speed+"<br>TimeStamp: "+d;
+            passToController2(str);
+            document.getElementById("buttonThree").disabled=true;
+            document.getElementById("buttonOne").disabled=true;
+            alert('Check Out time logged along with Location.');
+            y.style.display = "none";
+            a.style.display = "none";
+            b.style.display = "none";
+            a1.style.display="none";
+        }
+
+        </script>
+    </head>
+    <apex:form id="frm" >
+    <!--<input type="button" onclick="getLocation()"/>-->
+
+    <center style="font-size: 20px"><b>Field Visit Check In Check Out</b></center><br/><br/>
+    <span id="spn5" style="display:{!IF(AND(checkIn==true,checkOut==true),'','none')}">You have already Check In and Checked Out.</span>
+    <span style="display:{!IF(AND(checkIn==true,checkOut==true),'none','')}">
+        <apex:outputPanel id="test1" style="display: {!IF(retrieveAddress==true,'none','')}">
+            <div><b>Please make sure that GPS/Location service is enabled on your device.</b>
+            </div><br/>
+
+            <center>
+                <!--<input type="button" id="buttonOne1" onclick="call1()" value="Get" class="btn"/>-->
+                <input type="button" id="buttonOne" onclick="getLocation()" value="Get Geo Location" class="btn"/>
+                <apex:actionFunction action="{!addGeoLocationClassic}" name="passToController" rerender="test,tst1">
+                    <apex:param value="" name="inpval"/>
+                </apex:actionFunction>
+            </center>
+        </apex:outputPanel>
+    </span>
+    <div id="demo"></div><br/>
+
+    <apex:outputPanel id="tst1" style="display: {!IF(GeoFailed==true,'','none')}">
+        <span id="addr"><div style="color:red;"><b>{!addressVal}</b></div><br/></span>
+    </apex:outputPanel>
+
+   <apex:outputPanel id="test" style="display: {!IF(retrieveAddress==true,'','none')}">
+        <div><b>Please wait while we fetch your Location.</b></div>
+        <div><b>It may take sometime depending on your internet speed, location and server traffic.</b></div><br/><br/>
+        <span id="addr"><div><b>{!addressVal}</b></div><br/></span>
+        <span id="addr1"><div id="a1"><b>{!GeoTagIn}</b></div><br/></span>
+        <span id="addr2"><div id="b1"><b>{!GeoTagOut}</b></div><br/></span>
+
+        <center>
+            <span id="spn1" style="display: {!IF(checkIn==true,'none','')}">
+                <input type="button" id="buttonTwo" onclick="getLocationCIN()" value="Check In" class="btn"  />
+                <!--<apex:commandbutton id="buttonTwo" onclick="getLocationCIN();return true;" value="Check In" rerender="addr1,a1" />-->
+                <apex:actionFunction action="{!addCheckInsClassic}" name="passToController1" rerender="test,demo,a1,addr1,test1,spn1,spn5">
+                    <apex:param value="" name="inpval1"/>
+                </apex:actionFunction>
+            </span>
+
+            <span id="spn2" style="display: {!IF(checkOut==true,'none','')}">
+                <input type="button" id="buttonThree" onclick="getLocationCOUT()" value="Check Out" class="btn"/>
+                <apex:actionFunction action="{!addNewCheckOutsClssic}" name="passToController2" rerender="test,demo,addr2,test1,spn2,spn5,b1">
+                    <apex:param value="" name="inpval2"/>
+                </apex:actionFunction>
+            </span><br/>
+        </center>
+    </apex:outputPanel>
+</apex:form>    
+</apex:page>

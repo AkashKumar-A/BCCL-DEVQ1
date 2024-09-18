@@ -1,0 +1,57 @@
+<!--------------------------------------------------------------
+Author      :   Rahul Katarpawar
+Company     :   Bccl
+Description :   Server Side handler for RealtedOppOrderInDeal Lwc component
+Test Class  :   
+Details     :   This component is used to collect Sales Orders detail reated to Opp & display on Deal 
+
+History
+<Date>          <Authors Name>     <Brief Description of Change>
+11-Sept-2023     Rahul Katarpawar      Created
+-------------------------------------------------------------->
+<template>
+  <div class="c-main">
+      <article class="slds-card">
+      <div class="slds-card__header slds-grid slds-theme_shade slds-p-bottom_small">
+        <header class="slds-media slds-media_center slds-has-flexi-truncate ">
+          <div class="slds-media__figure">
+            <lightning-icon icon-name="standard:orders" size="small"></lightning-icon>
+          </div>
+          <div class="slds-media__body">
+            <h2 class="slds-card__header-title">
+              Deal Orders  ({orderSize})
+            </h2>
+          </div>
+        </header>
+      </div>
+      <template if:true={showOrders}> 
+        <div class="slds-p-around_small"> 
+          <table>
+            <tbody>
+              <template for:each={displayList} for:item="ord">
+                <tr class="slds-col slds-size_1-of-2" key={ord.Id}>
+                  <td>                  
+                    <a href={recordPageUrl} class="a-hreff" onclick={handleGotoOrderDetail} data-item={ord.Id}
+                       onmouseover={handleMouseover} onmouseout={handleMouseout} >
+                      {ord.OrderNumber}
+                    </a><br/>
+                    Status: {ord.Status}<br/>
+                    Order Start Date: {ord.EffectiveDate}<br/>
+                    Order Amount: ₹<lightning-formatted-number maximum-fraction-digits="2" value={ord.TotalAmount}>
+
+                                    </lightning-formatted-number>
+                    <br/><br/>
+                  </td>            
+                </tr>
+              </template> 
+            </tbody>  
+          </table>
+        </div>
+        <footer class="slds-card__footer">          
+          <a onclick={handleGotoRelatedList}>View All</a>
+        </footer>
+      </template>
+      </article>
+   </div>
+   
+</template>

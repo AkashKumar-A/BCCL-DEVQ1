@@ -1,0 +1,764 @@
+<aura:component controller="rsp_ViewTarget" 
+				implements="c:rsp_ViewTargetInterface,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction"
+				access="global" >
+    <!--
+    Attributes
+    -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <!--loading spinner start... style=Brand Medium (blue dots)-->
+    <lightning:spinner aura:id="mySpinner" alternativeText="Processing..." title="Processing.." variant="brand" size="large" class="slds-hide"/>
+    <!-- Loading spinner end-->    
+    
+    <!--Display Horizontals-->
+    <div class="c-container">
+        <h2 class="tableHeading">Filter Target Assignment</h2>
+        
+        <!--<lightning:layout horizontalAlign="space" multipleRows="true" class="customGrid">-->
+        
+        <div class="slds-grid slds-wrap">
+            
+            <div class="slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-3">
+                <lightning:layoutItem padding="around-small">
+                    <lightning:select name="horizontalName" label="Select Horizontal:" 
+                                      aura:id="horizontalName" value="{!v.selectedHorizon}" 
+                                      disabled ="{!v.disabledHorizon}" onchange="{!c.onHorizontalChange}">
+                        <option value="">--None--</option>
+                        <aura:iteration items="{!v.horizontalList}" var="horizon">
+                            <option value="{!horizon.Id}">{!horizon.Name}</option>
+                        </aura:iteration>
+                    </lightning:select>
+                </lightning:layoutItem>
+            </div>
+            
+            <div class="slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-3">
+                <lightning:layoutItem padding="around-small">
+                    <lightning:select name="verticalName" label="Select Vertical:" 
+                                      aura:id="verticalId" value="{!v.selectedVertical}" 
+                                      disabled="{!v.disabledVertical}" onchange="{!c.onVerticalChange}">
+                        <option value="">--None--</option>
+                        <aura:iteration items="{!v.verticalList}" var="vertical">
+                            <option value="{!vertical.Id}">{!vertical.Name}</option>
+                        </aura:iteration>
+                    </lightning:select>
+                </lightning:layoutItem>
+            </div>
+            
+            <aura:if isTrue="{!v.verticalCategoryList.length > 0}">
+	            <div class="slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-3">
+	                <lightning:layoutItem padding="around-small">
+	                    <lightning:select name="verticalCategoryName" label="Select Vertical Category:" 
+	                                      aura:id="verticalCategoryId" value="{!v.selectedVerticalCategory}" 
+	                                      onchange="{!c.onVerticalCategoryChange}">
+	                        <option value="">--None--</option>
+	                        <aura:iteration items="{!v.verticalCategoryList}" var="vertical">
+	                            <option value="{!vertical.Id}">{!vertical.Name}</option>
+	                        </aura:iteration>
+	                    </lightning:select>
+	                </lightning:layoutItem>
+	            </div>
+            </aura:if>
+            <div class="slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-3">
+                <lightning:layoutItem padding="around-small">
+                    <lightning:select name="roleName" label="Select Role:" 
+                                      aura:id="roleId" value="{!v.selectedRole}" 
+                                      onchange="{!c.onRoleChange}"
+                                      disabled ="{!v.disabledRole}">
+                        <option value="">--None--</option>
+                        <aura:iteration items="{!v.roleList}" var="role">
+                            <option value="{!role.Id}">{!role.Name} ({!role.rsp_Current_User__r.Name})</option>
+                        </aura:iteration>
+                    </lightning:select>
+                </lightning:layoutItem>
+            </div>
+            
+            <div class="slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-3">
+                <lightning:layoutItem padding="around-small">
+                    <lightning:select name="userName" label="Select User:" 
+                                      aura:id="userId" value="{!v.selectedUser}" 
+                                      onchange="{!c.onUserChange}"
+                                      disabled ="{!v.disabledUser}">
+                        <option value="">--None--</option>
+                        <aura:iteration items="{!v.usersList}" var="user">
+                            <option value="{!user.Id}">{!user.Name}</option>
+                        </aura:iteration>
+                    </lightning:select>
+                </lightning:layoutItem>  
+            </div>
+            
+            <aura:if isTrue="{!v.isAdmin}">
+                <div class="slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-3">
+                    <lightning:layoutItem padding="around-small">
+                        <lightning:select name="year" label="Select Financial Year:" 
+                                          aura:id="yearId" value="{!v.selectedYear}" 
+                                          onchange="{!c.onYearChange}">
+                            <option value="">--None--</option>
+                            <aura:iteration items="{!v.yearsList}" var="year">
+                                <!--<option value="{!year}">{!year}</option>-->
+                                <option text="{!year.label}" value="{!year.value}" />
+                            </aura:iteration>
+                        </lightning:select>
+                    </lightning:layoutItem> 
+                </div>
+            </aura:if>
+            
+            <aura:if isTrue="{!v.isRoleHolder}">
+                <div class="slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-3">
+                    <lightning:layoutItem padding="around-small">
+                        <lightning:select disabled="true" name="roleHolderYear" label="Select Financial Year:" 
+                                          aura:id="roleHolderYearId" value="{!v.selectedYear}">
+                            <option value="{!v.currentFinancialYearValue}">{!v.currentFinancialYear}</option>                        
+                        </lightning:select>
+                    </lightning:layoutItem>
+                </div>
+            </aura:if>
+            
+            <div class="slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-3">
+                <lightning:layoutItem padding="around-small">
+                    <lightning:select name="month" label="Select Month:" 
+                                      aura:id="monthId" value="{!v.selectedMonth}" 
+                                      onchange="{!c.onMonthChange}">
+                        <option value="">--None--</option>
+                        <aura:iteration items="{!v.monthList}" var="month">
+                            <option value="{!month}">{!month}</option>
+                        </aura:iteration>
+                    </lightning:select>
+                </lightning:layoutItem>
+            </div>
+            
+            <div class="slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-3">
+                <lightning:layoutItem padding="around-small">
+                    <lightning:select name="week" label="Select Week:" 
+                                      aura:id="weekId" value="{!v.selectedWeek}" 
+                                      onchange="{!c.onWeekChange}">
+                        <option value="">--None--</option>
+                        <aura:iteration items="{!v.weekListClone}" var="week">
+                            <option value="{!week}">Week-{!week}</option>
+                        </aura:iteration>
+                    </lightning:select>
+                </lightning:layoutItem>
+            </div>
+            
+        </div>
+        <div class="cstm_text_align_center">
+            <div class="slds-button-group slds-m-top_large" role="group">
+                <lightning:layoutItem padding="around-small">                
+                    <lightning:button variant="brand" label="Reset" title="Reset" onclick="{!c.resetFilters}" />
+                </lightning:layoutItem>
+                <lightning:layoutItem padding="around-small">
+                    <aura:if isTrue="{!!empty(v.selectedYear)}">
+                        <lightning:button variant="brand" label="View Target" title="View Target" onclick="{!c.calculateTarget}" />
+                    </aura:if>
+                </lightning:layoutItem>
+            </div>
+        </div>
+        
+        <!--</lightning:layout>-->
+        
+        
+        <br></br><br></br><br></br><br></br>
+        
+        <aura:if isTrue="{!v.isNoRecord}">
+            <div class="slds-box">
+                <p><center>No Records Found..</center></p>
+            </div>
+        </aura:if>
+        
+        <!--Start Table-->
+        <aura:if isTrue="{!and(v.displayMonthTable,!v.isNoRecord)}">
+            <center><div class="slds-text-heading_medium"><b>Target Assignment</b></div></center>
+            <br></br><br></br>
+            <aura:iteration items="{!v.wrapperList}" var="mainWrap" indexVar="mainIndex">
+                
+                <!--Monthly Cumulative Table-->
+                <aura:if isTrue="{!mainWrap.selectedUserName != null}">
+                    <div class="slds-scrollable--x responsiveTable">
+                        <div class="cstm_mrgn"><b>Cumulative targets for - {!mainWrap.selectedUserName}</b></div>
+                        <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_col-bordered">
+                            <thead>
+                                <tr class="slds-text-title_caps">
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="KRA Name"><b>KRA</b></div>
+                                    </th>                                
+                                    <aura:iteration items="{!v.monthList}" var="month">
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="{!month}"><b>{!month}</b></div>
+                                        </th>
+                                    </aura:iteration>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Total">Total</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!mainWrap.cumulativeTargetWrapper}" var="wrapData" indexVar="key">
+                                    <tr>                        
+                                        <td data-label="">
+                                            <div class="slds-truncate" title="{!wrapData.kraName}">{!wrapData.kraName}</div>
+                                        </td>
+                                        <aura:iteration items="{!wrapData.targetsList}" var="targetValue">
+                                            <td data-label="">
+                                                <lightning:formattedNumber value="{!targetValue}" minimumFractionDigits="{!wrapData.targetType == 'Revenue'?7:2}" maximumFractionDigits="{!wrapData.targetType == 'Revenue'?7:2}"/>                                                                                                    
+                                            </td>
+                                        </aura:iteration>
+                                        <td>
+                                            <b><lightning:formattedNumber value="{!wrapData.totalSum}" minimumFractionDigits="{!wrapData.targetType == 'Revenue'?7:2}" maximumFractionDigits="{!wrapData.targetType == 'Revenue'?7:2}"/> </b></td>
+                                    </tr>                            
+                                </aura:iteration>
+                                <aura:if isTrue="{!mainWrap.isNoRecord}">
+                                    <tr>
+                                        <div class="cstm_mrgn"> No Record Found.</div>
+                                    </tr>
+                                </aura:if> 
+                            </tbody>
+                        </table>
+                        
+                    </div>
+                </aura:if>
+                <!--End monthly Cumulative Table-->
+                
+                <!--START - Role Wise Table-->
+                <aura:if isTrue="{!mainWrap.selectedUserName == null}">
+                    
+                    <div class="slds-scrollable--x responsiveTable">
+                        <div class="cstm_mrgn"><b>{!mainWrap.roleName}</b></div>
+                        <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_col-bordered">
+                            <thead>
+                                <tr class="slds-text-title_caps">
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="KRA Name"><b>KRA</b></div>
+                                    </th>                                
+                                    <aura:iteration items="{!v.monthList}" var="month">
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="{!month}"><b>{!month}</b></div>
+                                        </th>
+                                    </aura:iteration>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Total">Total</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!mainWrap.targetWrapper}" var="wrapData" indexVar="key">
+                                    <tr>                        
+                                        <td data-label="">
+                                            <div class="slds-truncate" title="{!wrapData.kraName}">{!wrapData.kraName}</div>
+                                        </td>
+                                        <aura:iteration items="{!wrapData.targetsList}" var="targetValue">
+                                            <td data-label="">                                      
+                                                <lightning:formattedNumber value="{!targetValue}" minimumFractionDigits="{!wrapData.kraName == 'Revenue' ? 7 : 2}" maximumFractionDigits="{!wrapData.targetType == 'Revenue' ? 7 : 2}"/>
+                                            </td>
+                                        </aura:iteration>
+                                        <td>
+                                            <b>
+                                                <lightning:formattedNumber value="{!wrapData.totalSum}" minimumFractionDigits="{!wrapData.kraName == 'Revenue'?7:2}" maximumFractionDigits="{!wrapData.targetType == 'Revenue'?7:2}"/>
+                                                
+                                            </b></td>
+                                    </tr>                            
+                                </aura:iteration>
+                                <aura:if isTrue="{!mainWrap.isNoRecord}">
+                                    <tr>
+                                        <div class="cstm_mrgn"> No Record Found.</div>
+                                    </tr>
+                                </aura:if> 
+                            </tbody>
+                        </table>
+                    </div>
+                </aura:if>
+                
+                <!--START-Non Dev KRAs Table-->
+                <aura:if isTrue="{!mainWrap.behaviouralKraName != null}">
+                    <div class="slds-scrollable--x responsiveTable">
+                    <div class="cstm_mrgn"><b>Non Dev KRA Table</b></div>
+                    
+                        <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_col-bordered">
+                            <thead>
+                                <tr class="slds-text-title_caps">
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="KRA Name"><b>KRA</b></div>
+                                    </th>                                                                     
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Measures">Measures</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Weightage">Weightage</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Performance Standard">Performance Standard</div>
+                                    </th>
+                                    <aura:if isTrue="{!mainWrap.showManagerFeedback}">
+	                                    <th scope="col">
+	                                        <div class="slds-truncate" title="Manager Assessment">Manager Assessment</div>
+	                                    </th>
+	                                    <th scope="col">
+	                                        <div class="slds-truncate" title="Manager Rating">Manager Rating</div>
+	                                    </th>
+                                    </aura:if>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>                        
+                                    <td data-label="">
+                                        <div class="slds-truncate" title="{!mainWrap.behaviouralKraName}">{!mainWrap.behaviouralKraName}</div>
+                                    </td>
+                                    <td data-label="">
+                                        <div class="slds-truncate" title="{!mainWrap.behaviouralTarget.rsp_Measure__c}">{!mainWrap.behaviouralTarget.rsp_Measure__c}</div>
+                                    </td>
+                                    <td data-label="">
+                                        <div class="slds-truncate" title="{!mainWrap.behaviouralTarget.rsp_Weightage__c}">{!mainWrap.behaviouralTarget.rsp_Weightage__c}</div>
+                                    </td>
+                                    <td data-label="">
+                                        <div class="slds-truncate" title="{!mainWrap.behaviouralTarget.rsp_Performance_Standard__c}">{!mainWrap.behaviouralTarget.rsp_Performance_Standard__c}</div>
+                                    </td>
+                                    <aura:if isTrue="{!mainWrap.showManagerFeedback}">
+                                    	<td data-label="">                      	
+                                    	   <aura:if isTrue="{!v.showAssessmentEdit == false}">
+							                    <span class="slds-truncate" title="Name">{!mainWrap.behaviouralTarget.rsp_Manager_Assessment__c}</span>
+							                    <button onclick="{!c.inlineManagerAssessment}" class="slds-button slds-button_icon slds-cell-edit__button slds-m-left_x-small" tabindex="0" title="Edit Assessment">
+							                      <lightning:icon iconName="utility:edit" size="xx-small" alternativeText="edit"/>
+							                    </button>
+							                   
+							                    <!-- Inline Edit Section in else case-->  
+							                    <aura:set attribute="else">
+							                    	<div class="slds-truncate" title="{!mainWrap.behaviouralTarget.rsp_Manager_Assessment__c}">
+                                                      <lightning:input type="text" 
+                                                                       value="{!mainWrap.behaviouralTarget.rsp_Manager_Assessment__c}"
+                                                                       onblur="{!c.saveTargetdetail}"
+                                                                       />
+                                        	      </div>
+                                    	         </aura:set>
+                                    	   </aura:if>    		
+                                    	</td>
+                                    	<td data-label="">
+                                    	  <aura:if isTrue="{!v.showRatingEdit == false}">
+							                    <span class="slds-truncate" title="Name">{!mainWrap.behaviouralTarget.rsp_Manager_Rating__c}</span>
+							                    <button onclick="{!c.inlineManagerRating}" class="slds-button slds-button_icon slds-cell-edit__button slds-m-left_x-small" tabindex="0" title="Edit Manager Rating">
+							                      <lightning:icon iconName="utility:edit" size="xx-small" alternativeText="edit"/>
+							                    </button>
+							                   
+							                    <!-- Inline Edit Section in else case-->  
+							                    <aura:set attribute="else">
+							                    	<div class="slds-truncate" title="{!mainWrap.behaviouralTarget.rsp_Manager_Rating__c}">
+                                                        <lightning:input type="number" 
+                                                                         value="{!mainWrap.behaviouralTarget.rsp_Manager_Rating__c}" 
+                                                                         step="0.01"
+                                                                         onblur="{!c.saveTargetdetail}"/>
+                                                     </div>
+                                    	         </aura:set>
+                                    	   </aura:if>    		
+                                    		
+                                    	</td>
+                                    </aura:if>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                  
+                </aura:if>
+                <!--END-Non Dev KRAs Table-->  
+                
+                
+            </aura:iteration>            
+        </aura:if>
+        
+        <!--Weekly view table-->
+        <aura:if isTrue="{!and(v.displayWeekTable,!v.isNoRecord)}">
+            <center><div class="slds-text-heading_medium"><b>Target Assignment
+                </b></div></center>
+            <br></br>
+            <aura:iteration items="{!v.wrapperList}" var="mainWrap" indexVar="mainIndex">
+                
+                <!--Weekly Cumulative Table-->
+                <aura:if isTrue="{!mainWrap.selectedUserName != null}">
+                    <div class="slds-scrollable--x responsiveTable">
+                        <div class="cstm_mrgn"><b>Cumulative targets for - {!mainWrap.selectedUserName}</b></div>
+                        <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_col-bordered">
+                            <thead>
+                                <tr class="slds-text-title_caps">
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="KRA Name"><b>KRA</b></div>
+                                    </th>                                
+                                    <aura:iteration items="{!v.weekList}" var="weekNo">
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="{!weekNo}"><b>Week-{!weekNo}</b></div>
+                                        </th>
+                                    </aura:iteration>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Total">Total</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!mainWrap.cumulativeTargetWrapper}" var="wrapData" indexVar="key">
+                                    <tr>                        
+                                        <td data-label="">
+                                            <div class="slds-truncate" title="{!wrapData.kraName}">{!wrapData.kraName}</div>
+                                        </td>
+                                        <aura:iteration items="{!wrapData.targetsList}" var="targetValue">
+                                            <td data-label="">
+                                                <lightning:formattedNumber value="{!targetValue}" minimumFractionDigits="{!wrapData.targetType == 'Revenue'?7:2}" maximumFractionDigits="{!wrapData.targetType == 'Revenue'?7:2}"/> 
+                                            </td>
+                                        </aura:iteration>
+                                        <td>
+                                            <b><lightning:formattedNumber value="{!wrapData.totalSum}" minimumFractionDigits="{!wrapData.targetType == 'Revenue'?7:2}" maximumFractionDigits="{!wrapData.targetType == 'Revenue'?7:2}"/> </b></td>
+                                    </tr>                            
+                                </aura:iteration>
+                                <aura:if isTrue="{!mainWrap.isNoRecord}">
+                                    <tr>
+                                        <div class="cstm_mrgn"> No Record Found.</div>
+                                    </tr>
+                                </aura:if> 
+                            </tbody>
+                        </table>                        
+                    </div>
+                </aura:if>
+                <!--End Cumulative Table-->
+                
+                <!--Start weekly-role based target table-->
+                <aura:if isTrue="{!mainWrap.selectedUserName == null}">
+                    <div class="slds-scrollable--x responsiveTable">
+                        <div class="cstm_mrgn"><b>{!mainWrap.roleName}</b></div>
+                        <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_col-bordered">
+                            <thead>
+                                <tr class="slds-text-title_caps">
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="KRA Name"><b>KRA</b></div>
+                                    </th>
+                                    <aura:iteration items="{!v.weekList}" var="weekNo">
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="{!weekNo}"><b>Week-{!weekNo}</b></div>
+                                        </th>
+                                    </aura:iteration>
+                                    
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Total">Total</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!mainWrap.targetWrapper}" var="wrapData" indexVar="key">
+                                    <tr>                        
+                                        <td data-label="">
+                                            <div class="slds-truncate" title="{!wrapData.kraName}">{!wrapData.kraName}</div>
+                                        </td>
+                                        <aura:iteration items="{!wrapData.targetsList}" var="targetValue">
+                                            <td data-label="">
+                                                <lightning:formattedNumber value="{!targetValue}" minimumFractionDigits="{!wrapData.targetType == 'Revenue'?7:2}" maximumFractionDigits="{!wrapData.targetType == 'Revenue'?7:2}"/> 
+                                            </td>
+                                        </aura:iteration>
+                                        <td>
+                                            <b><lightning:formattedNumber value="{!wrapData.totalSum}" minimumFractionDigits="{!wrapData.targetType == 'Revenue'?7:2}" maximumFractionDigits="{!wrapData.targetType == 'Revenue'?7:2}"/> </b>
+                                        </td>
+                                    </tr>                                        
+                                </aura:iteration>
+                                
+                                <aura:if isTrue="{!mainWrap.isNoRecord}">
+                                    <tr>
+                                        <center><div class="cstm_mrgn"> No Record Found.</div></center>
+                                    </tr>
+                                </aura:if>                             
+                            </tbody>
+                        </table>
+                    </div>
+                </aura:if>
+                <!--End weekly-role based target table-->
+                
+                <!--START-Non Dev KRAs Table-->
+                <aura:if isTrue="{!mainWrap.behaviouralKraName != null}">
+                    <div class="slds-scrollable--x responsiveTable">
+                    <div class="cstm_mrgn"><b>Non Dev KRA Table</b></div>
+                    
+                        <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_col-bordered">
+                            <thead>
+                                <tr class="slds-text-title_caps">
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="KRA Name"><b>KRA</b></div>
+                                    </th>                                                                     
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Measures">Measures</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Weightage">Weightage</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Performance Standard">Performance Standard</div>
+                                    </th>
+                                    <aura:if isTrue="{!mainWrap.showManagerFeedback}">
+	                                    <th scope="col">
+	                                        <div class="slds-truncate" title="Manager Assessment">Manager Assessment</div>
+	                                    </th>
+	                                    <th scope="col">
+	                                        <div class="slds-truncate" title="Manager Rating">Manager Rating</div>
+	                                    </th>
+                                    </aura:if>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>                        
+                                    <td data-label="">
+                                        <div class="slds-truncate" title="{!mainWrap.behaviouralKraName}">{!mainWrap.behaviouralKraName}</div>
+                                    </td>
+                                    <td data-label="">
+                                        <div class="slds-truncate" title="{!mainWrap.behaviouralTarget.rsp_Measure__c}">{!mainWrap.behaviouralTarget.rsp_Measure__c}</div>
+                                    </td>
+                                    <td data-label="">
+                                        <div class="slds-truncate" title="{!mainWrap.behaviouralTarget.rsp_Weightage__c}">{!mainWrap.behaviouralTarget.rsp_Weightage__c}</div>
+                                    </td>
+                                    <td data-label="">
+                                        <div class="slds-truncate" title="{!mainWrap.behaviouralTarget.rsp_Performance_Standard__c}">{!mainWrap.behaviouralTarget.rsp_Performance_Standard__c}</div>
+                                    </td>
+                                    <aura:if isTrue="{!mainWrap.showManagerFeedback}">
+                                    	<td data-label="">                      	
+                                    	   <aura:if isTrue="{!v.showAssessmentEdit == false}">
+							                    <span class="slds-truncate" title="Name">{!mainWrap.behaviouralTarget.rsp_Manager_Assessment__c}</span>
+							                    <button onclick="{!c.inlineManagerAssessment}" class="slds-button slds-button_icon slds-cell-edit__button slds-m-left_x-small" tabindex="0" title="Edit Assessment">
+							                      <lightning:icon iconName="utility:edit" size="xx-small" alternativeText="edit"/>
+							                    </button>
+							                   
+							                    <!-- Inline Edit Section in else case-->  
+							                    <aura:set attribute="else">
+							                    	<div class="slds-truncate" title="{!mainWrap.behaviouralTarget.rsp_Manager_Assessment__c}">
+                                                      <lightning:input type="text" 
+                                                                       value="{!mainWrap.behaviouralTarget.rsp_Manager_Assessment__c}"
+                                                                       onblur="{!c.saveTargetdetail}"
+                                                                       />
+                                        	      </div>
+                                    	         </aura:set>
+                                    	   </aura:if>    		
+                                    	</td>
+                                    	<td data-label="">
+                                    	  <aura:if isTrue="{!v.showRatingEdit == false}">
+							                    <span class="slds-truncate" title="Name">{!mainWrap.behaviouralTarget.rsp_Manager_Rating__c}</span>
+							                    <button onclick="{!c.inlineManagerRating}" class="slds-button slds-button_icon slds-cell-edit__button slds-m-left_x-small" tabindex="0" title="Edit Manager Rating">
+							                      <lightning:icon iconName="utility:edit" size="xx-small" alternativeText="edit"/>
+							                    </button>
+							                   
+							                    <!-- Inline Edit Section in else case-->  
+							                    <aura:set attribute="else">
+							                    	<div class="slds-truncate" title="{!mainWrap.behaviouralTarget.rsp_Manager_Rating__c}">
+                                                        <lightning:input type="number" 
+                                                                         value="{!mainWrap.behaviouralTarget.rsp_Manager_Rating__c}" 
+                                                                         step="0.01"
+                                                                         onblur="{!c.saveTargetdetail}"/>
+                                                     </div>
+                                    	         </aura:set>
+                                    	   </aura:if>    		
+                                    		
+                                    	</td>
+                                    </aura:if>
+                                </tr>
+                            </tbody>
+                        </table>
+                    
+                    </div>
+                </aura:if>
+                <!--END-Non Dev KRAs Table-->  
+                
+            </aura:iteration>
+        </aura:if>    
+        
+        <!--Daily view table-->
+        <aura:if isTrue="{!and(v.displayDailyTable,!v.isNoRecord)}">
+            <center><div class="slds-text-heading_medium"><b>Target Assignment
+                </b></div></center>
+            <br></br>
+            <aura:iteration items="{!v.wrapperList}" var="mainWrap">
+                
+                <!--Daily Cumulative Table-->
+                <aura:if isTrue="{!mainWrap.selectedUserName != null}">
+                    <div class="slds-scrollable--x responsiveTable">
+                        <div class="cstm_mrgn"><b>Cumulative targets for - {!mainWrap.selectedUserName}</b></div>
+                        <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_col-bordered">
+                            <thead>
+                                <tr class="slds-text-title_caps">
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="KRA Name"><b>KRA</b></div>
+                                    </th>                                
+                                    <aura:iteration items="{!v.dateList}" var="date">
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="{!date}">
+                                                <b><lightning:formattedDateTime value="{!date}"/><!--{!date}--></b>                                          
+                                            </div>
+                                        </th>
+                                    </aura:iteration>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Total">Total</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!mainWrap.cumulativeTargetWrapper}" var="wrapData" indexVar="key">
+                                    <tr>                        
+                                        <td data-label="">
+                                            <div class="slds-truncate" title="{!wrapData.kraName}">{!wrapData.kraName}</div>
+                                        </td>
+                                        <aura:iteration items="{!wrapData.targetsList}" var="targetValue">
+                                            <td data-label="">
+                                                <lightning:formattedNumber value="{!targetValue}" minimumFractionDigits="{!wrapData.targetType == 'Revenue'?7:2}" maximumFractionDigits="{!wrapData.targetType == 'Revenue'?7:2}"/> 
+                                            </td>
+                                        </aura:iteration>
+                                        <td>
+                                            <b><lightning:formattedNumber value="{!wrapData.totalSum}" minimumFractionDigits="{!wrapData.targetType == 'Revenue'?7:2}" maximumFractionDigits="{!wrapData.targetType == 'Revenue'?7:2}"/> </b></td>
+                                    </tr>                            
+                                </aura:iteration>
+                                <aura:if isTrue="{!mainWrap.isNoRecord}">
+                                    <tr>
+                                        <div class="cstm_mrgn"> No Record Found.</div>
+                                    </tr>
+                                </aura:if> 
+                            </tbody>
+                        </table>                        
+                    </div>
+                </aura:if>
+                <!--End Cumulative Table-->
+                
+                <!--Start Daily-role based target table-->
+                <aura:if isTrue="{!mainWrap.selectedUserName == null}">
+                    <div class="slds-scrollable--x responsiveTable">
+                        <div class="cstm_mrgn"><b>{!mainWrap.roleName}</b></div>
+                        <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_col-bordered">
+                            <thead>
+                                <tr class="slds-text-title_caps">
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="KRA Name"><b>KRA</b></div>
+                                    </th>
+                                    <aura:iteration items="{!v.dateList}" var="date">
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="{!date}">
+                                                <b><lightning:formattedDateTime value="{!date}"/></b>
+                                            </div>
+                                        </th>
+                                    </aura:iteration>
+                                    
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Total">Total</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!mainWrap.targetWrapper}" var="wrapData" indexVar="key">
+                                    <tr>                        
+                                        <td data-label="">
+                                            <div class="slds-truncate" title="{!wrapData.kraName}">{!wrapData.kraName}</div>
+                                        </td>
+                                        <aura:iteration items="{!wrapData.targetsList}" var="targetValue">
+                                            <td data-label="">
+                                                <lightning:formattedNumber value="{!targetValue}" 
+                                                                           minimumFractionDigits="{!wrapData.targetType == 'Revenue'?7:2}" 
+                                                                           maximumFractionDigits="{!wrapData.targetType == 'Revenue'?7:2}"/> 
+                                            </td>
+                                        </aura:iteration>
+                                        <td>
+                                            <b><lightning:formattedNumber value="{!wrapData.totalSum}" minimumFractionDigits="{!wrapData.targetType == 'Revenue'?7:2}" maximumFractionDigits="{!wrapData.targetType == 'Revenue'?7:2}"/> </b>
+                                        </td>
+                                    </tr>                                        
+                                </aura:iteration>
+                                
+                                <aura:if isTrue="{!mainWrap.isNoRecord}">
+                                    <tr>
+                                        <center><div class="cstm_mrgn"> No Record Found.</div></center>
+                                    </tr>
+                                </aura:if>                             
+                            </tbody>
+                        </table>
+                    </div>
+                </aura:if>
+                <!--End Daily-role based target table-->   
+                
+                
+                <!--START-Non Dev KRAs Table-->
+                <aura:if isTrue="{!mainWrap.behaviouralKraName != null}">
+                    
+                    <div class="slds-scrollable--x responsiveTable">
+                        <div class="cstm_mrgn"><b>Non Dev KRA Table</b></div>
+                        <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_col-bordered">
+                            <thead>
+                                <tr class="slds-text-title_caps">
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="KRA Name"><b>KRA</b></div>
+                                    </th>                                                                     
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Measures">Measures</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Weightage">Weightage</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Performance Standard">Performance Standard</div>
+                                    </th>
+                                    <aura:if isTrue="{!mainWrap.showManagerFeedback}">
+	                                    <th scope="col">
+	                                        <div class="slds-truncate" title="Manager Assessment">Manager Assessment</div>
+	                                    </th>
+	                                    <th scope="col">
+	                                        <div class="slds-truncate" title="Manager Rating">Manager Rating</div>
+	                                    </th>
+                                    </aura:if>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>                        
+                                    <td data-label="">
+                                        <div class="slds-truncate" title="{!mainWrap.behaviouralKraName}">{!mainWrap.behaviouralKraName}</div>
+                                    </td>
+                                    <td data-label="">
+                                        <div class="slds-truncate" title="{!mainWrap.behaviouralTarget.rsp_Measure__c}">{!mainWrap.behaviouralTarget.rsp_Measure__c}</div>
+                                    </td>
+                                    <td data-label="">
+                                        <div class="slds-truncate" title="{!mainWrap.behaviouralTarget.rsp_Weightage__c}">{!mainWrap.behaviouralTarget.rsp_Weightage__c}</div>
+                                    </td>
+                                    <td data-label="">
+                                        <div class="slds-truncate" title="{!mainWrap.behaviouralTarget.rsp_Performance_Standard__c}">{!mainWrap.behaviouralTarget.rsp_Performance_Standard__c}</div>
+                                    </td>
+                                    <aura:if isTrue="{!mainWrap.showManagerFeedback}">
+                                    	<td data-label="">                      	
+                                    	   <aura:if isTrue="{!v.showAssessmentEdit == false}">
+							                    <span class="slds-truncate" title="Name">{!mainWrap.behaviouralTarget.rsp_Manager_Assessment__c}</span>
+							                    <button onclick="{!c.inlineManagerAssessment}" class="slds-button slds-button_icon slds-cell-edit__button slds-m-left_x-small" tabindex="0" title="Edit Assessment">
+							                      <lightning:icon iconName="utility:edit" size="xx-small" alternativeText="edit"/>
+							                    </button>
+							                   
+							                    <!-- Inline Edit Section in else case-->  
+							                    <aura:set attribute="else">
+							                    	<div class="slds-truncate" title="{!mainWrap.behaviouralTarget.rsp_Manager_Assessment__c}">
+                                                      <lightning:input type="text" 
+                                                                       value="{!mainWrap.behaviouralTarget.rsp_Manager_Assessment__c}"
+                                                                       onblur="{!c.saveTargetdetail}"
+                                                                       />
+                                        	      </div>
+                                    	         </aura:set>
+                                    	   </aura:if>    		
+                                    	</td>
+                                    	<td data-label="">
+                                    	  <aura:if isTrue="{!v.showRatingEdit == false}">
+							                    <span class="slds-truncate" title="Name">{!mainWrap.behaviouralTarget.rsp_Manager_Rating__c}</span>
+							                    <button onclick="{!c.inlineManagerRating}" class="slds-button slds-button_icon slds-cell-edit__button slds-m-left_x-small" tabindex="0" title="Edit Manager Rating">
+							                      <lightning:icon iconName="utility:edit" size="xx-small" alternativeText="edit"/>
+							                    </button>
+							                   
+							                    <!-- Inline Edit Section in else case-->  
+							                    <aura:set attribute="else">
+							                    	<div class="slds-truncate" title="{!mainWrap.behaviouralTarget.rsp_Manager_Rating__c}">
+                                                        <lightning:input type="number" 
+                                                                         value="{!mainWrap.behaviouralTarget.rsp_Manager_Rating__c}" 
+                                                                         step="0.01"
+                                                                         onblur="{!c.saveTargetdetail}"
+                                                                         />
+                                                     </div>
+                                    	         </aura:set>
+                                    	   </aura:if>    		
+                                    		
+                                    	</td>
+                                    </aura:if>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </aura:if>
+                <!--END-Non Dev KRAs Table-->              
+            </aura:iteration>
+        </aura:if> 		
+        
+        
+    </div>
+</aura:component>

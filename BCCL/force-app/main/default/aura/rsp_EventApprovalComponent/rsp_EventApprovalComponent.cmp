@@ -1,0 +1,26 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" controller = "rsp_EventApprovalHandler" >
+	<aura:attribute name="recordId" type="Id"/>
+    <aura:attribute name="Msg" type="String" default=""/>
+    <aura:attribute name="showErrorPopUp" type="Boolean" default="false"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:method name="backMethod" action="{!c.cancel}" description="back to record" />
+    <aura:handler event="aura:waiting" action="{!c.showSpinner}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/>  
+    <aura:attribute name="Spinner" type="boolean" default="false"/>    
+    <aura:handler event="aura:waiting" action="{!c.showSpinner}"/>
+    <!--aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/-->
+    
+    
+    <div>        
+        
+        <!--<header class="slds-modal__header">
+            <div class="slds-text-body_regular" style="font-weight:bold;font-size: 150%;"> Generate Customer Payment Plan Milestone</div>
+        </header> -->
+        <div style ="text-align: center;margin-top: 47px;">  <p style ="font-size:26px;">{!v.Msg}</p> </div> 
+		<aura:if isTrue="{!v.Spinner}">        
+            <div >
+              <lightning:spinner aura:id="mySpinner" variant="brand"/>
+            </div> 
+        </aura:if>
+    </div>	
+</aura:component>

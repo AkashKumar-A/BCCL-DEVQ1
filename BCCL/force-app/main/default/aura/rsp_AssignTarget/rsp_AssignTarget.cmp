@@ -1,0 +1,59 @@
+<aura:component controller="rsp_AssignTargetCtrl" implements="c:rsp_ViewTargetInterface,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <!--Aura Attributes-->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="geographyList" type="rsp_Geography__c[]"/>
+
+           
+        <!--loading spinner start... style=Brand Medium (blue dots)-->
+        <aura:if isTrue="{!v.spinner}">
+            <div aura:id="spinnerId" class="slds-spinner_container">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </aura:if>
+        <!-- Loading spinner end--> 
+        
+        
+        <!--Display Horizontals-->
+        <div class="c-container">
+            <lightning:layout horizontalAlign="space" multipleRows="true">
+                <lightning:layoutItem padding="around-small">
+                    <lightning:select name="horizontalName" label="Select Horizontal:" 
+                                      aura:id="horizontalName" value="{!v.selectedHorizon}" 
+                                      disabled ="{!v.disabledHorizon}" onchange="{!c.onHorizontalChange}">
+                        <option value="">--None--</option>
+                        <aura:iteration items="{!v.horizontalList}" var="horizontal">
+                            <option value="{!horizontal.Id}">{!horizontal.Name}</option>
+                        </aura:iteration>
+                    </lightning:select>
+                </lightning:layoutItem>
+                
+                <!--Display Verticals-->
+                <lightning:layoutItem padding="around-small">
+                    <lightning:select name="verticalName" label="Select Vertical:" 
+                                      aura:id="verticalId" value="{!v.selectedVertical}" 
+                                      disabled="{!v.disabledVertical}" onchange="{!c.onVerticalChange}">
+                        <option value="">--None--</option>
+                        <aura:iteration items="{!v.verticalList}" var="vertical">
+                            <option value="{!vertical.Id}">{!vertical.Name}</option>
+                        </aura:iteration>
+                    </lightning:select>
+                </lightning:layoutItem>
+                
+                <!--Display Geographies-->
+                <lightning:layoutItem padding="around-small">
+                    <lightning:select name="geographyName" label="Select Geography:" 
+                                      aura:id="geographyName" value="{!v.selectedGeography}" required = "True"
+                                      onchange="{!c.onGeographyChange}">
+                        <option value="">--None--</option>
+                        <aura:iteration items="{!v.geographyList}" var="geography">
+                            <option value="{!geography.Id}">{!geography.Name}</option>
+                        </aura:iteration>
+                    </lightning:select>
+                </lightning:layoutItem>
+            </lightning:layout>
+        </div>
+</aura:component>

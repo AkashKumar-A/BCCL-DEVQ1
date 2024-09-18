@@ -1,0 +1,5 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,force:hasRecordId,forceCommunity:availableForAllPageTypes,lightning:isUrlAddressable">
+    <aura:handler name="init" value="{!this}" action="{!c.myAction}"/>
+    <aura:attribute name="parameters" type="String"/>
+    <force:canvasApp developerName="iQ" parameters="{!v.parameters}" width="100%" />
+</aura:component>

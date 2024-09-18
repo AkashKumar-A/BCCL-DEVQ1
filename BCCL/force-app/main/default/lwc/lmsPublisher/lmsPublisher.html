@@ -1,0 +1,9 @@
+<template>
+   <lightning-card title="Publisher Component LMS LWC">
+       <div class="slds-m-around_medium">
+       <lightning-input type="text" name="name" value={dataToSend} onchange={changeHandler} label="Enter Message" placeholder="type here..."></lightning-input>
+       <br/>
+       <lightning-button variant="brand" label="Go" title="Go" onclick={publisherHandler}></lightning-button>
+       </div>
+   </lightning-card>
+</template>

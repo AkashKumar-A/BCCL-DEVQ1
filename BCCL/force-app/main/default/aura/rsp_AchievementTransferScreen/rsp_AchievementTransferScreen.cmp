@@ -1,0 +1,156 @@
+<aura:component controller="rsp_AchievementTransferScreenController" 
+                implements="c:rsp_AchievementTransferScreenInterface,flexipage:availableForRecordHome,force:hasRecordId,force:appHostable,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction"
+                access="global">
+    
+    <aura:attribute name="objOpty" type="Opportunity" />
+    <aura:attribute name ="geographyListSubOffice" type ="String[]"/>
+    <aura:attribute name="checkVerticalFlag" type="Boolean" default="false"/>
+    <!--
+    Init handler which is call doInit js function on component Load
+    -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+	<!--
+    <lightning:recordEditForm objectApiName="Opportunity" recordId="a00R0000000jq5eIAA">
+        <lightning:messages />
+            <div class="slds-grid">
+                <div class="slds-col slds-size_1-of-3">
+                    <lightning:inputField fieldName="Vertical__c"/>
+                </div>
+                <div class="slds-col slds-size_1-of-3">
+                    <lightning:inputField fieldName="Horizontal__c"/>
+                </div>               
+            </div>
+        <lightning:button class="slds-m-top_small" type="Transfer" label="Transfer" />
+    </lightning:recordEditForm>
+	-->
+    
+    <!-- Reference from Set Target Screen -->
+    <div class="slds-is-relative">
+        <lightning:spinner aura:id="mySpinner" alternativeText="Loading.." 
+                                       title="Loading.." variant="brand" 
+                                       size="large" class="slds-hide"/>
+        
+        <div class="c-container">        
+            <div class="slds-grid slds-wrap">
+                <div class="slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-2">
+                    <!-- 
+                        Show Verticals List 
+                    -->
+                    <lightning:layoutItem padding="around-small">
+                        <lightning:select name="verticalName" label="Select Vertical:" 
+                                          aura:id="verticalId" value="{!v.selectedVertical}" 
+                                          disabled="{!v.disableVertical}" 
+                                          onchange="{!c.onVerticalChange}">
+                            <option value="" text="--NONE--"></option>
+                            <aura:iteration items="{!v.verticalList}" var="vertical">
+                                <option value="{!vertical.Id}" text="{!vertical.Name}"></option>
+                            </aura:iteration>
+                        </lightning:select>
+                    </lightning:layoutItem>
+                </div>
+                
+                
+                <div class="slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-2">
+                    <!--<aura:if isTrue="{!(!v.showVerticalCateogry)}"></aura:if>-->
+                        <lightning:layoutItem padding="around-small">
+                            <lightning:select name="horizontalName" label="Select Horizontal:" 
+                                              aura:id="horizontalName" value="{!v.selectedHorizontal}" 
+                                              disabled ="{!v.disableHorizontal}" 
+                                              onchange="{!c.onHorizontalChange}">
+                                <option value="" text="--NONE--"></option>
+                                <aura:iteration items="{!v.horizontalList}" var="horizontal">
+                                    <option value="{!horizontal.Id}" text="{!horizontal.Name}"></option>
+                                </aura:iteration>
+                            </lightning:select>
+                        </lightning:layoutItem>
+                    
+                </div>
+                <div class="slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-2">
+                    <!-- 
+                        Show Verticle Category List 
+                    -->
+                    
+                    <!--<aura:if isTrue="{!v.showVerticalCateogry}"></aura:if>   ssssss padding="around-small"-->
+                        <lightning:layoutItem padding="around-small">
+                            <lightning:select name="Select Vertical Category" label="Select Vertical Category:" 
+                                              aura:id="verticalCategoryId" 
+                                              value="{!v.selectedVerticalCateogry}"
+                                              disabled="{!v.disableVerticalCategoryList}"
+                                              onchange="{!c.onVerticalCategoryChange}">
+                                <option value="" text="--NONE--"></option>
+                                <aura:iteration items="{!v.verticalCategoryList}" 
+                                                var="verticalCateogry">
+                                    <option value="{!verticalCateogry.Id}" 
+                                            text="{!verticalCateogry.Name}">
+                                    </option>
+                                </aura:iteration>
+                            </lightning:select>
+                        </lightning:layoutItem>
+                    
+                </div>
+                
+                <div class="slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-2">
+                    <!--
+                        Show Geography List 
+                   -->
+                    <lightning:layoutItem padding="around-small">
+                        <lightning:select name="geographyName" label="Select Geography:" 
+                                          aura:id="geographyName" value="{!v.selectedGeography}" 
+                                          onchange="{!c.onGeographyChange}">
+                            <option value="" text="--Select--"></option>
+                            <aura:iteration items="{!v.geographyList}" var="geography">
+                                <option value="{!geography.value}" text="{!geography.label}">
+                                </option>
+                            </aura:iteration>
+                        </lightning:select>
+                    </lightning:layoutItem>
+                    
+                    <lightning:layoutItem padding="around-small">
+                        <lightning:select name="geographySubOfficeName" label="Select Sales Office:" 
+                                          aura:id="geographySubOfficeName" value="{!v.selectedGeographySubOffice}" 
+                                          onchange="{!c.onGeographySubOfficeChange}">
+                            <option value="" text="--Select--"></option>
+                            <aura:iteration items="{!v.geographyListSubOffice}" var="geographySub">
+                                <option value="{!geographySub.value}" text="{!geographySub.label}">
+                                </option>
+                            </aura:iteration>
+                        </lightning:select>
+                    </lightning:layoutItem>
+                </div>
+                
+                <div class="slds-size--1-of-1 slds-medium-size--2-of-2 slds-large-size--1-of-1">
+                    <!--
+                        Show Role List 
+                    -->
+                    <lightning:layoutItem padding="around-small">
+                        <lightning:select name="roleName" label="Select Role:" 
+                                          aura:id="roleId" value="{!v.selectedRole}"
+                                          disabled ="{!v.disableRole}" 
+                                          onchange="{!c.onRoleChange}">
+                            <option value="" text="--NONE--"></option>
+                            <aura:iteration items="{!v.roleList}" var="role">
+                                <option value="{!role.Id}" text="{!role.Name + ' (' + role.rsp_Current_User__r.Name +')'}"></option>
+                            </aura:iteration>
+                        </lightning:select>
+                    </lightning:layoutItem>    
+                </div>   
+                
+                <!--
+                    Show Achievement Transfer button
+                -->
+                <div class="showTargetBtnCls slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1 slds-text-align_center">
+                    <div class="slds-button-group slds-m-top_medium" >
+                        <lightning:layoutItem padding="around-small">  
+                            <lightning:button variant="brand" label="Transfer Achievements" title="Transfer Achievements"
+                                              onclick="{!c.onClickTransferAchievement}"
+                                              disabled = "{!v.checkVerticalFlag}"
+                                              />
+                        </lightning:layoutItem>
+                    </div>
+                </div>
+                
+            </div>	
+        </div>
+    </div>    
+</aura:component>

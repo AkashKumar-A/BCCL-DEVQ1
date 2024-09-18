@@ -1,0 +1,11 @@
+<aura:component implements="force:lightningQuickAction,force:hasRecordId" >
+        <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <!--<lightning:card title="Add Opportunity Projection" variant="base">
+        <div>
+        	Are you sure you want to add Opportunity Projection? If yes, Click on continue.
+            <lightning:button variant="brand" label="Continue" title="Brand action" 
+                                      onclick="{!c.callAddEditOppComponent}"/>
+        </div>
+    </lightning:card>
+-->
+</aura:component>

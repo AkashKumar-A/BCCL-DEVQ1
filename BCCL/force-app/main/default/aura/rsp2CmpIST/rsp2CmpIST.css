@@ -1,0 +1,63 @@
+.THIS .wrapped-header-datatable .slds-table .slds-th__action .slds-truncate{
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: unset;
+    white-space: pre-line;
+    /*  uncomment this if you want break the words further */
+    /* word-wrap: break-word;*/
+
+}
+.THIS .wrapped-header-datatable .slds-table .slds-th__action {
+    height: 3rem;
+    border-bottom: 1px solid rgb(206 206 206);
+}
+
+.THIS .wrapped-header-datatable {
+    height: calc(100vh - 22rem);
+    display: block;
+}
+
+.THIS .ntc-warning {
+    padding: 0.4rem 0;
+    color: rgb(251 139 38);
+    font-weight: 700;
+}
+
+.THIS .slds-table_header-fixed_container {
+    padding-top: 3rem;
+}
+
+.THIS.slds-spinner_container {  
+    z-index: 10000;
+    position: fixed;   
+}
+
+.THIS.toggle {
+    display: none;
+}
+
+.THIS .popup-note {
+    margin: 43px;
+    text-align: center;
+    color: red;
+    font-size: 23px;
+    font-weight: 600;
+    text-transform: uppercase;
+    text-decoration: underline;
+}
+
+.THIS .red-color {
+    color: rgb(251 139 38);
+}
+
+.THIS ::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+}
+.THIS ::-webkit-scrollbar-track {
+    display: none !important;
+}
+.THIS ::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: rgba(0,0,0,0.4);
+}

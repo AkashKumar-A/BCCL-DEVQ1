@@ -1,0 +1,23 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" >
+    <aura:attribute name="opportunityObject" type="Opportunity"/>
+    
+    <div class="demo-only" style="width: 30rem;">
+        <article class="slds-tile slds-hint-parent">
+            <div class="slds-grid slds-grid_align-spread slds-has-flexi-truncate">
+                <h3 class="slds-tile__title slds-truncate" title="Name"><a href = "" aura:id="{!v.opportunityObject.Id}" onclick = "{!c.navigateToOpportunity}" tabindex="-1">
+                    {!v.opportunityObject.Agency__r.Name} 
+                    </a></h3>
+            </div>
+            <div class="slds-tile__detail">
+                <dl class="slds-list_horizontal slds-wrap">
+                    <dt class="slds-item_label slds-text-color_weak slds-truncate" title="First Label">Amount:</dt>
+                    <dd class="slds-item_detail slds-truncate" title="Description for first label">{!v.opportunityObject.Amount}</dd>
+                    <dt class="slds-item_label slds-text-color_weak slds-truncate" title="Second Label">Location:</dt>
+                    <dd class="slds-item_detail slds-truncate" title="Description for second label">{!v.opportunityObject.Location__c}</dd>
+                </dl>
+            </div>
+        </article>
+    </div>
+    <br />
+    
+</aura:component>

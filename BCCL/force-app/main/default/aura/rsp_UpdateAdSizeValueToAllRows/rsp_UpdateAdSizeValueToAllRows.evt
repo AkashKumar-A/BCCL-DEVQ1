@@ -1,0 +1,5 @@
+<aura:event type="Component" description="Event template">
+    <aura:attribute name="sizeValue" type="String"/>
+    <aura:attribute name="isCustomSelected" type="Boolean"/>
+    <aura:attribute name="currentIndexRow" type="String"/>
+</aura:event>

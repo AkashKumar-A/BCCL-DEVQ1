@@ -1,0 +1,9 @@
+<apex:page standardController="Event" extensions="bccl_CheckInController" showHeader="false" sidebar="false">
+    <apex:pageBlock >
+        <apex:pageBlockSection title="Check In Check Out">
+            <apex:map width="600px" height="400px" mapType="roadmap" >
+                <apex:mapMarker title="Check Out" position="{!checkOutList.bccl_Check_Out_Location__Latitude__s},{!checkOutList.bccl_Check_Out_Location__Longitude__s}"/>
+            </apex:map>
+        </apex:pageBlockSection>
+    </apex:pageBlock>
+</apex:page>

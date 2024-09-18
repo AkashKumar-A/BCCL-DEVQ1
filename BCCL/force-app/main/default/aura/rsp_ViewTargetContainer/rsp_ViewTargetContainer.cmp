@@ -1,0 +1,15 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global"
+                		controller ="rsp_ServiceViewTargetNonDev">
+	    
+  <aura:attribute name="isNonDevelopmentUser" type="boolean"/>
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}" />    
+    <aura:if isTrue="{!v.isNonDevelopmentUser}">
+        
+        
+        <c:rsp_ViewTargetNonDev/>
+    </aura:if>
+    <aura:if isTrue="{!!v.isNonDevelopmentUser}">
+        <c:rsp_ViewTarget/>
+      
+    </aura:if>
+</aura:component>

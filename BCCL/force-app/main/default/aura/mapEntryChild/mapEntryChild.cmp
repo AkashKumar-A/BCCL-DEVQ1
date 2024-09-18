@@ -1,0 +1,56 @@
+<aura:component >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="map" type="map"/>
+    <aura:attribute name="mapQuestionnaire" type="map" />
+    <aura:attribute name="key" type="id"/>
+    <aura:attribute name="value" type="rsp_OCA_questionnaire__c[]"/>
+    <aura:attribute name="valueListQuestionQuestionaire" type="rsp_OCA_questionnaire__c[]"/>
+    
+    <lightning:accordion aura:id="accordion" activeSectionName="a">
+        <aura:iteration items="{!v.value}" var="varQuestionaire" indexVar = "index">
+            <!-- <p>{!varQuestionaire.rsp_Question__c}</p> -->
+            
+            
+            <lightning:accordionSection name="TableAccordian" label="{!varQuestionaire.rsp_Question__c}">
+                <table class="slds-table slds-table--bordered slds-table--cell-buffer">
+                    <thead>
+                        <tr class="slds-text-title--caps">
+                            <th>
+                                <span class="slds-truncate" title="Name">User Name</span>      
+                            </th>
+                            <th>
+                                <span class="slds-truncate" title="Name">Feedback (Submitted)</span>      
+                            </th>
+                            <th>
+                                <span class="slds-truncate" title="Name">Remarks (Submitted)</span>      
+                            </th>
+                            <th>
+                                <span class="slds-truncate" title="Name">Feedback</span>      
+                            </th>
+                            <th>
+                                <span class="slds-truncate" title="Name">Remarks (If any)</span>      
+                            </th>
+                            <th>
+                                <span class="slds-truncate" title="Name">Attachment</span>      
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <aura:iteration items="{!v.valueListQuestionQuestionaire}" var="varIndiQuestionaire">
+                            <tr>
+                                <td scope="row">
+                                    <div class="slds-truncate" title="abc">
+                                        
+                                    </div>
+                                </td>
+                                
+                            </tr>
+                        </aura:iteration>
+                    </tbody>
+                </table>
+            </lightning:accordionSection>    
+            
+        </aura:iteration>
+    </lightning:accordion>
+    
+</aura:component>

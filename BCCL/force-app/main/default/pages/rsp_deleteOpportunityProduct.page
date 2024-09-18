@@ -1,0 +1,3 @@
+<apex:page standardController="OpportunityLineItem">
+<h1>Delete is not enabled</h1>
+</apex:page>

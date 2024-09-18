@@ -1,0 +1,62 @@
+<aura:component controller="rsp2CmpBehaviouralTargetManagerCtrl"  implements="lightning:isUrlAddressable,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:handler name="init" value="{!this}" action="{!c.doInIt}"></aura:handler>
+    <aura:attribute name="isOpen" type="boolean" default="false"/>
+    <aura:attribute name="selectedOptionListFL" type="List"></aura:attribute> 
+    <aura:attribute name="selectedOptionListBL" type="List"></aura:attribute> 
+    <aura:attribute name="optionsFL" type="List" />
+    <aura:attribute name="optionsBL" type="List" />
+    
+    <lightning:button variant="brand"
+                      label="Trainings"
+                      onclick="{! c.openModel }" />   
+    <aura:if isTrue="{!v.isOpen}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close"
+                                          onclick="{! c.closeModelIcon}"
+                                          alternativeText="close"
+                                          variant="bare-inverse"
+                                          class="slds-modal__close"/>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Training Need Identification</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <p>
+                        <lightning:dualListbox name="FunctionalLearnings"  
+                           label= "Training Needs Functional" 
+                           sourceLabel="All Learnings" 
+                           selectedLabel="Recommended Learnings"
+                           options="{!v.optionsFL}" 
+                           value="{!v.selectedOptionListFL}"
+                           onchange="{! c.handleChangeFL }"
+                           max="2"
+                           messageWhenRangeOverflow="User can select upto 2 trainings."/>
+                         <div id ="functionalErrorBox" style="color: red;"></div>
+                    </p>
+                
+                    <p>
+                        <lightning:dualListbox name="BehaviouralLearnings"  
+                           label= "Trainings Needs Behavioural" 
+                           sourceLabel="All Learnings" 
+                           selectedLabel="Recommended Learnings"
+                           options="{!v.optionsBL}" 
+                           value="{!v.selectedOptionListBL}"
+                           onchange="{! c.handleChangeBL }"  
+                           max="2"
+                           messageWhenRangeOverflow="User can select upto 2 trainings."
+                           />
+                        <div id ="behaviouralErrorBox" style="color: red;"></div>
+                    </p>
+                    <p><br></br></p>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral" 
+                                      label="Submit"
+                                      title="Submit"
+                                      onclick="{! c.closeModel }"/>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+</aura:component>

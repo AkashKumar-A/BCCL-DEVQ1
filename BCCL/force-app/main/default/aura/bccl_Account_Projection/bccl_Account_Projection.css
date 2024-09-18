@@ -1,0 +1,17 @@
+.THIS .myCustomClass input { 
+    width: 100%;
+}
+
+/*.THIS .slds-modal__container {
+    max-width: 90rem !important;
+    width: 90% !important;
+}*/
+
+.THIS .Custom_td {
+    
+    padding: 0px 10px;
+}
+
+.THIS .uiScrollerWrapper.scrollable {
+    overflow: hidden;
+}

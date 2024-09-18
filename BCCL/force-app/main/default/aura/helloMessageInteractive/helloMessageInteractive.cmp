@@ -1,0 +1,49 @@
+<aura:component>
+<aura:attribute name="message" type="String"></aura:attribute>
+<aura:attribute name="newaccount" type="Account"  default="{ 'sobjectType': 'Account','Name': '' ,'Unique_Code__c ':'','BillingStreet':''}" ></aura:attribute>
+
+
+<lightning:layout class="slds-page-header slds-page-header_object-home">
+    <lightning:layoutItem>
+            <lightning:icon iconName="standard:scan_card" alternativeText="My Expenses"/>
+      </lightning:layoutItem>
+
+
+      <lightning:layoutItem padding="horizontal-small">
+            <div class="page-section page-header">
+                <h1 class="slds-text-heading_label">Expenses</h1>
+                <h2 class="slds-text-heading_medium">My Expenses</h2>
+            </div>
+        </lightning:layoutItem>
+ 
+
+<div aria-labelledby="newexpenseform">
+   
+        <form class="slds-form_stacked">
+            <lightning:input aura:id="expenseform" label="Account Name"
+                             name="accountname"
+                             value="{!v.newaccount.Name}"
+                             required="true"  placeholder="ABC Co."/>
+
+                             <lightning:input aura:id="expenseform" label="Sap Code"
+                             name="sapcoode"
+                             value="{!v.newaccount.Unique_Code__c}"
+                             required="true"/>      
+
+                             <lightning:input aura:id="expenseform" label="Address"
+                             name="address"
+                             value="{!v.newaccount.BillingStreet}"
+                             required="true"/>      
+                             
+                             <lightning:button label="Create Account"
+                              class="slds-var-m-top_medium"
+                              variant="brand"
+                              onclick="{!c.clickCreate}"/>
+
+        </form>               
+    
+</div>   
+
+</lightning:layout>
+
+</aura:component>

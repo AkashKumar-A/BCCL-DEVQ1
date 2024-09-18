@@ -1,0 +1,14 @@
+<aura:component controller="rsp_CreateSchemeMembers" implements="force:lightningQuickAction,force:hasRecordId" >
+    <aura:handler name="init" action="{!c.doinit}" value="{!this}"/>
+    <aura:attribute name="showWarning" type="Boolean"/>
+    <aura:if isTrue="{!v.showWarning}">
+        <ui:message title="warning" severity="warning" closable="fasle">
+            There already exits Scheme Members for this Reward. If you want too create new one's 
+            click Continue else click Cancel.
+        </ui:message>
+        <!--<lightning:button variant="brand" label="Cancel" title="Cancel" 
+                          onclick="{! c.closeQuickAction }" />-->
+        <lightning:button variant="brand" label="Continue" title="Continue" iconPosition="right"
+                          onclick="{! c.createNewSchemeMemebers }" />
+    </aura:if>
+</aura:component>

@@ -1,0 +1,55 @@
+<aura:component >
+    <aura:attribute name="groupings" type="Object[]"/>
+    <aura:attribute name="level" type="Integer" description="holds level of grouping so we know which grouping to access"/>
+    <aura:attribute name="groupingLevelToLabel" type="Object" description="groupings by level"/>
+    <aura:attribute name="factMap" type="Object" description="row data from report"/>
+    <aura:attribute name="fieldLabel" type="String" description="label for grouping for display"/>
+    <aura:attribute name="numColumns" type="Integer" description="number of columns to display so we can make our td wide enough"/>
+    <aura:attribute name="targetReportIdAttribute" type="String" description="Id for the report to display"/>
+    <aura:attribute name="Column1" type="Boolean" description="test"/>
+    <aura:attribute name="Column2" type="Boolean" description="test"/>
+    <aura:attribute name="Column3" type="Boolean" description="test"/>
+    <aura:attribute name="Column4" type="Boolean" description="test"/>
+    <aura:attribute name="Column5" type="Boolean" description="test"/>
+    <aura:attribute name="Column6" type="Boolean" description="test"/>
+    <aura:attribute name="Column7" type="Boolean" description="test"/>
+    <aura:attribute name="Column8" type="Boolean" description="test"/>
+    <aura:attribute name="Sequence" type="string" description="Enter sequence with comma separated value like 4,5,1,2"/>
+    <aura:attribute name="title1" type="string" description="test"/>
+    <aura:attribute name="title2" type="string" description="test"/>
+    <aura:attribute name="title3" type="string" description="test"/>
+    <aura:attribute name="title4" type="string" description="test"/>
+    <aura:attribute name="title5" type="string" description="test"/>
+    <aura:attribute name="title6" type="string" description="test"/>
+    <aura:attribute name="title7" type="string" description="test"/>
+    <aura:attribute name="title8" type="string" description="test"/>
+    <aura:attribute name="columnLabels" type="String[]" description="Labels of columns, order is assumed"/>
+    
+    <!-- handlers to load data, things aren't always ready on load, so also adding listeners when initial data is ready -->
+    <aura:handler name="init" action="c.setLabel" value="{!this}"/>
+    <aura:handler name="change" action="c.setLabel" value="{!v.groupingLevelToLabel}"/>
+    <aura:handler name="change" action="c.setLabel" value="{!v.factMap}"/>
+    <aura:handler name="change" action="c.setLabel" value="{!v.Column1}"/>
+    <aura:iteration items="{!v.groupings}" var="aGrouping" end="1">
+        <tr class="{!'level-row-'+v.level}">
+            <!-- quick way to check if this is a lookup field so we can handle differently -->
+         <!--   <td colspan="{!v.numColumns}" class="{!'level-col-'+v.level}">
+                <span class="fieldLabel">{!v.fieldLabel}</span> : 
+                <aura:if isTrue="{! (aGrouping.value != aGrouping.label) &amp;&amp; (aGrouping.value.length == 15 || aGrouping.value.length == 18)}">
+                    <a href="{!'/'+aGrouping.value}" target="_blank">{!aGrouping.label}</a>
+                    <aura:set attribute="else">
+                        {!aGrouping.label}
+                    </aura:set>
+                </aura:if> 
+            </td>-->
+        </tr>
+        <!-- if the are more groupings, recurse downwards -->
+        <aura:renderIf isTrue="{!aGrouping.groupings != null }">
+            <c:ReportGroupingManual numColumns="{!v.numColumns}" groupings="{!aGrouping.groupings}" level="{!v.level+1}" groupingLevelToLabel="{!v.groupingLevelToLabel}" factMap="{!v.factMap}" Column1="{!v.Column1}" Column2="{!v.Column2}" Column3="{!v.Column3}" Column4="{!v.Column4}" Column5="{!v.Column5}" Column6="{!v.Column6}" Column7="{!v.Column7}" Column8="{!v.Column8}" Sequence="{!v.Sequence}" title1="{!v.title1}" title2="{!v.title2}" title3="{!v.title3}" title4="{!v.title4}" title5="{!v.title5}" title6="{!v.title6}" title7="{!v.title7}" title8="{!v.title8}" columnLabels="{!v.columnLabels}"  targetReportIdAttribute="{!v.targetReportIdAttribute}"/>
+        </aura:renderIf>
+        <!-- else just show row data -->
+        <aura:renderIf isTrue="{!aGrouping.groupings == null }">
+            <c:GroupingDataCellsManual groupingKey="{!aGrouping.key}" factMap="{!v.factMap}" Column1="{!v.Column1}" Column2="{!v.Column2}" Column3="{!v.Column3}" Column4="{!v.Column4}" Column5="{!v.Column5}" Column6="{!v.Column6}" Column7="{!v.Column7}" Column8="{!v.Column8}" Sequence="{!v.Sequence}" title1="{!v.title1}" title2="{!v.title2}" title3="{!v.title3}" title4="{!v.title4}" title5="{!v.title5}" title6="{!v.title6}" title7="{!v.title7}" title8="{!v.title8}" columnLabels="{!v.columnLabels}"  targetReportIdAttribute="{!v.targetReportIdAttribute}"/>
+        </aura:renderIf>
+    </aura:iteration>
+</aura:component>

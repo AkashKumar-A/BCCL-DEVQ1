@@ -1,0 +1,20 @@
+<template>
+    <lightning-card class="slds-var-m-around_medium" variant="Narrow"  title="Images selection" icon-name="standard:lead">
+      <!-- <lightning-combobox class="slds-var-m-around_medium"
+            name="progress"
+            label="Select Name"
+            value={selectedValue}
+            placeholder="Select Progress"
+            options={listImageLabel}
+            onchange={selectedHandler} >
+        </lightning-combobox> -->
+        <lightning-input class="slds-var-m-around_medium"
+            label="Enter Image Name"
+            value={selectedvalue}
+            onchange={selectedHandler}
+            ></lightning-input>
+        <img class="slds-var-m-around_medium" style="max-height: 100px" src={imageurl} />
+        </br>
+        <lightning-button class="slds-var-m-around_medium" label="Save Image" onclick={saveHandle}></lightning-button>
+    </lightning-card>
+</template>

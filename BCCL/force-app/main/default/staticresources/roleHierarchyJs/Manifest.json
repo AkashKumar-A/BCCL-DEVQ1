@@ -1,0 +1,8 @@
+{
+    "landing-pages" : [
+        {
+            "path": "htmlRole.html",
+            "content-security-policy-type": "Minimum"
+        }
+    ]
+ }

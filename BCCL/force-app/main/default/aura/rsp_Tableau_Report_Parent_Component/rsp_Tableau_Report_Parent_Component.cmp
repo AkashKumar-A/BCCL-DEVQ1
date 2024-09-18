@@ -1,0 +1,18 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:attribute type="Boolean" name ="truthy" default="flase"/>
+    <!--Header Part-->        
+    <div class="slds-page-header">
+        <center><h1 class="slds-page-header__title">Tableau Reports</h1></center> 
+    </div>
+    <div class="myTest" title="testTitle" >
+        <a onclick="{!c.showReport1}"> Report 1</a>
+    </div>
+   
+    <aura:renderIf isTrue="{!v.truthy}">
+    <c:rsp_TableauComponent recordId="001O000001PAX4Q"/>
+    <aura:set attribute="else">
+      
+    </aura:set>
+  </aura:renderIf> 
+    
+</aura:component>

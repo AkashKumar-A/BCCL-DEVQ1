@@ -1,0 +1,11 @@
+<aura:interface description="Interface template">
+	<aura:attribute name="productData" type="Product2"/>
+    <aura:attribute name="productWrapperRecord" type="rsp_AddProductforOpp.ProductWrapper"/>
+    <aura:attribute name="picklistValues" type="Object"/>
+    <aura:attribute name="rowIndex" type="String"/>
+    <aura:attribute name="id" type="String"/>
+    <aura:attribute name="showFieldsForCustom" type="Boolean" default="false"/>
+    <aura:attribute name="addSizepicklistValues" type="Object"/>
+	<aura:attribute name="packageImage" type="String"/>
+    <aura:attribute name="indiCustomSettings" type="rsp_Global_Setting__c"/>
+</aura:interface>

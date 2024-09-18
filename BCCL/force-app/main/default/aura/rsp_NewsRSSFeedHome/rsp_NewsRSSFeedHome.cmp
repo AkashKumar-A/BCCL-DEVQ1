@@ -1,0 +1,50 @@
+<aura:component Controller="rsp_NewsRSSFeedHomeHandler" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:handler name="init"
+                  value="{!this}" 
+                  action="{!c.doInit}"/>
+				  
+    <aura:attribute name = "wrapLst" type = "rsp_NewsRSSFeedHomeHandler.wrapItemData[]"/>
+    <aura:attribute name="ChatterTitle" type="String" />
+    
+    <div  class = "slds-scrollable,headcss">
+        <h3 class="headcss2"><Strong>RSS News Feed</Strong></h3>
+        <div class="slds-grid slds-gutters uptCls">
+		 <aura:if isTrue="{!and(v.wrapLst , v.wrapLst.length > 0)}">
+            <aura:iteration items="{!v.wrapLst}" var="item" indexVar = "index">
+                <div class="slds-col">
+                    <span>
+						<lightning:card>
+							<aura:set attribute="body">
+								<p>                        
+									<a href="{!item.link}" target="_blank">
+										<b>  <ui:outputText value="{!item.title}" /> </b>
+									</a>
+								</p><br/>
+								<img src="{!item.image}" class="newsImage" align="middle" alt ="" height="" width=""/>
+								<div id="{!index}"
+									 onclick="{!c.createFeedPost}">
+									<lightning:icon iconName="utility:share"
+													size="xx-small"
+													title="share"
+													class="slds-icon-share" />
+								</div>
+							</aura:set>
+							<aura:set attribute="footer">
+								&nbsp;
+							</aura:set>
+						</lightning:card>
+					</span>
+                </div>
+            </aura:iteration>
+			<aura:set attribute="else">
+                <lightning:card>
+                    No News Found For Home .
+                </lightning:card>
+            </aura:set>
+             
+		</aura:if>
+        </div>
+    </div>
+    
+    
+</aura:component>

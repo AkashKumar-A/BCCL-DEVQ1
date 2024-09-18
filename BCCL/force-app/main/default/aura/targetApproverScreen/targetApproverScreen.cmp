@@ -1,0 +1,66 @@
+<aura:component 
+    controller="rsp_targetApproverScreenController"
+    implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" 
+    access="global"
+>
+    <aura:attribute name="showTargetComponent" type="boolean" />
+    <aura:attribute name="target" type="Object" />
+    <aura:attribute name="tempClasses" type="Object" />
+    <aura:attribute name="showCC" type="boolean" />
+
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <aura:if isTrue="{!v.showTargetComponent}">
+        <lightning:card title="Monthly Target Details">
+            <table class="slds-table slds-table_cell-buffer slds-table_header-hidden slds-table_bordered">
+                <tbody>
+                    <tr class="slds-hint-parent">
+                        <td class="make-bold">Month:</td>
+                        <td>{!v.target.month}</td>
+                    </tr>
+                    <tr class="slds-hint-parent">
+                        <td class="make-bold">Role Name:</td>
+                        <td>{!v.target.roleName}</td>
+                    </tr>
+                    <tr class="slds-hint-parent">
+                        <td class="make-bold">KRA Name:</td>
+                        <td>{!v.target.kraName}</td>
+                    </tr>
+                    <tr class="slds-hint-parent make-green">
+                        <td class="make-bold">Approved Response Revenue Target:</td>
+                        <td>{!v.target.assigned/100000 ? v.target.assigned/100000 : 0} Lacs</td>
+                    </tr>
+                    <tr class="{!'slds-hint-parent ' + v.tempClasses.assigned}">
+                        <td class="make-bold">Submitted Response Revenue Target:</td>
+                        <td>{!v.target.tempAssigned/100000 ? v.target.tempAssigned/100000 : 0} Lacs</td>
+                    </tr>
+                    <tr class="slds-hint-parent make-green">
+                        <td class="make-bold">Approved TIL Target:</td>
+                        <td>{!v.target.assignedTIL/100000 ? v.target.assignedTIL/100000 : 0} Lacs</td>
+                    </tr>
+                    <tr class="{!'slds-hint-parent ' + v.tempClasses.til}">
+                        <td class="make-bold">Submitted TIL Target:</td>
+                        <td>{!v.target.tempAssignedTIL/100000 ? v.target.tempAssignedTIL/100000 : 0} Lacs</td>
+                    </tr>
+                    <aura:iteration items="{!v.target.KPIs}" var="kpi">
+                        <tr class="slds-hint-parent make-green">
+                            <td class="make-bold">Approved {!kpi.KPIName} Target:</td>
+                            <td>{!kpi.approved/100000} Lacs</td>
+                        </tr>
+                        <tr class="{!'slds-hint-parent ' + kpi.class}">
+                            <td class="make-bold">Submitted {!kpi.KPIName} Target:</td>
+                            <td>{!kpi.value/100000} Lacs</td>
+                        </tr>
+                    </aura:iteration>
+                    <aura:if isTrue="{!v.showCC}">
+                        <tr class="slds-hint-parent make-red">
+                            <td class="make-bold">Target Client Count:</td>
+                            <td>{!v.target.clientCount ? v.target.clientCount : 0}</td>
+                        </tr>
+                    </aura:if>
+                </tbody>
+            </table>
+        </lightning:card>
+    </aura:if>
+</aura:component>

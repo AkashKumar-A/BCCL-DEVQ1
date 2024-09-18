@@ -1,0 +1,301 @@
+<aura:component implements="force:appHostable,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction,lightning:actionOverride" access="global"  
+                controller="rsp_ServiceAssignTargetNonDevelopment">
+    
+    <aura:attribute name="geographyList" type="Object[]"/>
+    <aura:attribute name="roleList" type="Object[]"/>
+    <aura:attribute name="fiscalList" type="Object[]"/>
+    <aura:attribute name="selectedGeography" type="string"/>
+    <aura:attribute name="selectedRole" type="string"/>
+    <aura:attribute name="selectedFiscalYr" type="string"/>
+    <aura:attribute name="showDatePicklist" type="boolean"/>
+    <aura:attribute name="onRoleChange" type="boolean"/>
+    <aura:attribute name="allowSubmition" type="boolean"/>
+    <aura:attribute name="showAlreadyTargetExitsTable" type="boolean" default="false"/>
+    <aura:attribute name="showTargetTable" type="boolean" default="false"/>
+    <aura:attribute name="lstApprovedTargets" type="Object[]"/>
+    <aura:attribute name="lstTargets" type="Object[]"/>
+    <aura:attribute name="lstDeletedTargets" type="Object[]"/>
+    <aura:attribute name="KRAMaster" type="Object"/>
+    <aura:attribute name="ProfileName" type="string" access="PRIVATE"/>
+    
+    
+    
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <div class="c-container">
+        
+        <h2 class="tableHeading">Goal Setting</h2>
+        <div class="slds-grid slds-wrap">
+            
+            <div class="slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-3">
+                <!--
+                                                           Show Geography List 
+                                                -->
+                <lightning:layoutItem padding="around-small">
+                    <lightning:select name="Function " label="Select Function:" aura:id="geographyName" 
+                                      value="{!v.selectedGeography}" onchange="{!c.onGeographyChange}">
+                        <option value="" text="--NONE--"></option>
+                        <aura:iteration items="{!v.geographyList}" var="geography">
+                            <option value="{!geography}" text="{!geography}"></option>
+                        </aura:iteration>
+                    </lightning:select>
+                </lightning:layoutItem>
+            </div>
+            <div class="slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-3">
+                <lightning:layoutItem padding="around-small">
+                    <lightning:select name="roleName" label="Select Role:" aura:id="roleId" value="{!v.selectedRole}"
+                                      disabled="{!v.disableRole}" onchange="{!c.onRoleChange}">
+                        <option value="" text="--NONE--"></option>
+                        <aura:iteration items="{!v.roleList}" var="role">
+                            <option value="{!role.Id}" text="{!role.Name}"></option>
+                        </aura:iteration>
+                    </lightning:select>
+                </lightning:layoutItem>
+            </div>
+            <div class="slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-3">
+                <lightning:layoutItem padding="around-small">
+                    <aura:if isTrue="{!v.showDatePicklist}">
+                        <lightning:select name="Fiscal Year" label="Select Fiscal Year:" aura:id="fiscalId" value="{!v.selectedFiscalYr}"
+                                          disabled="{!v.disableRole}" >
+                            <option value="" text="--NONE--"></option>
+                            <aura:iteration items="{!v.fiscalList}" var="fiscalYr">
+                                <option value="{!fiscalYr}" text="{!fiscalYr}"></option>
+                            </aura:iteration>
+                        </lightning:select>
+                    </aura:if>
+                </lightning:layoutItem>
+            </div>
+            <br /><br /><br />
+            
+        </div>
+        <div class="cstm_align_txt">
+            <div class="slds-button-group" >
+                <lightning:layoutItem padding="around-small">  
+                    <lightning:button variant="brand" label="Reset" title="Reset"
+                                      onclick="{!c.resetData}" />
+                </lightning:layoutItem>
+                <lightning:layoutItem padding="around-small">  
+                    <lightning:button variant="brand" label="Goal Setting" title="Goal Setting"
+                                      onclick="{!c.setTarget}" />
+                </lightning:layoutItem>
+            </div>
+        </div>
+        
+       <!-- <div style="width:100%; height:1px; background-color:#C9C7C5"></div>-->
+    
+        <!--<div class="">
+             <div class="">
+            <aura:if isTrue="{!v.showAlreadyTargetExitsTable}">
+                <center><div class="slds-text-heading_medium"><b>Target Already Exists</b></div></center>
+                <br></br><br></br>
+                <div class="tableScroll responsiveTable ">
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_col-bordered">
+                        <thead>
+                            <tr class="slds-text-title_caps">
+                                <th scope="col">
+                                    <div class="slds-truncate" title="KRA Name"><b>KRA Behaviour</b></div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Individual Target Value"><b>Measures</b></div>
+                                </th> 
+                                <th scope="col">
+                                    <div class="slds-truncate" title="End Date"><b>Weightage</b></div>
+                                </th> 
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Individual Target Value"><b>Performance Standard</b></div>
+                                </th> 
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Approval Status">Approval Status</div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:iteration items="{!v.lstApprovedTargets}" var="EachRowData" indexVar="key">
+                                <tr>                        
+                                    <td data-label="">
+                                        <div class="slds-truncate" title="{!EachRowData.kraName}">
+                                            {!EachRowData.KRABehaviour}</div>
+                                    </td>
+                                    <td data-label="">
+                                        <div class="slds-truncate" title="{!EachRowData.strMeasures}">
+                                            {!EachRowData.strMeasures}
+                                        </div>
+                                    </td>
+                                    <td data-label="">
+                                        <div class="slds-truncate" title="{!EachRowData.weightage}">
+                                            {!EachRowData.weightage}
+                                        </div>
+                                    </td>
+                                    <td data-label="">
+                                        <div class="slds-truncate" title="{!EachRowData.performanceStandard}">
+                                            {!EachRowData.performanceStandard}
+                                        </div>
+                                    </td>
+                                    <td data-label="">
+                                        <div class="slds-truncate" title="{!EachRowData.approvalStatus}">
+                                            {!EachRowData.approvalStatus}
+                                        </div>
+                                    </td>
+                                </tr>                            
+                            </aura:iteration>
+                        </tbody>
+                    </table>
+                    
+                
+                </div>
+            </aura:if>
+        </div> 
+            
+            <div class="">-->
+                <div class="tableScroll responsiveTable ">
+                    <aura:if isTrue="{!v.showAlreadyTargetExitsTable}">
+                        <div class="slds-size_1-of-1 slds-grid slds-wrap">
+                            <div class="slds-text-heading_medium  slds-size_1-of-1 slds-text-align_center slds-p-around_large"><b>Target Already Exists</b></div>
+                            <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_col-bordered">
+                                <thead>
+                                    <tr class="slds-text-title_caps">
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="KRA Behaviour"><b>KRA Behaviour</b></div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Individual Target Value"><b>Measures</b></div>
+                                        </th> 
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Weightage"><b>Weightage</b></div>
+                                        </th> 
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Individual Target Value"><b>Performance Standard</b></div>
+                                        </th> 
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Approval Status">Approval Status</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:iteration items="{!v.lstApprovedTargets}" var="EachRowData" indexVar="key">
+                                        <tr>                        
+                                            <td data-label="">
+                                                <div class="slds-truncate" title="{!EachRowData.kraName}">
+                                                    {!EachRowData.KRABehaviour}</div>
+                                            </td>
+                                            <td data-label="">
+                                                <div class="slds-truncate" title="{!EachRowData.strMeasures}">
+                                                    {!EachRowData.strMeasures}
+                                                </div>
+                                            </td>
+                                            <td data-label="">
+                                                <div class="slds-truncate" title="{!EachRowData.weightage}">
+                                                    {!EachRowData.weightage}
+                                                </div>
+                                            </td>
+                                            <td data-label="">
+                                                <div class="slds-truncate" title="{!EachRowData.performanceStandard}">
+                                                    {!EachRowData.performanceStandard}
+                                                </div>
+                                            </td>
+                                            <td data-label="">
+                                                <div class="slds-truncate" title="{!EachRowData.approvalStatus}">
+                                                    {!EachRowData.approvalStatus}
+                                                </div>
+                                            </td>
+                                        </tr>                            
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                            
+                        </div>
+                    </aura:if>
+                    <aura:if isTrue="{!v.showTargetTable}">
+                        <div class="slds-size_1-of-1 slds-grid slds-wrap">
+                            <div class="slds-text-heading_medium slds-size_1-of-1 slds-text-align_center slds-p-around_large"><b>Target Assignment</b></div>
+                            <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_col-bordered">
+                                <thead>
+                                    <tr class="slds-text-title_caps">
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="KRA Behaviour"><b>KRA Behaviour</b></div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Measures"><b>Measures</b></div>
+                                        </th> 
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Weightage"><b>Weightage</b></div>
+                                        </th> 
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Performance Standard"><b>Performance Standard</b></div>
+                                        </th> 
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Actions">Actions</div>
+                                        </th>
+                                        
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:iteration items="{!v.lstTargets}" var="EachRowData" indexVar="index">
+                                        <tr>                        
+                                            <td data-label="">
+                                                <div class="slds-truncate" title="{!EachRowData.kraName}">
+                                                    <lightning:Input type="text" value="{!EachRowData.KRABehaviour}"  disabled ="true"/> 
+                                                </div>
+                                            </td>
+                                            <td data-label="">
+                                                <div class="slds-truncate" title="{!EachRowData.strMeasures}">
+                                                    <lightning:Input type="text" value="{!EachRowData.strMeasures}"  disabled ="{!or(index == 0,EachRowData.isTargetExists)}"/>
+                                                    
+                                                </div>
+                                            </td>
+                                            <td data-label="">
+                                                <div class="slds-truncate inputNum" title="{!EachRowData.weightage}">
+                                                    <lightning:input type="number" value="{!EachRowData.weightage}" min="0"
+                                                                     label="" required ="true"
+                                                                     variant="label-hidden" step="0.01" disabled ="{!or(index == 0,EachRowData.isTargetExists)}"/>
+                                                </div>
+                                            </td>
+                                            <td data-label="">
+                                                <div class="slds-truncate" title="{!EachRowData.performanceStandard}">
+                                                    <lightning:Input  type="text" value="{!EachRowData.performanceStandard}"  disabled ="{!or(index == 0,EachRowData.isTargetExists)}"/>
+                                                    
+                                                </div>
+                                            </td>
+                                            <td data-label="">
+                                                <!-- <aura:if isTrue="{!index == 0}">
+                                            <a onclick="{!c.AddNewRow}" id="{!index}">
+                                              <lightning:icon iconName="utility:add" class="slds-icon slds-icon_small" size="small" alternativeText="add"/>
+                                              <span class="slds-assistive-text">Add Icon</span>
+                                            </a> 
+                                          </aura:if>-->
+                                                <aura:if isTrue="{!and(index != 0,EachRowData.isTargetExists==false)}">	
+                                                    
+                                                    <a onclick="{!c.removeRow}" id="{!index}" >
+                                                        <lightning:icon  iconName="utility:delete" class="slds-icon slds-icon_small" size="small" alternativeText="icon"/>
+                                                        <span class="slds-assistive-text">Delete Icon</span>
+                                                    </a>
+                                                    
+                                                </aura:if>
+                                            </td>
+                                        </tr>                            
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                        </div>
+                    </aura:if>
+                </div>
+         <aura:if isTrue="{!v.allowSubmition}">
+        <div class="footer-to-be-fixed custombottom">
+            <div class="slds-text-align_center slds-p-around_medium">
+                <lightning:button variant="brand" label="Add" 
+                                  title="Add" disabled="{!v.showSaveTargetbtn}"
+                                  onclick="{!c.AddNewRow}" />
+                
+                <lightning:button variant="brand" label="Save and Submit for Approval" 
+                                  title="Save and Submit for Approval" disabled="{!v.showSaveTargetbtn}"
+                                  onclick="{!c.saveTargets}" />
+                <lightning:spinner aura:id="mySpinner" alternativeText="Loading.." title="Loading.." variant="brand" size="large" class="slds-hide"/>
+            </div>
+        </div>
+    </aura:if>
+            </div>
+     <!--   </div>
+    </div>-->
+   
+</aura:component>

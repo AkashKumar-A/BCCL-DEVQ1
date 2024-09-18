@@ -1,0 +1,4 @@
+<aura:event type="COMPONENT" description="Event template" >
+    <aura:attribute name="currentIndexRow" type="String"/>
+    <aura:attribute name="currentIndexVisible" type="Boolean"/>
+</aura:event>

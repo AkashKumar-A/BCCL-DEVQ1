@@ -1,0 +1,104 @@
+<!--
+Child Lightning Component for Create New Row for each table
+-->
+<aura:component >
+
+    <aura:attribute name="oppProjection" type="rsp_Opportunity_Projection__c" default="{'sobjectType':'rsp_Opportunity_Projection__c'}" />
+    <aura:attribute name="rowIndex" type="String"/>
+    <aura:attribute name="totalAmount" type="Decimal"/>
+    <aura:attribute name="totalPercentage" type="Integer" default="0"/>
+    <aura:attribute name="oppProjectionListChild" type="rsp_Opportunity_Projection__c[]"/>
+    <aura:attribute name="opportunityChild" type="Opportunity"/>
+    <aura:attribute name="estimatedAmount" type="Decimal"/>
+    <aura:attribute name="isViewMode" type="Boolean" default="false"/>
+    <aura:attribute name="selectedFrequency" type="String" />
+
+    <!--
+     Table Row
+     -->
+    <aura:if isTrue="{!v.selectedFrequency =='Monthly'}">
+        <tr class="slds-hint-parent">
+            <td class="slds-truncate" >
+
+                {!v.oppProjection.rsp_Month_Text__c}
+            </td>
+            <td class="slds-truncate wrapCont cstm_white_space" >
+                {!v.oppProjection.rsp_Date_Range__c}
+            </td>
+            <td class="slds-truncate" >
+                <lightning:input aura-id="percentId" label=" " variant="label-hidden" name="percent" type="number"
+                                 min="0" max="100"
+                                 value="{!v.oppProjection.rsp_Realization_percent__c}"
+                                 formatter="percent-fixed" step="1"
+                                 onblur="{!c.calculatePercent}"
+                                 onchange="{!c.calculateAmount}"
+                                 disabled="{!v.isViewMode}" />
+            </td>
+            <td class="slds-truncate " >
+                <lightning:input label=" " aura-id="realisationAmountId" disabled="true" type="number" name="amount"
+                                 variant="label-hidden" value="{!v.oppProjection.rsp_Realisation_Amount1__c}"
+                                 step=".01" />
+
+
+            </td>
+        </tr>
+    </aura:if>
+    <aura:if isTrue="{!v.selectedFrequency =='Weekly'}">
+        <tr class="slds-hint-parent">
+            <td class="slds-truncate" >
+                <aura:if isTrue="{!v.oppProjection.rsp_Month_Week_Count__c ==1}">
+                    {!v.oppProjection.rsp_Month_Text__c}
+                </aura:if>
+            </td>
+            <td class="slds-truncate wrapCont" style="white-space:normal">
+                W-{!v.oppProjection.rsp_Week_No__c}
+            </td>
+            <!--<td class="slds-truncate" >
+                {!v.oppProjection.rsp_Week_Start_Date_Text__c}
+            </td>
+            <td class="slds-truncate" >
+                {!v.oppProjection.rsp_Week_End_Date_Text__c}
+            </td>-->
+            <td class="slds-truncate">
+            {!v.oppProjection.rsp_Date_Range_Short__c}
+            </td>
+
+            <!--<td class="slds-truncate wrapCont" style="white-space:normal">
+                {!v.oppProjection.rsp_No_of_Days_In_Week__c}
+            </td>-->
+            <td class="slds-truncate">
+                <lightning:input aura:id="percentId" label=" " variant="label-hidden" name="percent" type="number"
+                                 min="0" max="100"
+                                 value="{!v.oppProjection.rsp_Realization_percent__c}"
+                                 formatter="percent-fixed" step="1"
+                                 onblur="{!c.calculatePercent}"
+                                 onchange="{!c.calculateAmount}"
+                                 disabled="{!or(v.isViewMode,v.oppProjection.isViewModeForPreviousWeek)}" />
+            </td>
+            <td class="slds-truncate " >
+                <lightning:input label=" " aura-id="realisationAmountId" disabled="true" type="number" name="amount"
+                                 variant="label-hidden" value="{!v.oppProjection.rsp_Realisation_Amount1__c}"
+                                 step=".01" />
+            </td>
+        </tr>
+        <aura:if isTrue="{!v.oppProjection.rsp_Monthly_Amount__c != null}">
+        <tr class="slds-hint-parent">
+        <td class="slds-truncate"></td>
+            
+            <td class="slds-truncate"></td>
+            <td class="slds-truncate"></td>
+            <td class="slds-truncate">
+            <!--<lightning:input label=" " aura-id="totalPercentage" disabled="true" type="number" name="amount"
+                                 variant="label-hidden" />-->
+                
+                <b>Total :{!v.oppProjection.rsp_Monthly_Percentage__c}%</b>
+            </td>
+            <td class="slds-truncate">
+            <!--<lightning:input label=" " aura-id="totalPercentage" disabled="true" type="number" name="amount"
+                                 variant="label-hidden" />-->
+                <b>Total :{!v.oppProjection.rsp_Monthly_Amount__c} lacs</b>
+            </td>
+        </tr>
+       </aura:if>
+    </aura:if>
+</aura:component>

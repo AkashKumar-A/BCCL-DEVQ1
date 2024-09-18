@@ -1,0 +1,7 @@
+<aura:component>
+<aura:attribute name="message" type="String" ></aura:attribute>
+<aura:attribute  name="mylist" type="List" default="['one','two','three']" > </aura:attribute>
+  <lightning:button label="You look nice today."
+            onClick="{!c.handleRequest}"/> 
+ <p>The message {!v.message}</p>
+</aura:component>

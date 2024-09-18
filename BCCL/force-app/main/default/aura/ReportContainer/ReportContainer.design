@@ -1,0 +1,33 @@
+<design:component >
+	<design:attribute name="reportIdAttribute" label="Report ID" description="Use the ID of the report that you want to display. Make sure the user has access to it"/>
+    
+    
+     <design:attribute name="searchCriteria" label="Search By" datasource="apex://ReportContainerCustomPickList" default="Price" 
+                       description="Search for similar houses based on what criteria?" />
+    
+    <design:attribute name="Column1" label="Column 1" description="test"/>
+    <design:attribute name="title1" label="Title 1" description="test"/>
+
+    <design:attribute name="Column2" label="Column 2" description="test"/>    
+    <design:attribute name="title2" label="Title 2" description="test"/>
+
+    <design:attribute name="Column3" label="Column 3" description="test"/>    
+    <design:attribute name="title3" label="Title 3" description="test"/>
+
+    <design:attribute name="Column4" label="Column 4" description="test"/>    
+    <design:attribute name="title4" label="Title 4" description="test"/>
+
+    <design:attribute name="Column5" label="Column 5" description="test"/>    
+    <design:attribute name="title5" label="Title 5" description="test"/>
+
+    <design:attribute name="Column6" label="Column 6" description="test"/>    
+    <design:attribute name="title6" label="Title 6" description="test"/>
+    
+    <design:attribute name="Column7" label="Column 7" description="test"/>    
+    <design:attribute name="title7" label="Title 7" description="test"/>
+    
+    <design:attribute name="Column8" label="Column 8" description="test"/>    
+    <design:attribute name="title8" label="Title 8" description="test"/>
+
+
+</design:component>

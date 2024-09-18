@@ -1,0 +1,37 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global" 
+                controller = "rsp_updateOpportunityVerticalService">
+    <aura:attribute name="oppRecord" 
+                    type="opportunity"
+                     default="{ 'sobjectType': 'Opportunity'}"/>
+    <aura:attribute name="recordId" 
+                    type="String"/>
+    <aura:attribute name="errorMessage" 
+                    type="String"/>
+    <div class="slds-page-header">
+        <center><h1 class="slds-page-header__title">Update Vertical And Owner</h1></center>
+    </div>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:registerEvent name="oSelectedRecordEvent" type="c:rspLookUpEvent"/>
+    <aura:if isTrue = "{!v.errorMessage}">
+    <p style = "color:red">{!v.errorMessage}</p>
+    </aura:if>
+    <c:rspLookUp IconName="standard:user"                 
+                 label = ""
+                 indexNumber = ""
+                 errorMessage = "{!v.errorMessage}"
+                 aura:id = "userLookupId"                
+                 placeHolder = "Search User.."
+                 filterCondition = "select Id,name,Email from user where isActive = true  and Name like : searchKey limit 5"  />
+    <c:rspLookUp IconName="standard:user"
+                 label = ""
+                 indexNumber = ""
+                 errorMessage = "{!v.errorMessage}"
+                 aura:id = "verticalLookupId"                                 
+                 placeHolder = "Search Vertical.."
+                 filterCondition = "select Id,name from rsp_Vertical__c where rsp_IsActive__c = true and Name like : searchKey limit 5"  />
+    <br/>
+    <lightning:button class = "slds-align_right" variant="brand" label="Update"
+                      title="Update"
+                      onclick="{!c.updateOwner}"
+                      disabled="{!v.isViewMode}"/>
+</aura:component>

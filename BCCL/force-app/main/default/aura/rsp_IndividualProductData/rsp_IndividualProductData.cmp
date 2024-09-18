@@ -1,0 +1,228 @@
+<aura:component implements="c:rsp_IndividualProductDataInterface">
+    
+    <aura:handler name="init" action="{!c.setindividualRowData}" value="{!this}"/>
+    <aura:registerEvent name="removeProductRow" type="c:rsp_deleteProductEvent"/>
+    <aura:registerEvent name="UpdatePositionValues" type="c:rsp_UpdateAdPostionValueToAllRows"/>
+    <aura:registerEvent name="UpdateSizeValues" type="c:rsp_UpdateAdSizeValueToAllRows"/>
+    <aura:registerEvent name="UpdateSizeheightValues" type="c:rsp_UpdateSizeheightValues"/>
+    <aura:registerEvent name="UpdateSizeWidthValues" type="c:rsp_UpdateSizeWidthValues"/>
+    <aura:registerEvent name="addClassOnRow" type="c:rsp_AddRemoveChildClassEvent"/>
+    <aura:if isTrue="{!$Browser.formFactor != 'DESKTOP'}">
+        
+        <div class="topHeadBox slds-hide_medium">
+            <div class="innerCont slds-p-around_small ">	
+                
+                <div class="slds-grid slds-wrap divClass innerContTxt">
+                    <h3 class="innderHeader">
+                        <span onclick="{!c.showOneRow}">
+                            <lightning:icon iconName="utility:chevrondown" 
+                                            size="small" 
+                                            alternativeText="sss"/>
+                        </span>
+                        <span>
+                        <aura:if isTrue="{!v.productWrapperRecord.packageName != ''}">
+                            <img class="imageClass" src="{!v.packageImage}"
+                                 alt="Package Image"/>                        
+                        </aura:if>
+                          <img class="imageClass" src="{!v.productWrapperRecord.mediaTypeImage}"
+                               alt="Media Type Image"/>
+                         </span>
+                        <span class="txtCont">{!v.productWrapperRecord.productName}</span>
+                     
+                            <span class="iconTog1" onclick="{!c.removeRow}">
+                            <lightning:icon iconName="utility:close" 
+                                            size="small" 
+                                            alternativeText=""/>
+                             </span>
+                    </h3>
+                    <div class="{!v.productWrapperRecord.toAddClass?'slds-p-top_large frmCont':'slds-hide'}">
+                        <div class="slds-grid slds-p-bottom_large">
+                            <div class="slds-col">Media Type</div>
+                            <div class="slds-col">{!v.productWrapperRecord.productType}</div>
+                        </div>
+                        <div class="slds-grid  slds-p-bottom_large">
+                            <div class="slds-col">Package</div>
+                            <div class="slds-col">{!v.productWrapperRecord.packageName}</div>
+                        </div>
+                        <aura:if isTrue="{!(or(v.productWrapperRecord.productType == 'PRINT', v.productWrapperRecord.productType == 'PRINTST')) }">
+                            <div class="slds-grid slds-p-bottom_large sltCont">
+                                <div class="slds-col">Ad Position</div>
+                                <div class="slds-col">
+                                    <lightning:select label="" 
+                                                      aura:id="positionId" variant="label-hidden"
+                                                      onchange = "{!c.onAdPostionChange}"
+                                                      class="slds-select">
+                                        <option value="">--None--</option>                        
+                                        <aura:iteration items="{!v.picklistValues}" var="item">
+                                            <option value="{!item.value}"
+                                                    selected="{!item == v.productWrapperRecord.selectedPosition}">
+                                                {!item}
+                                            </option>
+                                        </aura:iteration>                        
+                                    </lightning:select>
+                                </div>
+                            </div>
+                            
+                            
+                            <div class="slds-grid slds-p-bottom_large sltCont">
+                                <div class="slds-col">Ad Size</div>
+                                <div class="slds-col">
+                                    <lightning:select label="" 
+                                                      aura:id="sizeId" variant="label-hidden"
+                                                      onchange = "{!c.onAdSizeChange}">
+                                        <option value="">--None--</option>                        
+                                        <aura:iteration items="{!v.addSizepicklistValues}" var="item">
+                                            <option value="{!item.value}"
+                                                    selected="{!item == v.productWrapperRecord.selectedAdSize}"
+                                                    class="slds-select">
+                                                {!item}
+                                            </option>
+                                        </aura:iteration>                        
+                                    </lightning:select>
+                                    <aura:if isTrue="{!v.productWrapperRecord.showFieldsForCustom}">
+                                        <div class="slds-m-top_medium">  
+                                            <lightning:input type="number" name="input" label="" 
+                                                             value="{!v.productWrapperRecord.widthValue}" 
+                                                             variant="label-hidden" 
+                                                             placeholder="Enter Width..."
+                                                             onchange="{!c.widthChange}"
+                                                             step="any"/>
+                                        </div> 
+                                        <div class="slds-m-top_medium">        
+                                            <lightning:input type="number" name="input" label="" 
+                                                             value="{!v.productWrapperRecord.heightValue}" 
+                                                             variant="label-hidden" 
+                                                             placeholder="Enter height.."
+                                                             onblur="{!c.heightChange}"
+                                                             step="any"/>
+                                        </div>
+                                    </aura:if>
+                                </div>
+                            </div>
+                        </aura:if>
+                        <aura:if isTrue="{!(and(v.productWrapperRecord.productType != 'PRINT', v.productWrapperRecord.productType != 'PRINTST')) }">
+                            <div class="slds-grid slds-p-bottom_large sltCont">
+                                <div class="slds-col">Estimated Amount</div>
+                                <div class="slds-col">        
+                                    <lightning:input type="number" name="input" label="" 
+                                                     value="{!v.productWrapperRecord.estimtedAmount}" 
+                                                     variant="label-hidden" placeholder="Enter amount.."/>
+                                </div>
+                            </div>
+                        </aura:if>
+                    </div> 
+                </div>    
+            </div>
+        </div>
+    </aura:if>
+    <aura:if isTrue="{!$Browser.formFactor == 'DESKTOP'}">
+        <tr>
+            <aura:if isTrue="{!(or(v.productWrapperRecord.productType == 'PRINT', v.productWrapperRecord.productType == 'PRINTST')) }">
+                <td>
+                    <div class="slds-truncate slds-p-around_small">Print Products</div>
+                </td>
+                <td>
+                    <div class="slds-truncate slds-p-around_small">{!v.productWrapperRecord.productName}</div>
+                </td>
+                <td>
+                    <div class="slds-truncate slds-p-around_small">{!v.productWrapperRecord.packageName}</div>
+                </td>
+                <td>
+                    <div class="slds-truncate">              
+                        <lightning:layoutItem padding="around-small">
+                            <lightning:select label="" 
+                                              aura:id="positionId" variant="label-hidden"
+                                              onchange = "{!c.onAdPostionChange}">
+                                <option value="">--None--</option>                        
+                                <aura:iteration items="{!v.picklistValues}" var="item">
+                                    <option value="{!item.value}"
+                                            selected="{!item == v.productWrapperRecord.selectedPosition}">
+                                        {!item}
+                                    </option>
+                                </aura:iteration>                        
+                            </lightning:select>
+                        </lightning:layoutItem>
+                    </div>
+                </td>
+                <td>
+                    <div class="slds-truncate">
+                        <div class="customSlt">
+                            <lightning:layoutItem padding="around-small">
+                                <lightning:select label="" 
+                                                  aura:id="sizeId" variant="label-hidden"
+                                                  onchange = "{!c.onAdSizeChange}">
+                                    <option value="">--None--</option>                        
+                                    <aura:iteration items="{!v.addSizepicklistValues}" var="item">
+                                        <option value="{!item.value}"
+                                                selected="{!item == v.productWrapperRecord.selectedAdSize}">
+                                            {!item}
+                                        </option>
+                                    </aura:iteration>                        
+                                </lightning:select>
+                            </lightning:layoutItem>
+                        </div>
+                        <aura:if isTrue="{!v.productWrapperRecord.showFieldsForCustom}">
+                            <div class="slds-grid slds-p-around_small slds-gutters"> 
+                                <div class="slds-col">
+                                    <lightning:input type="number" name="input" label="Insertions" 
+                                                     value="{!v.productWrapperRecord.widthValue}" 
+                                                     variant="label-hidden" 
+                                                     placeholder="Enter Width(In cm)"
+                                                     onblur="{!c.widthChange}"
+                                                     step="any"/>
+                                </div> 
+                                <div class="slds-col">
+                                    <lightning:input type="number" name="input" label="Insertions" 
+                                                     value="{!v.productWrapperRecord.heightValue}" 
+                                                     variant="label-hidden" 
+                                                     placeholder="Enter height(In cm)"
+                                                     onblur="{!c.heightChange}" 
+                                                     step="any"/>
+                                </div>
+                            </div>
+                        </aura:if>
+                    </div> 
+                    
+                </td>
+                <td>
+                    <div class="slds-p-around_small divClassRemoveRow">
+                        <a onclick="{!c.removeRow}">
+                            <lightning:icon class="slds-icon " 
+                                            iconName="action:reject" alternativeText="Delete" />
+                        </a>
+                    </div>
+                </td>
+            </aura:if>
+            <aura:if isTrue="{!(and(v.productWrapperRecord.productType != 'PRINT', v.productWrapperRecord.productType != 'PRINTST')) }">
+                <td>
+                    <div class="slds-truncate slds-p-around_small">Non Print Products</div>
+                </td>
+                <td>
+                    <div class="slds-truncate slds-p-around_small">{!v.productWrapperRecord.productName}</div>
+                </td>
+                <td>
+                    <div class="slds-truncate slds-p-around_small">{!v.productWrapperRecord.packageName}</div>
+                </td>
+                <td>
+                    
+                </td>
+                <td class="AmountTD">
+                    <div class="slds-truncate Amountdiv">
+                        <lightning:input type="number" name="input7" 
+                                         label="" placeholder="Enter Estimated Amount" 
+                                         variant="label-hidden" formatter="currency" step="0.01"
+                                         value="{!v.productWrapperRecord.estimtedAmount}"/>
+                    </div> 
+                </td>
+                <td class="AmountTD">
+                    <div class="slds-p-around_small divClassRemoveRow">
+                        <a onclick="{!c.removeRow}">
+                            <lightning:icon class="slds-icon " 
+                                            iconName="action:reject" alternativeText="Delete" />
+                        </a>
+                    </div>
+                </td>
+            </aura:if>
+        </tr>
+    </aura:if>
+</aura:component>

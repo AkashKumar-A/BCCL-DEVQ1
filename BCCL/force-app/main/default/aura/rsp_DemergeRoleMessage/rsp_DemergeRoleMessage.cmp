@@ -1,0 +1,9 @@
+<aura:component implements="force:lightningQuickAction,force:hasRecordId" >
+	<lightning:card title="Demerge Role" variant="base">
+        <div>
+        	Are you sure you want to demerge. If yes, Click on continue.
+            <lightning:button variant="brand" label="Continue" title="Brand action" 
+                                      onclick="{!c.callDemergeComponent}"/>
+        </div>
+    </lightning:card>
+</aura:component>

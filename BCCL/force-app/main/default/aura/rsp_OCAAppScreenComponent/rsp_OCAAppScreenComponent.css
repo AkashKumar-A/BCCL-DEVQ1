@@ -1,0 +1,47 @@
+.THIS .headCont{
+    padding:15px;
+    background:#fff;
+}
+
+.THIS .forceContentFileCard{
+    width:3.5rem !important;
+}
+
+.THIS .customFileUpload{}
+.THIS .customFileUpload span{
+    color:#fff !important;
+    border: none !important;
+    visibility: hidden;
+    
+}
+.THIS .customFileUpload svg{
+    color: rgba(0, 112, 210, 1) !important;
+    position: absolute;
+    top: 37%;
+    left: 55%;
+    width: 19px;
+    border: none;
+    visibility: initial;
+}
+.THIS .slds-file-selector_files .slds-file-selector__body{
+    max-width: 100px;
+    overflow: hidden;
+    max-height: 35px;
+    text-align: initial;
+}
+
+.THIS .slds-file-selector__body:hover{
+    background: #fff !important;
+}
+
+.THIS .fileViewDiv{
+   margin-top: 6%;
+}
+
+.THIS .slds-truncate{
+    white-space: normal;
+}
+
+.THIS .lightning-disbaled-pointers-event select{
+    pointer-events : none;
+}

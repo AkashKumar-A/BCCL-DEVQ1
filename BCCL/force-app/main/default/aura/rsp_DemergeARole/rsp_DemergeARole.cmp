@@ -1,0 +1,113 @@
+<aura:component controller="rsp_DemergeRole" implements="force:appHostable,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" 
+                access="global">
+    <aura:attribute name="noOfRoles" type="Integer"/>
+    <aura:attribute name="roleWrapper" type="rsp_DemergeRole.MainWrapper"/>
+    <aura:attribute name="showTargetsData" type="boolean" default="false"/>
+    <aura:attribute name="testString" type="String"/>
+    <aura:attribute name="roleRecordId" type="String"/>
+    <!--loading spinner start... style=Brand Medium (blue dots)-->
+    <lightning:spinner aura:id="mySpinner" alternativeText="Processing.." title="Processing.." 
+                       variant="brand" size="large" class="slds-hide"/>
+    <!-- Loading spinner end--> 
+    <lightning:card title="Demerge Role" variant="base">
+        <lightning:layout horizontalAlign="center">
+            <label class="demergeLbl">Number of Roles to demerge:</label>
+            <lightning:layoutItem class="slds-p-left_medium goButton">
+                <lightning:input type="number" name="input3" label="" 
+                                 required="true" value="{!v.noOfRoles}"
+                                 max="5"  min="1" variant="label-hidden"/>
+            </lightning:layoutItem>
+            <lightning:layoutItem padding="horizontal-medium">
+                <!--<lightning:button variant="brand" class="actionBtn" label="Go" title="Brand action" 
+                                  onclick="{!c.Testfun}"/>-->
+                <lightning:button variant="brand" class="actionBtn" label="Go" title="Brand action" 
+                                  onclick="{!c.getTargets}"/>
+            </lightning:layoutItem>
+        </lightning:layout><br/><br/>
+    </lightning:card>
+    
+    <aura:if isTrue="{!v.showTargetsData}">
+        <lightning:card title="Role Targets" variant="base">
+            <!--<lightning:layout horizontalAlign="center">
+                <lightning:layoutItem padding="horizontal-medium">-->
+                    <div class="errorMessage slds-hide" aura:id="errorMsg">
+                        <lightning:icon iconName="utility:warning" size="small" alternativeText="Warning" variant="inverse" class="warning_icn" />
+                        This value field's sum is not equal to "Available Target Value". Enter correct value
+                        <lightning:icon iconName="utility:close" size="small" alternativeText="Close" variant="inverse" class="close_icn" />
+                    </div>
+                    <div class="slds-scrollable--x responsiveTable responseCss" >
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered">
+                            
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th scope="col" class="slds-text-title_caps">
+                                        <div class="slds-truncate" title="{!v.roleWrapper.objRowWrapper.targetName}">{!v.roleWrapper.objRowWrapper.targetName}</div>
+                                    </th>
+                                    <th scope="col" class="slds-text-title_caps">
+                                        <div class="slds-truncate" title="{!v.roleWrapper.objRowWrapper.targetValue}">{!v.roleWrapper.objRowWrapper.targetValue}</div>
+                                    </th>
+                                    <aura:iteration items="{!v.roleWrapper.objRowWrapper.lstRole}" var="rowWrapper"
+                                                    indexVar="index">
+                                        <th scope="col" class="slds-text-title_caps">
+                                            <div class="slds-truncate enterRolePlace"><lightning:input value="{!rowWrapper.Name}" 
+                                                                                        name="input3" label="" variant="label-hidden"
+                                                                                        placeholder="Enter Role Name..."
+                                                                                        required="true" disabled="{!(index == 0)}"/>
+                                                <!--disabled="{!(index == 0)}"/>-->
+                                            </div>
+                                        </th>
+                                    </aura:iteration>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.roleWrapper.objTableWrapper.lstForAllRows}" 
+                                                var="objAllRows" indexVar="rowIndex">
+                                    <tr class="slds-hint-parent" id="{!rowIndex}">
+                                        <aura:iteration items="{!objAllRows}" var="oneRow" indexVar="index">
+                                            <td>
+                                                <div class="slds-truncate" title="Cloudhub">
+                                                    <aura:if isTrue="{!index == 0}">
+                                                        <lightning:input value="{!oneRow.rsp_KRA_Name__c}" 
+                                                                         name="input3" variant="label-hidden"
+                                                                         disabled="{!(or(index == 0,index == 1))}" 
+                                                                         onblur="{!c.ValidateTargetTotal}" 
+                                                                         label="{!rowIndex}" aura:id="rowID" required="true"/>
+                                                        <!-- <ui:inputText value="{!oneRow.newRoleValue}" label="{!rowIndex}" 
+                          blur="{!c.ValidateTargetTotal}"/>-->
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!index == 1}">
+                                                        <lightning:input value="{!oneRow.rsp_Available_Target_Value__c}" 
+                                                                         name="input3" variant="label-hidden"
+                                                                         disabled="{!(or(index == 0,index == 1))}" 
+                                                                         onblur="{!c.ValidateTargetTotal}" 
+                                                                         label="{!rowIndex}" aura:id="rowID" required="true"/>
+                                                        <!-- <ui:inputText value="{!oneRow.newRoleValue}" label="{!rowIndex}" 
+                          blur="{!c.ValidateTargetTotal}"/>-->
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!index > 1}">
+                                                        <lightning:input value="{!oneRow.rsp_Assigned_Target__c}" 
+                                                                         name="input3" variant="label-hidden"
+                                                                         disabled="{!(or(index == 0,index == 1))}" 
+                                                                         onblur="{!c.ValidateTargetTotal}" 
+                                                                         label="{!rowIndex}" aura:id="rowID" required="true"/>
+                                                        <!-- <ui:inputText value="{!oneRow.newRoleValue}" label="{!rowIndex}" 
+                          blur="{!c.ValidateTargetTotal}"/>-->
+                                                    </aura:if>
+                                                </div>
+                                            </td>
+                                        </aura:iteration>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="slds-text-align_center slds-p-around_medium">
+                        <lightning:button variant="brand" label="Save" class="actionBtn saveBtn" title="Brand action" 
+                                          onclick="{!c.splitRoles}"/>
+                    </div>
+                <!--</lightning:layoutItem>
+            </lightning:layout>-->
+        </lightning:card>
+    </aura:if>
+</aura:component>

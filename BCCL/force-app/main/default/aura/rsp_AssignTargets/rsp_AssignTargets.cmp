@@ -1,0 +1,168 @@
+<aura:component controller="rsp_AssignTargets" 
+                implements="c:rsp_AssignTargetsInterface,force:appHostable,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction,lightning:actionOverride" access="global">
+    <!-- This component is used by user to update the existing 10 Rs targets of all the roles -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:html tag="style">
+        .wrapped-header-datatable .slds-table .slds-th__action .slds-truncate{
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: unset;
+            white-space: pre-line;
+            /*  uncomment this if you want break the words further */
+            /* word-wrap: break-word;*/
+        
+        }
+        
+        .wrapped-header-datatable .slds-table .slds-th__action {
+            height: 3rem;
+            border-bottom: 1px solid rgb(206 206 206);
+        }
+        
+        .wrapped-header-datatable .slds-table .slds-line-height_reset{
+            height: 1rem;
+        }
+    </aura:html>
+    <lightning:spinner aura:id="mySpinner" alternativeText="Loading.." 
+                                   title="Loading.." variant="brand" 
+                                   size="large" class="slds-hide"/>
+    <div class="c-container">
+        <div class="slds-grid slds-wrap">
+            <div class="slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-4">
+                <!-- Show Vertical/Horizontal/Classified Filter-->
+                <lightning:layoutItem padding="around-small">
+                    <lightning:select name="filter" label="Select Role Category:" 
+                                      aura:id="filterId" value="{!v.selectedFilter}"
+                                      onchange="{!c.onFilterChange}">
+                        <option value="A" text="All Roles" selected="true"></option>
+                        <option value="C" text="Classifieds"></option>
+                        <option value="V" text="Vertical Roles"></option>
+                        <option value="H" text="Horizontal Roles"></option>
+                    </lightning:select>
+                </lightning:layoutItem>
+            </div>
+            
+            <aura:if isTrue="{!v.geographies.length > 2}">
+                <div class="slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-4">
+                    <!-- Show Geography filter if role in more than 1 geography -->
+                    <lightning:layoutItem padding="around-small">
+                        <lightning:select name="geographies" label="Select Geography:" 
+                                          aura:id="geographies" value="{!v.selectedGeography}"
+                                          onchange="{!c.onGeographyChange}">
+                            <aura:iteration items="{!v.geographies}" var="geography" indexVar="index">
+                                <option value="{!geography.value}" text="{!geography.label}" selected="{!index==0}"></option>
+                            </aura:iteration>
+                        </lightning:select>
+                    </lightning:layoutItem>
+                </div>
+            </aura:if>
+            
+                
+            <div class="slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-4">
+                <!-- Show month picklist -->
+                <lightning:layoutItem padding="around-small">
+                    <lightning:select 
+                        name="month" 
+                        label="Select Month"
+                        aura:id="month"
+                        value="{!v.selectedMonth}"
+                        onchange="{!c.onMonthChange}"
+                    >
+                        <option value="3" text="{! 'April ' + v.fiscalYear }"></option>
+                        <option value="4" text="{! 'May ' + v.fiscalYear }"></option>
+                        <option value="5" text="{! 'June ' + v.fiscalYear }"></option>
+                        <option value="6" text="{! 'July ' + v.fiscalYear }"></option>
+                        <option value="7" text="{! 'August ' + v.fiscalYear }"></option>
+                        <option value="8" text="{! 'September ' + v.fiscalYear }"></option>
+                        <option value="9" text="{! 'October ' + v.fiscalYear }"></option>
+                        <option value="10" text="{! 'November ' + v.fiscalYear }"></option>
+                        <option value="11" text="{! 'December ' + v.fiscalYear }"></option>
+                        <option value="0" text="{! 'January ' + v.fiscalYearEnd }"></option>
+                        <option value="1" text="{! 'February ' + v.fiscalYearEnd }"></option>
+                        <option value="2" text="{! 'March ' + v.fiscalYearEnd }"></option>
+                    </lightning:select>
+                </lightning:layoutItem>
+            </div>
+            <aura:if isTrue="{!!(v.geographies.length > 2)}">
+                <div class="slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-4"></div>
+            </aura:if>
+            <div class="showTargetBtnCls slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-4">
+                <div class="slds-button-group slds-m-top_large" >
+                    <lightning:layoutItem padding="around-small">  
+                        <lightning:buttonIcon 
+                            tooltip="Refresh"
+                            iconName="utility:refresh"
+                            onclick="{!c.showtargetsData}"
+                        />
+                    </lightning:layoutItem>
+                </div>
+                <!-- <div class="slds-button-group slds-m-top_large" >
+                    <lightning:layoutItem padding="around-small">  
+                        <lightning:button variant="brand" label="Reset" title="Reset"
+                                          onclick="{!c.resetData}"/>
+                    </lightning:layoutItem>
+                </div> -->
+            </div>
+        </div>
+        
+        <aura:if isTrue="{!v.existingTargetData.length > 0}">
+            <center>
+                <div class="slds-text-heading_medium slds-m-bottom_xx-small">
+                    <b style="color:red;font-size:medium;">
+                        <aura:if isTrue="{!v.showTargetsOfMonth}">
+                            <!-- Targets displayed are default/nominal targets only. This should not be considered as user role's monthly target. -->
+                            Targets displayed as default/nominal targets, should not be considered as user role's monthly target.
+                            <aura:set attribute="else">
+                                This month's target cannot be submitted without HR approval. Please reach out to your HR BP.
+                            </aura:set>
+                        </aura:if>
+                    </b>
+                </div>
+            </center>
+            <div class="">
+                <table>
+                    <tr>
+                        <aura:if isTrue="{!v.selectedFilter != 'H'}">
+                            <td class="slds-col" style="padding: 10px;">
+                                <span style="font-weight:bold">Total Vertical target (Approved): </span> <ui:outputNumber value="{!v.verticalTarget}" /> Crore{!v.verticalTarget == 1 ? '' : 's'}
+                            </td>
+                        </aura:if>
+                        <aura:if isTrue="{! OR(v.selectedFilter == 'H', v.selectedFilter == 'A') }">
+                            <td class="slds-col" style="padding: 10px;">
+                                <span style="font-weight:bold">Total Horizontal target (Approved): </span> <ui:outputNumber value="{!v.horizontalTarget}" /> Crore{!v.horizontalTarget == 1 ? '' : 's'}
+                            </td>
+                        </aura:if>
+                        <td class="slds-col" style="padding: 10px;">
+                            <span style="font-weight:bold"> Total Approved Target: </span> <ui:outputNumber value="{!v.approvedTarget}" /> Crore{!v.approvedTarget == 1 ? '' : 's'}
+                        </td>
+                        <td class="slds-col" style="padding: 10px;">
+                            <span style="font-weight:bold"> Total Target pending for Approval: </span> <ui:outputNumber value="{!v.pendingTarget}" /> Crore{!v.pendingTarget == 1 ? '' : 's'}
+                        </td>
+                        <td class="slds-col" style="padding: 10px;">
+                            <span style="font-weight:bold"> Role{!v.pendingSubmission == 1 ? '' : 's'} pending for target submisssion: </span> <ui:outputNumber value="{!v.pendingSubmission}" /> 
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="TargetTable" style="max-height: 300px;">
+                <div id="datatableDiv" class="slds-box slds-box_xx-small" style="height: 300px;">
+                    <lightning:datatable
+                        class="wrapped-header-datatable"
+                        aura:id="existingTargetTable"
+                        name="ExistingTargetTable"
+                        columns="{!v.existingTargetColumns}" 
+                        data="{!v.existingTargetData}" 
+                        keyField="targetId"
+                        draftValues="{!v.draftTargetValues}"
+                        selectedRows="{!v.selectedExistingTargetRows}"
+                        oncellchange="{!c.handleCellChange}"
+                        onsave="{!c.updateTarget}"
+                        oncancel="{!c.cancelSave}"
+                        errors="{!v.updateTargetErrors}"
+                    />
+                </div>
+            </div>
+        </aura:if>
+        <br/>
+        <br/>
+    </div>
+</aura:component>

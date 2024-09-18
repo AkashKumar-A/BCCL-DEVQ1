@@ -1,0 +1,20 @@
+<aura:component controller="rsp_AddProductforOpp" implements="flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction,lightning:actionOverride" 
+                												access="global" >
+    <aura:attribute name="productWrapper" type="rsp_AddProductforOpp.MainProductWrapper"/>
+    <aura:attribute name="messageBody" type="String"/>
+    <aura:attribute name="OppId" type="String"/>
+    <aura:attribute name="isContinueDisable" type="boolean" default="true"/>
+    <aura:handler name="init" action="{!c.doinit}" value="{!this}"/>
+    <lightning:card title="Add Products" variant="base">
+         
+                <div>
+            <!--By clicking on continue, you will be redirected to product selection screen. 
+            Opportunity stage has to be Proposal, to add products.-->
+            {!v.messageBody}&nbsp;
+            <lightning:button variant="brand" label="Continue" title="Brand action" 
+                              onclick="{!c.callAddProduct}" disabled="{!v.isContinueDisable}"/>
+        </div>
+
+    </lightning:card>
+	
+</aura:component>

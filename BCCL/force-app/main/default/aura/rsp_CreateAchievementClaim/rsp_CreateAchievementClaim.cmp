@@ -1,0 +1,20 @@
+<aura:component controller="rsp_Request_Credit_Claim" Implements="flexipage:availableForRecordHome,
+                                                                  force:appHostable,force:hasRecordId,
+                                                                  forceCommunity:availableForAllPageTypes,
+                                                                  force:lightningQuickAction">
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="errorMessage" type="String"/>
+    
+    <aura:if isTrue="{!empty(v.errorMessage)}">
+        <ui:message title="Claim processed successfully." severity="confirm" closable="true">
+            Claim has been processed successfully.
+        </ui:message>
+        <aura:set attribute="else">
+            <ui:message title="Error occurred." severity="error" closable="true">
+                {!v.errorMessage}
+            </ui:message>
+        </aura:set>
+    </aura:if>
+    
+</aura:component>

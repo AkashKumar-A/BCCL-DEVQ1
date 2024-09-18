@@ -1,0 +1,122 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" controller="rsp_ViewAgencyAccountsController" access="global" >
+    <aura:handler name="init" action="{!c.getAgencyList}" value="{!this}" />
+    <aura:attribute name="agencyList" type="Opportunity[]"/>
+    <aura:attribute name="customerList" type="Opportunity[]" />
+    <aura:attribute name="countAgency" type="Integer" />
+    <aura:attribute name="countCustomer" type="Integer" />
+    <aura:attribute name="displayAgencyTable" type="Boolean" default="false"/>
+    <aura:attribute name="displayCustomerTable" type="Boolean" default="false"/>
+    <aura:attribute name="accountType" type ="String"/>
+    
+    <lightning:card title="">  
+        <aura:if isTrue="{!v.displayAgencyTable}">
+            
+            <aura:if isTrue="{!v.countAgency > 2}">
+                <lightning:card title="">
+                    <aura:set attribute="title">
+                        <b>Agencies(2+)</b>
+                    </aura:set>
+                    <aura:if isTrue="{!not(empty(v.agencyList))}"> 
+                        <div>
+                            <aura:iteration items="{!v.agencyList}" var="item" indexVar="key">
+                                <aura:if isTrue="{!lessthan(key,2)}">       
+                                    <c:rsp_ViewAgencyAccountsChild opportunityObject="{!item}"/>
+                                </aura:if>     
+                            </aura:iteration>
+                        </div>
+                    </aura:if>
+                    
+                    <footer class="slds-card__footer">
+                        <button class="slds-button" onclick = "{!c.callAgencyCustomerListComponent}">View All</button>
+                    </footer>
+                    
+                </lightning:card>
+                
+                <aura:set attribute="else">
+                    <lightning:card title="">
+                        <aura:set attribute="title">
+                            <b>Agencies({!v.countAgency})</b>
+                        </aura:set>
+                        <aura:if isTrue="{!not(empty(v.agencyList))}"> 
+                            <div>
+                                <aura:iteration items="{!v.agencyList}" var="item">
+                                    <c:rsp_ViewAgencyAccountsChild opportunityObject="{!item}"/>
+                                </aura:iteration>
+                            </div>
+                        </aura:if>
+                    </lightning:card>
+                </aura:set>
+                
+            </aura:if>
+            <aura:set attribute="else">
+                <aura:if isTrue="{!not(v.displayCustomerTable)}">
+                    <aura:if isTrue="{!(v.accountType == 'Advertiser Master')}">
+                        <lightning:card title="">
+                            <aura:set attribute="title">
+                                <b>Agencies(0)</b>
+                            </aura:set>
+                        </lightning:card>
+                </aura:if>
+               </aura:if>     
+            </aura:set>
+            
+        </aura:if>
+        
+        
+        
+        
+        <aura:if isTrue="{!v.displayCustomerTable}" >
+            <aura:if isTrue="{!v.countCustomer > 2}">            
+                <div class="cstm_padding">
+                    <lightning:card title="" >
+                        <aura:set attribute="title">
+                            <b>Customers(2+)</b> 
+                        </aura:set>
+                        <aura:if isTrue="{!not(empty(v.customerList))}"> 
+                            <div>
+                                <aura:iteration items="{!v.customerList}" var="item" indexVar="key">
+                                    <aura:if isTrue="{!lessthan(key,2)}">   
+                                        <c:rsp_ViewAgencyAccountsChild opportunityObject="{!item}"/>
+                                    </aura:if>
+                                </aura:iteration>
+                            </div>
+                        </aura:if>
+                        
+                        <footer class="slds-card__footer">
+                            <button class="slds-button" onclick = "{!c.callAgencyCustomerListComponent}">View All</button>
+                        </footer>
+                        
+                    </lightning:card>
+                    <aura:set attribute="else">
+                        <lightning:card title="">
+                            <aura:set attribute="title">
+                                <b>Customers({!v.countCustomer})</b>
+                            </aura:set>
+                            <aura:if isTrue="{!not(empty(v.customerList))}"> 
+                                <div>
+                                    <aura:iteration items="{!v.customerList}" var="item">
+                                        <c:rsp_ViewAgencyAccountsChild opportunityObject="{!item}"/>
+                                    </aura:iteration>
+                                </div>
+                            </aura:if>
+                        </lightning:card>
+                    </aura:set>
+                </div>
+            </aura:if>
+            
+            <aura:set attribute="else">
+                <aura:if isTrue="{!(v.displayAgencyTable  == false)}">
+                   <aura:if isTrue="{!(v.accountType == 'Agency')}"> 
+                    <lightning:card title="">
+                        <aura:set attribute="title">
+                            <b>Customers(0)</b>
+                        </aura:set>
+                    </lightning:card>
+                </aura:if>
+               </aura:if>
+            </aura:set>
+            
+        </aura:if>
+        
+    </lightning:card>
+</aura:component>

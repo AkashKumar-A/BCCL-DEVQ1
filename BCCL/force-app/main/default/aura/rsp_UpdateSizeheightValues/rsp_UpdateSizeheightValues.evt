@@ -1,0 +1,4 @@
+<aura:event type="Component" description="Event template">
+    <aura:attribute name="sizeheightValue" type="Integer"/>
+    <aura:attribute name="currentIndexRow" type="String"/>
+</aura:event>

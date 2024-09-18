@@ -1,0 +1,15 @@
+.THIS {
+    background:white;
+}
+.THIS .tableHeading {
+    font-size: 18px;
+    font-weight: bold;
+}
+.THIS .canvas_width {
+    width:100%;
+    
+}
+.THIS .canvas_width_cumulative {
+    width:100%;
+    height:300px;
+}

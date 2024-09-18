@@ -1,0 +1,32 @@
+<aura:documentation>
+	<aura:description>Documentation</aura:description>
+	<aura:example name="ExampleName" ref="exampleComponentName" label="Label">
+            Line 44 
+        <option value="--None--">--None--</option>
+        
+        
+        
+        <th style = "width:20%">
+                                <div class="slds-truncate" title="Column 1">Trimester Payout %</div>
+                            </th>
+                            <!-- <th> -->
+                            <!-- <div class="slds-truncate" title="Column 1">Enter Achievements</div> -->
+                            <!-- </th> -->
+        
+         <td>
+                                   <!-- <ui:outputNumber value="{!main.deciTrimesterPayoutPer}" format="###,###,###,##0.##"/> -->
+                                    
+                                <!--    <lightning:textarea maxlength="999" disabled="{!v.wrappersetBehaviouralTarget.boolIsSuccessfullSubmit}" class="slds-m-top_xx-small" label="Input label" placeholder="Self Assessment" variant="label-hidden" value="{!v.wrappersetBehaviouralTarget.strSelfAssessment}"></lightning:textarea> -->
+                                </td>
+        
+        
+        <th style = "width:20%">
+                                <div class="slds-truncate" title="Column 1">Role Name</div>
+                            </th>
+        
+        
+        <td>
+                                    <div style="font-size: 0.8125rem;">{!eachItem.strRoleName}</div>
+                                </td>
+	</aura:example>
+</aura:documentation>

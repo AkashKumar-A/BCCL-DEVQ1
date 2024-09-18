@@ -1,0 +1,60 @@
+.THIS .responseCss{
+    padding: 10px;
+}
+.THIS .enterRolePlace{
+    width: 5rem;
+}
+
+.THIS .demergeLbl{
+    padding-top: 5px;
+    font-weight: bold;
+}
+.THIS table.slds-table{
+    border: 1px solid #dddbda;
+}
+.THIS .actionBtn{
+    background: #0067D9;
+    border-color: #0067D9;
+}
+.THIS .actionBtn.saveBtn{
+    min-width: 150px;
+}
+.THIS table.slds-table th{
+    background: #E8E8E8;
+    color: #8F8F8F;
+    font-weight: bold;
+}
+.THIS table.slds-table .slds-input{
+    border-radius: .2rem;
+}
+.THIS table.slds-table th + th{
+    border-left: 1px solid #dddbda;
+}
+.THIS table.slds-table tr.rowClass > td,
+.THIS table.slds-table tr.rowClass:hover > td{
+    background-color: #E88C8B;
+}
+.THIS .errorMessage{
+    background-color: #E88C8B;
+    width: 50%;
+    padding: 15px 45px;
+    border-radius: .25rem;
+    margin: 15px auto;
+    color: white;
+    font-weight: normal;
+    position: relative;
+}
+.THIS .errorMessage .warning_icn,
+.THIS .errorMessage .close_icn{
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.THIS .errorMessage .close_icn{
+    right: 10px;
+    left: auto;
+}
+.THIS .goButton{
+    max-width: 85px;
+}

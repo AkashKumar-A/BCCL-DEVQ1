@@ -1,0 +1,182 @@
+<aura:component controller="rspOCAController"
+                implements="c:rsp_OCAQuestionRollOutInterface,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" 
+                access="global" >
+    
+    <aura:handler name="init" value="{!this}" action="{!c.initializeComponent}" />
+    <aura:attribute name="ListOfContact" type="contact[]" />
+    <aura:attribute name="selectedCount" type="integer" default="0"/>
+    <lightning:spinner aura:id="mySpinner" alternativeText="Loading.." 
+                       title="Loading.." variant="brand" 
+                       size="large" class="slds-hide"/>
+    
+    <div class="slds-scrollable--y">
+        <div class="">
+            <h2 class="tableHeading slds-text-heading_large slds-text-align_center"><b>Publish OCA</b></h2>
+            <div class="slds-grid slds-wrap">
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_2-of-4">
+                    <lightning:layoutItem padding="around-small">
+                        <lightning:select name="profileName" 
+                                          label="Profiles for selecting Questions:" 
+                                          aura:id="profileId" 
+                                          value="{!v.selectedProfile}" 
+                                          onchange="{!c.onProfileSelect}">
+                            <option value="" text="--NONE--"></option>
+                            <aura:iteration items="{!v.profileList}" var="varProfile">
+                                <option value="{!varProfile.Id}" text="{!varProfile.Name}"></option>
+                            </aura:iteration>
+                        </lightning:select>
+                    </lightning:layoutItem>
+                </div>
+                
+                
+            </div>
+        </div>
+        
+        <div style ="background : #fff">
+            <lightning:accordion aura:id="accordion" activeSectionName="TableAccordian">
+                <lightning:accordionSection name="TableAccordian" label="List of Questions">
+                    <div class="slds-p-around_small">
+                        <div class="slds-page-header slds-p-around_small">
+                            <!--<p class="slds-page-header__title slds-truncate" title="">List of Questions</p>-->
+                            <span class="slds-badge">Selected Questions:{!v.selectedCount}</span> 
+                        </div>
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-max-medium-table_stacked-horizontal">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th title="" class="" scope="col">
+                                        <div class="slds-form-element">
+                                            <div class="slds-form-element__control">
+                                                <label class="slds-checkbox">
+                                                    <!--header checkbox for select all-->
+                                                    <ui:inputCheckbox aura:id="selectAllCheckbox" change="{!c.selectAllCheckbox}"/>
+                                                    <span class="slds-checkbox--faux"></span>
+                                                    <span class="slds-form-element__label text"></span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th title="Question" class="" scope="col">
+                                        <span class="slds-truncate" title="Name">Question</span>      
+                                    </th>
+                                    
+                                    <!--<th>
+                                    <span class="slds-truncate" title="Last Name">Function</span>
+                                </th>
+                                <th>       
+                                    <span class="slds-truncate" title="Department">Sub-Function</span>
+                                </th>-->
+                                    <th title="Policy Head" class="" scope="col">
+                                        <span class="slds-truncate" title="Last Name">Policy Head</span>
+                                    </th>
+                                    <th title="Policy Sub-Head" class="" scope="col">   
+                                        <span class="slds-truncate" title="Department">Policy Sub-Head</span>
+                                    </th>
+                                    
+                                </tr>
+                            </thead>
+                            
+                            <tbody>
+                                <aura:iteration items="{!v.listOCAQuestProfMapp}" var="varOCAQuestProfMapp">
+                                    <tr class="slds-hint-parent">
+                                        <td data-label="" scope="row" class="slds-text-align--right" style="width:3.25rem;">
+                                            <div class="slds-form-element">
+                                                <div class="slds-form-element__control">
+                                                    <label class="slds-checkbox">
+                                                        <ui:inputCheckbox text="{!varOCAQuestProfMapp.Id}" 
+                                                                          aura:id="individRecCheckbox" 
+                                                                          value="" 
+                                                                          change="{!c.checkboxSelectSingle}"/>
+                                                        <span class="slds-checkbox--faux"></span>
+                                                        <span class="slds-form-element__label text"></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td data-label="Question" scope="row">
+                                            <div class="slds-truncate slds-cell-wrap td-div-text-align-padding-left" title="{!varOCAQuestProfMapp.rsp_Question__r.rsp_Question__c}">
+                                                {!varOCAQuestProfMapp.rsp_Question__r.rsp_Question__c}
+                                            </div>
+                                        </td>
+                                        
+                                        <!--<td scope="row">
+                                        <div class="slds-truncate" title="{!varOCAQuestProfMapp.rsp_Question__r.rsp_Function__c}">
+                                            {!varOCAQuestProfMapp.rsp_Question__r.rsp_Function__c}
+                                        </div>
+                                    </td>
+                                    <td scope="row">
+                                        <div class="slds-truncate" title="{!varOCAQuestProfMapp.rsp_Question__r.rsp_Sub_Function__c}">
+                                            {!varOCAQuestProfMapp.rsp_Question__r.rsp_Sub_Function__c}
+                                        </div>
+                                    </td>-->
+                                        <td data-label="Policy Head" scope="row">
+                                            <div class="slds-truncate td-div-text-align-padding-left" title="{!varOCAQuestProfMapp.rsp_Question__r.rsp_Header__c}">
+                                                {!varOCAQuestProfMapp.rsp_Question__r.rsp_Header__c}
+                                            </div>
+                                        </td>
+                                        <td data-label="Policy Sub-Head" scope="row">
+                                            <div class="slds-truncate td-div-text-align-padding-left" title="{!varOCAQuestProfMapp.rsp_Question__r.rsp_Sub_Header__c}">
+                                                {!varOCAQuestProfMapp.rsp_Question__r.rsp_Sub_Header__c}
+                                            </div>
+                                        </td>
+                                        
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="slds-p-top_x-small slds-align_absolute-center" style="display: block;margin-left: auto;margin-right: auto;width: fit-content;margin-top: 2%;margin-bottom:2%">
+                        <lightning:button variant="brand" class="slds-button_destructive" onclick="{!c.resetSelectionBtClick}">Reset Selection</lightning:button>
+                        <lightning:button variant="brand" class="slds-button_success" onclick="{!c.setDurationClick}">Set Duration</lightning:button>
+                    </div>
+                </lightning:accordionSection>
+                <lightning:accordionSection name="DurationAccordian" label="Set Duration">
+                    <aura:if isTrue="{!v.showSetDuration}">
+                        <div class="slds-p-top_x-small">
+                            <div class="slds-border_top slds-p-around_small">
+                                <h2 class="tableHeading slds-text-heading_medium slds-text-align_center"><b>Define Duration for OCA</b></h2>
+                                
+                                <div class="slds-grid slds-wrap">            
+                                    <div class="slds-col  slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_2-of-4">
+                                        <lightning:layoutItem padding="around-small">
+                                            <lightning:select name="durationSelection" 
+                                                              label="Duration for Publishing:" 
+                                                              aura:id="durationId" 
+                                                              value="{!v.selectedDuration}" 
+                                                              onchange="{!c.onDurationSelect}">
+                                                <option value="" text="--NONE--"></option>
+                                                <aura:iteration items="{!v.durationList}" var="varDuration">
+                                                    <option value="{!varDuration}" text="{!varDuration}"></option>
+                                                </aura:iteration>
+                                            </lightning:select>
+                                        </lightning:layoutItem>
+                                    </div>
+                                    
+                                    <div class="slds-col  slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_2-of-4">
+                                        <lightning:layoutItem padding="around-small">
+                                            <lightning:select name="durationSelection" 
+                                                              label="{!v.slotText + ' Survey Slot:'}" 
+                                                              aura:id="surveySlotId" 
+                                                              value="{!v.selectedSurveySlot}" 
+                                                              onchange="{!c.onSurveySlotSelect}">
+                                                <option value="" text="--NONE--"></option>
+                                                <aura:iteration items="{!v.surveySlotList}" var="varSurveySlot">
+                                                    <option value="{!varSurveySlot}" text="{!varSurveySlot}"></option>
+                                                </aura:iteration>
+                                            </lightning:select>
+                                        </lightning:layoutItem>
+                                    </div>
+                                </div>    
+                                <div class="slds-p-top_x-small slds-align_absolute-center" style="display: block;margin-left: auto;margin-right: auto;width: fit-content;margin-top: 2%;margin-bottom:2%;">
+                                    <lightning:button variant="brand" class="slds-button_destructive" onclick="{!c.selectDurationResetClick}">Reset</lightning:button>
+                                    <lightning:button variant="brand" class="slds-button_success" onclick="{!c.saveSelected}">Publish OCA</lightning:button>
+                                </div>    
+                            </div>    
+                        </div>    
+                    </aura:if>
+                </lightning:accordionSection>
+            </lightning:accordion>   
+            
+        </div>
+    </div>
+</aura:component>

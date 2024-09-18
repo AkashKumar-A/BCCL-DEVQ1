@@ -1,0 +1,393 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" 
+                access="global"
+                controller="rsp2CmpBehaviouralTargetManagerCtrl">
+    
+    
+    <!-- <lightning:spinner aura:id="Spinner" alternativeText="Loading" size="medium" variant="brand" class="slds-hide"/> -->
+    
+    <!-- <aura:handler event="aura:waiting" action="{!c.showSpinner}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/> -->
+    <!-- <aura:attribute name="Spinner" type="boolean" default="false"/> -->
+    <aura:attribute name="yearsList" type="String[]"/>
+    <aura:attribute name="selectedYear" type="String" access="public"/>
+    <aura:attribute name="currentFinancialYear" type="String" access="public"/>
+    <aura:attribute name="currentFinancialYearValue" type="String" access="public"/>
+    <aura:attribute name="wrappersetBehaviouralTarget" type="object" access="public"/>
+    <aura:attribute name="approvalStatus" type ="string" default="Submitted for Approval" />
+    <aura:attribute name="financialYear" type ="string" access="public"/> 
+    
+    <aura:attribute name="attStartDate" type="String" access="public"/>
+    <aura:attribute name="attEndDate" type="String" access="public"/>
+    <!-- <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> -->
+    
+    <!-- New Manager Attributes -->
+    <aura:attribute name="selectedLookUpRecords" type="sObject[]" default="[]"/>
+    <aura:attribute name="Spinner" type="boolean" default="false"/>
+    <aura:attribute name="managerDeclaration" type="boolean" default="false"/>
+    
+    <aura:attribute name="loggerInUserId" type="String" default="" />
+    <aura:attribute name="attQuery" type="String" default="" />
+    <aura:attribute name="wrapperBehaviouralTargetManager" type="object" access="PUBLIC"/>
+    <aura:attribute name="wrapperBehaviouralTargetManagerAllUser" type="object" access="PUBLIC"/>
+    <aura:attribute name="booleanShowDown" type="boolean" default="false" />
+    <aura:attribute name="booleanDateCheck" type="boolean" default="false" />
+    
+    <aura:handler name="cmpEvtMultiselectClear" event="c:EventMultiselectLookupClear" action="{!c.handleComponentEvent}"/>
+    
+    <aura:attribute name="activeSections" type="List" default="['A']" />
+    <aura:attribute name="activeSectionsMessage" type="String" default="" />
+    <aura:attribute name="activeSectionWithinAccordion" type="List" />
+    <aura:attribute name="activeSectionMessageWithinAccordion" type="String" default=""/>
+    <aura:attribute name="activeSectionMessageWithinCostHeadAccordion" type="String" default=""/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInitCall}" />
+    <!--loading spinner start... style=Brand Medium (blue dots)-->
+    <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </aura:if>
+    
+    <lightning:card title="Approve Behavioural Targets" variant="base">
+        <div class="slds-card__body_inner searchLookUp">
+            <div style="border-style: solid;border-color:#DDDBDA;border-width: thin;">
+                <div class="slds-form slds-form_stacked">
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col">
+                            
+                            <!--<lightning:select name="select1" label="Financial Year" disabled = "true" value="{!v.financialYear}">
+                                <option value="2019-2020">2019-2020</option>
+                            </lightning:select> -->
+                            <!--<lightning:layout class="slds-wrap" multipleRows="true"> -->
+                                <!--<lightning:layoutItem>-->
+                                    <lightning:select disabled="false" name="year" label="Financial Year:" 
+                                                      aura:id="yearId" value="{!v.financialYear}" 
+                                                      onchange="{!c.onYearChange}">
+                                        
+                                        <aura:iteration items="{!v.yearsList}" var="year">
+                                            <!--<option value="{!year}">{!year}</option>-->
+                                            <option text="{!year.label}" value="{!year.value}" />
+                                        </aura:iteration>
+                                    </lightning:select>
+                                <!--</lightning:layoutItem>-->
+                    		<!--</lightning:layout>-->
+                        </div>
+                        <div class="slds-col">
+                            <lightning:select name="select1" label="Approval Status" value ="{!v.approvalStatus}" onchange="{!c.onYearChange}">
+                                <option value="Submitted for approval">Submitted for Approval</option>
+                                <option value="Approved">Approved</option>
+                            </lightning:select>
+                        </div>
+                    </div>
+                    <lightning:layout  multipleRows="true">
+                        <lightning:layoutItem>
+                            <c:reUsableMultiSelectLookup objectAPIName="rsp_Target__c"
+                                                         IconName="standard:user"
+                                                         lstSelectedRecords="{!v.selectedLookUpRecords}"
+                                                         strQuery = "{!v.attQuery}"
+                                                         label="Filter User"/>
+                        </lightning:layoutItem>
+                    </lightning:layout>
+                </div>
+                <div class="slds-form slds-form_stacked">
+                    <lightning:layout  multipleRows="true">
+                        <lightning:layoutItem>
+                            <lightning:button class="slds-m-left_small slds-m-bottom_small slds-theme_brand slds-float_left"
+                                              variant="brand" 
+                                              label="Filter Behavioural Target" onclick="{!c.onClickFilterBehaviouralTarget}"></lightning:button>
+                        </lightning:layoutItem>
+                    </lightning:layout>
+                </div>
+            </div>	
+            
+            <aura:if isTrue="{!v.booleanShowDown}">
+                
+                <aura:iteration items="{!v.wrapperBehaviouralTargetManager.lstWrapperIndiBehaviouralTargetManager}" var="eachItem" indexVar="indi">
+                    <div name="mainOuterDiv" class="slds-section slds-is-open" style="border-style: solid;border-color:#DDDBDA;border-width: thin;">
+                        <h3 class="slds-section__title">
+                            <lightning:layout class="slds-wrap" verticalAlign="start" multipleRows="true">
+							<lightning:accordion aura:id="accordion"
+                                                 allowMultipleSectionsOpen="true"
+                                                 onsectiontoggle="{! c.handleSectionToggleWithinAccordion }"
+                                                 activeSectionName="{! v.activeSectionWithinAccordion }"
+                                                 >    
+                                <lightning:accordionSection name="" label="{!eachItem.objWrapperUser.srtUserName}"> <!--{!eachItem.strTargetId}-->
+									<lightning:layoutItem>
+										<!-- <lightning:button class="slds-theme_base slds-section__title-action, slds-is-open" iconPosition="left" variant="base" label="{!eachItem.objWrapperUser.srtUserName}" iconName="utility:switch"></lightning:button> -->
+										<div class="slds-media slds-p-around_x-small slds-p-top_x-small slds-p-right_x-small slds-p-bottom_x-small slds-p-left_x-small slds-media_center slds-theme_shade">
+											
+											<div class="slds-media__body">
+												<!-- slds-table_fixed-layout -->
+												<table class="slds-table slds-no-row-hover slds-table_bordered slds-table_striped slds-table_col-bordered ">
+													<thead>
+														<tr class="slds-text-title_caps">
+															<th>
+																<div class="slds-truncate" title="Total Qualified Targets (In Lacs)">Total Qualified Targets (In Lacs)</div>
+															</th>
+															<!-- <th>
+																<div class="slds-truncate" title="Total Achievements (In Lacs)">Total Achievements (In Lacs)</div>
+															</th> -->
+                                                            <th>
+																<div class="slds-truncate" title="Total Qualified Response Revenue Print (In Lacs)">Total Qualified Response Revenue Print (In Lacs)</div>
+															</th>
+                                                            <th>
+																<div class="slds-truncate" title="Total Targets (In Lacs)">Total Targets (In Lacs)</div>
+															</th>
+                                                            <th>
+																<div class="slds-truncate" title="Total Response Revenue Print (In Lacs)">Total Response Revenue Print (In Lacs)</div>
+															</th>
+															<th>
+																<div class="slds-truncate" title="Enter Achievement Value (In Lacs)">Enter Achievement Value (In Lacs)</div>
+															</th>
+															<th>
+																<div class="slds-truncate" title="Self Assessment">Self Assessment </div>
+															</th>
+															<!--<th>
+																<div class="slds-truncate" title="Behavioural Rating">Behavioural Rating</div>
+															</th>-->
+															<th>
+																<div class="slds-truncate" title="Feedback">Feedback</div>
+															</th>
+															<!--<th>
+																<div class="slds-truncate" title="Promotion">Promotion</div>
+															</th>
+															<th>
+																<div class="slds-truncate" title="Promotion Justification">Promotion Justification</div>
+															</th>-->
+															<th>
+																<div class="slds-truncate" title="Training Needs">Training Needs</div>
+															</th>
+														</tr>
+													</thead>
+													<tbody>
+														
+														<tr class="slds-hint-parent">
+															<td class="slds-text-align_center">
+																<!--<lightning:input 
+																				 variant="label-hidden" 
+																				 type="number" 
+																				 name="input4" readonly="true" value="{!eachItem.deciTotalTargets/100000}" label="Read-only number field" /> -->
+																<ui:inputNumber value="{!eachItem.deciTotalTargets/100000}" disabled="true" format="0.##" />
+																<!-- <div class="slds-text-align_center" style="font-size: 0.8125rem;">{!eachItem.deciTotalTargets}</div> -->
+															</td>
+															<!-- <td class="slds-text-align_center"> -->
+																<!--<lightning:input variant="label-hidden" type="number" name="input4" readonly="true" value="{!eachItem.deciTotalAchievedTargets/100000}" label="Read-only number field" />-->
+                                                                <!-- <ui:inputNumber value="{!eachItem.deciTotalAchievedTargets/100000}" disabled="true" format="0.##" /> -->
+																<!-- <div class="slds-text-align_center" style="font-size: 0.8125rem;">{!eachItem.deciTotalAchievedTargets}</div> -->
+															<!-- </td> -->
+                                                            
+                                                            <td class="slds-text-align_center">
+                                                                <ui:inputNumber value="{!eachItem.deciTotalResponseRevenue/100000}" disabled="true" format="0.##" />
+															</td>
+                                                            <td class="slds-text-align_center">
+                                                                <ui:inputNumber value="{!eachItem.deciActualTotalTargets/100000}" disabled="true" format="0.##" />
+															</td>
+                                                            <td class="slds-text-align_center">
+                                                                <ui:inputNumber value="{!eachItem.deciActualTotalPrintAchievedTargets/100000}" disabled="true" format="0.##" />
+															</td>
+                                                            
+															<td class="slds-text-align_center" style="vertical-align: middle;">
+																<!--<div class="slds-text-align_center" style="font-size: 0.8125rem;">{!eachItem.intTotalAchievements}</div> -->
+                                                                
+																<lightning:input disabled="{!eachItem.strApprovalStatus == 'Approved' ? true : false}" name="{!indi}" type="text" min="0" label="Input label"  placeholder="Please put value in lacs"  variant="label-hidden" value="{!eachItem.intTotalAchievements}" onblur="{!c.checkIfNotNumber}"  onchange="" maxlength="12"  formatter="decimal"></lightning:input>
+																<lightning:helptext content="Only for reference. Not to be included in computation" class="help-text-icon slds-float_right"/> 
+															</td>
+															<td class="slds-text-align_center" style="vertical-align: bottom">
+																<!-- disabled="{!v.wrappersetBehaviouralTarget.boolIsSuccessfullSubmit}" -->
+																<lightning:textarea disabled="true"  
+																					class="slds-m-top_xx-small" 
+																					label="Input label" 
+																					placeholder="Self Assessment" 
+																					variant="label-hidden" 
+																					value="{!eachItem.strSelfAssessment}"></lightning:textarea>
+																<!-- <div style="font-size: 0.8125rem;">{!eachItem.strSelfAssessment}</div> -->
+                                                                <lightning:helptext content="{!eachItem.strSelfAssessment}" class="customIcon, slds-float_right"/> 
+															</td>
+															<!--<td class="slds-text-align_center" style="vertical-align: bottom;">
+																<lightning:select disabled="{!eachItem.strApprovalStatus == 'Approved' ? true : false}"  value="{!eachItem.strBehaviouralRating}">
+																	<option value="Select">Select</option>
+																	<option value="1">1</option>
+																	<option value="2">2</option>
+																	<option value="3">3</option>
+																	<option value="4">4</option>
+																	<option value="5">5</option>
+																</lightning:select>
+                                                                <lightning:helptext content="5 is the Highest" class="customIcon, slds-float_right"/> 
+																<div id ="{!'Feed' + indi}" style="color: red;"></div>
+															</td>-->
+															<td class="slds-text-align_center">
+                                                                <span class="slds-m-top_xx-small" style="color:red;left: 12px;position: absolute;top: -4px;">*</span>
+																<lightning:textarea 
+                                                                    maxlength="2000" 
+                                                                    disabled="{!eachItem.strApprovalStatus == 'Approved' ? true : false}"  
+                                                                    value="{!eachItem.strFeedback}" 
+                                                                    required="true"
+                                                                    placeholder=" Reason" 
+                                                                    messageWhenValueMissing=""
+                                                                    variant="label-hidden"
+                                                                ></lightning:textarea>
+																<div id ="{!'FeedBac' + indi}" style="color: red;"></div>
+															</td>
+															<!--<td class="slds-text-align_center" style="vertical-align: baseline;">
+																<lightning:select disabled="{!eachItem.strApprovalStatus == 'Approved' ? true : false}"  value="{!eachItem.strPromotion}">
+																	<option value="Select">Select</option>
+																	<option value="Yes">Yes</option>
+																	<option value="No">No</option>
+																</lightning:select>
+																<div id ="{!'Promo' + indi}" style="color: red;"></div>
+															</td>
+															<td class="slds-text-align_center">
+																<lightning:textarea maxlength="2000" disabled="{!eachItem.strApprovalStatus == 'Approved' ? true : false}"  value="{!eachItem.strPromotionJustification}" class="slds-m-top_xx-small" label="Input label" placeholder=" Reason" variant="label-hidden"></lightning:textarea>
+																<div id ="{!'PromoJusti' + indi}" style="color: red;"></div>
+															</td>-->
+															<td class="slds-text-align_center">
+																<c:POCModelDual selectedOptionListFL="{!eachItem.strFunctionalLearnings}" selectedOptionListBL="{!eachItem.strBehavioralLearnings}"/>
+																<div id ="{!'PromoLearning' + indi}" style="color: red;"></div>
+                                                            </td>
+                                                            	
+														</tr>
+													</tbody>
+												</table>
+                                                <aura:if isTrue="{!eachItem.strApprovalStatus != 'Approved'}">
+                                                    <table>
+                                                        <tr>
+                                                            <td style="width:10%" class="slds-p-left_xx-large slds-p-right_xx-small">
+                                                                <lightning:input
+                                                                    aura:id="managerDec"
+                                                                    type="checkbox"
+                                                                    variant="label-hidden"
+                                                                    messageWhenValueMissing="Required"
+                                                                    name="declaration"
+                                                                    label="true"
+                                                                    required="true"
+                                                                    checked="{!eachItem.managerDeclaration}"
+                                                                />
+                                                            </td>
+                                                            <td class="slds-p-left_xx-small slds-p-right_xx-large">
+                                                                <span class="manager-acknowledgement">
+                                                                    I acknowledge that I have had a conversation with the Employee and have provided Developmental Feedback. I acknowledge that providing my electronic approval is equivalent to signing this document and I understand that my electronic signature is binding.
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </aura:if>
+											</div>
+											<div class="slds-media__figure slds-media__figure_reverse"></div>
+										</div>
+									</lightning:layoutItem>
+								</lightning:accordionSection>
+								</lightning:accordion>
+                            </lightning:layout>
+                        </h3>
+                        <div class="">
+                            <lightning:accordion aura:id="accordion"
+                                                 allowMultipleSectionsOpen="true"
+                                                 onsectiontoggle="{! c.handleSectionToggleWithinAccordion }"
+                                                 activeSectionName="{! v.activeSectionWithinAccordion }"
+                                                 >    
+                                <lightning:accordionSection name="" label="Cumulative (All Roles)">
+                                    <!-- slds-table_fixed-layout -->
+                                    <table class="slds-table slds-no-row-hover slds-table_bordered slds-table_col-bordered">
+                                        <thead>
+                                            <tr class="slds-text-title_caps">
+                                                <th>
+                                                    <div class="" title="User Name">User Name</div>
+                                                </th>
+                                                <th>
+                                                    <div class="" title="Role Name">Role Name</div>
+                                                </th>
+                                                <th>
+                                                    <div class="" title="Start Date">Start Date</div>
+                                                </th>
+                                                <th>
+                                                    <div class="" title="End Date">End Date</div>
+                                                </th>
+                                                <th>
+                                                    <div class="" title="Total Qualified Targets (In Lacs)">Total Qualified Targets (In Lacs)</div>
+                                                </th>
+                                                <!-- <th>
+                                                    <div class="" title="Total Achievements (In Lacs)">Total Achievements (In Lacs)</div>
+                                                </th> -->
+                                                <th>
+                                                    <div class="" title="Total Qualified Response Revenue Print (In Lacs)">Total Qualified Response Revenue Print (In Lacs)</div>
+                                                </th>
+                                                <th>
+                                                    <div class="" title="Total Targets (In Lacs)">Total Targets (In Lacs)</div>
+                                                </th>
+                                                <th>
+                                                    <div class="" title="Total Response Revenue Print (In Lacs)">Total Response Revenue Print (In Lacs)</div>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <aura:iteration items="{!eachItem.lstWrapperIndividualRTA}" var="Item">
+                                                <tr class="slds-hint-parent">
+                                                    <td>
+                                                        <div class="slds-text-align_center" style="font-size: 0.8125rem;">{!Item.strUserName}</div>
+                                                    </td>
+                                                    <td>
+                                                        <div style="font-size: 0.8125rem;">{!Item.strRoleName}</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="slds-text-align_center" style="font-size: 0.8125rem;">{!Item.strStartDate}</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="slds-text-align_center" style="font-size: 0.8125rem;">{!Item.strEndDate}</div>
+                                                    </td>
+                                                    <td>
+                                                        <!--<lightning:input class="slds-text-align_center" variant="label-hidden" type="number" name="input4" readonly="true" value="{!Item.deciTotalTarget/100000}" label="Read-only number field" /> -->
+														<ui:inputNumber value="{!Item.deciTotalTarget/100000}" disabled="true" format="0.##" />
+                                                        <!-- <div class="slds-text-align_center" style="font-size: 0.8125rem;">{!Item.deciTotalTarget}</div> -->
+                                                    </td>
+                                                    <!-- <td> -->
+                                                        <!--<lightning:input class="slds-text-align_center" variant="label-hidden" type="number" name="input4" readonly="true" value="{!Item.deciTotalAchievement/100000}" label="Read-only number field" /> -->
+														<!-- <ui:inputNumber value="{!Item.deciTotalAchievement/100000}" disabled="true" format="0.##" /> -->
+                                                        <!-- <div class="slds-text-align_center" style="font-size: 0.8125rem;">{!Item.deciTotalAchievement}</div> -->
+                                                    <!-- </td> -->
+                                                    <td>
+														<ui:inputNumber value="{!Item.deciTotalResponseRevenue/100000}" disabled="true" format="0.##" />
+                                                    </td>
+                                                    <td>
+														<ui:inputNumber value="{!Item.deciActualTotalTarget/100000}" disabled="true" format="0.##" />
+                                                    </td>
+                                                    <td>
+														<ui:inputNumber value="{!Item.deciActualTotalPrintAchievement/100000}" disabled="true" format="0.##" />
+                                                    </td>
+                                                </tr>
+                                                
+                                            </aura:iteration>
+                                        </tbody>
+                                    </table>
+                                </lightning:accordionSection>
+                            </lightning:accordion>
+                        </div>
+                    </div>
+                </aura:iteration>
+                
+                <div class="slds-col showTargetBtnCls slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1 slds-text-align_center">
+                    
+                    <div class="slds-button-group slds-m-top_medium" >
+                        <!--<lightning:layout  multipleRows="false">-->
+                        <lightning:layoutItem padding="around-small">
+                            <aura:if isTrue="{!v.booleanDateCheck}">
+                                <lightning:button class="slds-m-top_small slds-m-bottom_small slds-theme_brand slds-align_absolute-center" variant="brand" label="Submit Assessment" onclick="{!c.onSubmitClick}" disabled="{!if(v.approvalStatus == 'Approved', true, false)}"></lightning:button>
+                            </aura:if>
+                        </lightning:layoutItem>
+                        
+                        <lightning:layoutItem padding="around-small">
+                            <!-- <aura:if isTrue="{!v.booleanDateCheck}"> -->
+                            <aura:if isTrue="true">
+                                <lightning:button class="slds-m-top_small slds-m-bottom_small slds-theme_brand slds-align_absolute-center" variant="brand" label="Save as draft" onclick="{!c.onSaveAsDraftClick}" disabled="{!if(v.approvalStatus == 'Approved', true, false)}"></lightning:button>
+                            </aura:if>
+                        </lightning:layoutItem>
+                        <!-- </lightning:layout> -->
+                    </div>
+                </div>
+            </aura:if>	
+        </div>
+    </lightning:card>
+</aura:component>

@@ -1,0 +1,1195 @@
+<aura:component 
+    implements="force:appHostable,force:hasSObjectName,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction"
+    access="global"  
+    controller = "bccl_AccountProjection"
+>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:registerEvent name="loadMyEvent" type="c:RoleProfileResult"/>
+    <aura:attribute name="Spinner" type="boolean" default="false"/>
+    <aura:attribute name="CheckVal" type="boolean" default="false"/>
+    <aura:attribute name="adminLogin" type = "boolean" default="false"/>
+    <aura:attribute 
+        name="modalHeader" 
+        type="String"  
+        description = "Holds the modal header name"
+    />
+    <aura:attribute 
+        name="isModalOpened" 
+        type="Boolean"
+        default = "false"
+        description = "Holds whether modal is opened or not"
+    />
+    <aura:attribute 
+        name="modalButtonLabel" 
+        type="String"                    
+        description = "Holds label of modal button"
+    />
+    <aura:attribute 
+        name="Msg" 
+        type="String"  
+        description = "popUp Msg"
+    />
+    <aura:attribute 
+        name="selectedAccountId" 
+        type="object"                      
+        description="Use,for store SELECTED sObject Record"
+    />
+    <aura:attribute 
+        name="selectedGeographyId" 
+        type="object"                      
+        description="Use,for store SELECTED sObject Record"
+    />
+
+    <aura:attribute name="selectedVerticalValue" type="String"/>
+    <aura:attribute name="disableCategoryPicklistFields" type="Boolean" default="false"/>
+    <aura:attribute name="verticalList" type="String[]"/>
+    <aura:attribute name="verticalCategoryList" type="String[]"/>
+    <aura:attribute name="selectedVerticalCategory" type="String"/>
+    <aura:attribute name="showSubCategoryList" type="Boolean" default="false"/>
+    <aura:attribute name="displayHorizontal" type="Boolean" default="true"/>
+    <aura:attribute name="displayVertical" type="Boolean" default="true"/>
+    <aura:attribute name="displayGeography" type="Boolean" default="true"/>
+    <aura:attribute name="displayRole" type="Boolean" default="true"/>
+    <aura:attribute name="selectedHorizontalValue" type="String"/>
+    <aura:attribute name="horizontalList" type="String[]"/>
+    <aura:attribute name="selectedRoleValue" type="String"/>
+    <aura:attribute name="selectedSalesOfficeValue" type="String"/>
+    <aura:attribute name="roleList" type="rsp_Role__c[]"/>
+    <aura:attribute name="salesOfficeList" type="String[]"/>
+    <aura:attribute name="displaySecondPanel" type="Boolean" default="true"/>
+    <aura:attribute name="displaySofficePanel" type="Boolean" default="false"/>
+    <aura:attribute name="displayVerticalPanel" type="Boolean" default="false"/>
+    <aura:attribute name="displayBranchPanel" type="Boolean" default="false"/>
+    <aura:attribute name="displayProjFilterButton" type="Boolean" default="false"/>
+    <aura:attribute name="displayProjButton" type="Boolean" default="true"/>
+    <aura:attribute name="displayOppButton" type="Boolean" default="true"/>
+    <aura:attribute name="displayFieldsPanel" type="Boolean" default="true"/>
+    <aura:attribute name="totalPrint" type="string"/>
+    <aura:attribute name="totalNonPrint" type="string"/>
+    <aura:attribute name="totalCreated" type="string"/>
+    <aura:attribute name="totalTarget" type="string"/>
+    <aura:attribute name="totalAmount" type="string"/>
+    <aura:attribute name="filter" type="String" />
+
+    <aura:attribute name="ProjectionAmount1" type="string"/>
+    <aura:attribute name="ProjectionAmount2" type="string"/>
+    <aura:attribute name="ProjectionAmount3" type="string"/>
+    <aura:attribute name="ProjectionAmount4" type="string"/>
+    <aura:attribute name="ProjectionAmount5" type="string"/>
+    <aura:attribute name="SelectedRoleName" type="string"/>
+
+    <aura:attribute name="projectionList" type="List" />
+    <aura:attribute name="projDataList" type="List" />
+    <aura:attribute name="sub" type="List" />
+    <aura:attribute name="selectedCases" type="List"/>
+    <aura:attribute name="fetchCases" type="List"/>
+    <aura:attribute name="columns" type="List"/>
+    <aura:attribute name="mycolumns" type="List"/>
+
+    <aura:attribute name="isModalOpen" type="boolean" default="false"/>
+    <aura:attribute name="isReasonModalOpen" type="boolean" default="false"/>
+    <aura:attribute name="isViewPrjModel" type="boolean" default="false"/>
+    <aura:attribute name="printProjAmt" type="String"/>
+    <aura:attribute name="nonprintProjAmt" type="String"/>
+    <aura:attribute name="createdProjAmt" type="String"/>
+    <aura:attribute name="probR" type="String"/>
+    
+    <aura:attribute name="closeDate" type="date"/>
+    <aura:attribute name="Description" type="String"/>
+    <aura:attribute name="Reason" type="String"/>
+
+    <aura:attribute name="isEditModalOpen" type="boolean" default="false"/>
+
+    <aura:attribute name="projectionValue1" type="string"/>
+    <aura:attribute name="projectionValue2" type="string"/>
+    <aura:attribute name="projectionValue3" type="string"/>
+    <aura:attribute name="projectionValue4" type="string"/>
+    <aura:attribute name="projectionValue5" type="string"/>
+
+    <aura:attribute name="nonprojectionValue1" type="string"/>
+    <aura:attribute name="nonprojectionValue2" type="string"/>
+    <aura:attribute name="nonprojectionValue3" type="string"/>
+    <aura:attribute name="nonprojectionValue4" type="string"/>
+    <aura:attribute name="nonprojectionValue5" type="string"/>
+
+    <aura:attribute name="createdprojectionValue1" type="string"/>
+    <aura:attribute name="createdprojectionValue2" type="string"/>
+    <aura:attribute name="createdprojectionValue3" type="string"/>
+    <aura:attribute name="createdprojectionValue4" type="string"/>
+    <aura:attribute name="createdprojectionValue5" type="string"/>
+
+
+    <aura:attribute name="p1" type="string"/>
+    <aura:attribute name="p2" type="string"/>
+    <aura:attribute name="p3" type="string"/>
+    <aura:attribute name="p4" type="string"/>
+    <aura:attribute name="p5" type="string"/>
+
+    <aura:attribute name="np1" type="string"/>
+    <aura:attribute name="np2" type="string"/>
+    <aura:attribute name="np3" type="string"/>
+    <aura:attribute name="np4" type="string"/>
+    <aura:attribute name="np5" type="string"/>
+
+    <aura:attribute name="cp1" type="string"/>
+    <aura:attribute name="cp2" type="string"/>
+    <aura:attribute name="cp3" type="string"/>
+    <aura:attribute name="cp4" type="string"/>
+    <aura:attribute name="cp5" type="string"/>
+
+    <aura:attribute name="probabilityValue" type="integer"/>
+    <aura:attribute name="PV1" type="integer"/>
+
+    <aura:attribute name="monthList" type="List" />
+    <aura:attribute name="yearList" type="List" />
+    <aura:attribute name="monthValue" type="string"/>
+    <aura:attribute name="yearValue" type="string"/>
+
+    <aura:attribute name="selectedMnthValue" type="String"/>
+    <aura:attribute name="mList" type="String[]"/>
+
+    <aura:attribute name="isHorizModal" type="boolean" default="false"/>
+    <aura:attribute name="proj" type="object"/>
+
+    <aura:attribute name="draftValues" type="Object" default="[]"/>
+    <aura:attribute name="errors" type="Object" default="[]"/>
+    
+    
+    <!--<aura:handler event="aura:waiting" action="{!c.showSpinner}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/>-->
+    <aura:if isTrue="{!v.Spinner}">        
+        <div >
+            <lightning:spinner aura:id="mySpinner" variant="brand"/>
+        </div> 
+    </aura:if>
+    
+    
+    <div class="slds-box slds-theme_default" >
+        <ui:scrollerWrapper class="scrollerSize">
+            <div class="slds-form-element">
+                <!--<b>Create Projections</b>-->
+                <b><span class="slds-card__header-title slds-truncate" title="Create Projections" data-aura-rendered-by="634:0">Projections</span></b>
+                <!--<button type="button"><a href="https://bcclresponse-qa1.lightning.force.com/lightning/r/Report/00OO0000000sUSd/view" target="_blank">View Report</a></button>
+                <div class="slds-page-header__row">
+                    <div class="slds-page-header__col-title">
+                        <div class="slds-media">
+                            <div class="slds-media__figure">
+                                <lightning:icon iconName="action:submit_for_approval" size="small" alternativeText="Indicates approval"/>
+                            </div>
+                            <div class="slds-media__body">
+                                <div class="slds-page-header__name">
+                                    <div class="slds-page-header__name-title">
+                                        <h1>
+                                            <span class="slds-page-header__title slds-truncate" title="Items To Approve">Projections</span>
+                                        </h1>
+                                    </div>
+                                </div>
+                                <p class="slds-page-header__name-meta">Create Projections</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>-->
+                <div class="headCont">
+                    <div class="slds-grid slds-wrap slds-grid_align-center slds-gutters">
+                        <!--ACCOUNT-->
+            
+                        <table style="margin-bottom: 14px;">
+                            <tr>
+                                <!--
+                                    <aura:if isTrue="{!v.displayVerticalPanel}">
+                                        <td>
+                                            <div class="slds-col ">
+                                                <ui:inputSelect aura:Id="verId" multiple="false" label="Select Vertical">
+                                                    <ui:inputSelectOption label="RETAIL" text="RETAIL"/>
+                                                    <ui:inputSelectOption label="MEDIA ENTERTAINMENT" text="MEDIA ENTERTAINMENT"/>
+                                                    <ui:inputSelectOption label="TELECOM" text="TELECOM"/>
+                                                    <ui:inputSelectOption label="REAL ESTATE" text="REAL ESTATE"/>
+                                                    <ui:inputSelectOption label="AIRLINES" text="AIRLINES"/>
+                                                    <ui:inputSelectOption label="EDUCATION" text="EDUCATION"/>
+                                                    <ui:inputSelectOption label="RETAIL HEALTHCARE AND PHARMA" text="RETAIL HEALTHCARE AND PHARMA"/>
+                                                    <ui:inputSelectOption label="CONS.SOFT AND OTC" text="CONS.SOFT AND OTC"/>
+                                                    <ui:inputSelectOption label="BFSI" text="BFSI"/>
+                                                    <ui:inputSelectOption label="B2B" text="B2B"/>
+                                                    <ui:inputSelectOption label="E BUSINESS" text="E BUSINESS"/>
+                                                    <ui:inputSelectOption label="CONS.DURABLES" text="CONS.DURABLES"/>
+                                                    <ui:inputSelectOption label="CONSUMER SERVICES" text="CONSUMER SERVICES"/>
+                                                    <ui:inputSelectOption label="CLOTHING / TEXTILES" text="CLOTHING / TEXTILES"/>
+                                                    <ui:inputSelectOption label="APPOINTMENTS" text="APPOINTMENTS"/>
+                                                    <ui:inputSelectOption label="B3+PSU" text="B3+PSU"/>
+                                                    <ui:inputSelectOption label="CLASSIFIEDS" text="CLASSIFIEDS"/>
+                                                    <ui:inputSelectOption label="OBIT / PERSONAL" text="OBIT / PERSONAL"/>
+                                                    <ui:inputSelectOption label="GOVERNMENT" text="GOVERNMENT"/>
+                                                    <ui:inputSelectOption label="INTERIOR DECOR" text="INTERIOR DECOR"/>
+                                                    <ui:inputSelectOption label="FOOD AND BEVERAGES" text="FOOD AND BEVERAGES"/>
+                                                    <ui:inputSelectOption label="LUXURY" text="LUXURY"/>
+                                                    <ui:inputSelectOption label="TRAVEL AND TOURISM" text="TRAVEL AND TOURISM"/>
+                                                    <ui:inputSelectOption label="INTERNATIONAL" text="INTERNATIONAL"/>
+                                                    <ui:inputSelectOption label="TECHNOLOGY" text="TECHNOLOGY"/>
+                                                    <ui:inputSelectOption label="AUTOMOBILES" text="AUTOMOBILES"/>
+                                                
+                                                </ui:inputSelect>
+                                            </div>
+                                        </td>
+                                    </aura:if>
+                                    
+                                    <aura:if isTrue="{!v.displayBranchPanel}">
+                                        <td>
+                                            <div class="slds-col ">
+                                                <ui:inputSelect aura:Id="BranchId" multiple="false" label="Select Branch">
+                                                    <ui:inputSelectOption label="LUCKNOW" text="LUCKNOW"/>
+                                                    <ui:inputSelectOption label="PUNE" text="PUNE"/>
+                                                    <ui:inputSelectOption label="NAGPUR" text="NAGPUR"/>
+                                                    <ui:inputSelectOption label="BANGALORE" text="BANGALORE"/>
+                                                    <ui:inputSelectOption label="BHOPAL" text="BHOPAL"/>
+                                                    <ui:inputSelectOption label="JAIPUR" text="JAIPUR"/>
+                                                    <ui:inputSelectOption label="GURGAON" text="GURGAON"/>
+                                                    <ui:inputSelectOption label="COCHIN" text="COCHIN"/>
+                                                    <ui:inputSelectOption label="HYDERABAD" text="HYDERABAD"/>
+                                                    <ui:inputSelectOption label="KOLKATTA" text="KOLKATTA"/>
+                                                    <ui:inputSelectOption label="CHANDIGARH" text="CHANDIGARH"/>
+                                                    <ui:inputSelectOption label="DELHI" text="DELHI"/>
+                                                    <ui:inputSelectOption label="AHMEDABAD" text="AHMEDABAD"/>
+                                                    <ui:inputSelectOption label="CHENNAI" text="CHENNAI"/>
+                                                    <ui:inputSelectOption label="MUMBAI" text="MUMBAI"/>
+                                                    <ui:inputSelectOption label="PATNA" text="PATNA"/>
+                                                    <ui:inputSelectOption label="BHUBANESHWAR" text="BHUBANESHWAR"/>
+                                                </ui:inputSelect>
+                                            </div>
+                                        </td>
+                                    </aura:if>
+                                -->
+                                <td>
+                                    <div class="slds-col" style="max-width: 430px;">
+                                        <div>
+                                            <lightning:select 
+                                                aura:id="categoryId" 
+                                                label="Select Role" onchange="{!c.onRoleChange}"
+                                                value="{!v.selectedRoleValue}"
+                                                disabled="{!v.disableCategoryPicklistFields}"
+                                            >
+                                                <option value="">--None--</option>                        
+                                                <aura:iteration items="{!v.roleList}" var="item">
+                                                    <option 
+                                                        value="{!item.Id}"
+                                                        selected="{!item.Id == v.selectedRoleValue}"
+                                                    >{!item.Name}</option>
+                                                </aura:iteration>                        
+                                            </lightning:select>
+                                        </div>
+                                    </div>
+                                </td>
+                                <aura:if isTrue="{!v.displayFieldsPanel}">  
+                                    <!--Shubham-->
+                                    <aura:if isTrue="{!v.displaySofficePanel}">
+                                        <td>
+                                            <div class="slds-col ">
+                                                <div>
+                                                    <lightning:select  
+                                                        aura:id="salesOffId" 
+                                                        label="Select Sales Office" 
+                                                        required="True" 
+                                                        value="{!v.selectedSalesOfficeValue}"
+                                                    >
+                                                        <option value="">--None--</option>                        
+                                                        <aura:iteration items="{!v.salesOfficeList}" var="item">
+                                                            <option 
+                                                                value="{!item.Id}"
+                                                                selected="{!item.Id == v.selectedSalesOfficeValue}"
+                                                            >{!item.Name}</option>
+                                                        </aura:iteration>                        
+                                                    </lightning:select>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </aura:if>
+                                    
+                                    <!--Shubham End-->
+                                    
+                                    <td>
+                                        <div class="slds-col">
+                                            <c:bccl_Lookup 
+                                                IconName="standard:account"
+                                                selectedRecord = "{!v.selectedAccountId}"
+                                                label = "Select Account"
+                                                indexNumber = ""
+                                                aura:id = "userLookUpId1"                                 
+                                                placeHolder = "Search Account.."
+                                                threshold = "3"
+                                                filterCondition = "select Id,Unique_Code__c,name from Account where Unique_Code__c!=NULL AND (Name like : searchKey OR Unique_Code__c like : searchKey)" 
+                                            />              
+                                        </div>
+                                    </td>
+                                    
+                                    
+                                    <!--  <td>
+                                        <div class="slds-col ">
+                                            <div>
+                                                <lightning:select  
+                                                    aura:id="categoryId" 
+                                                    label="Select Role" onchange="{!c.onRoleChange}"
+                                                    value="{!v.selectedRoleValue}"
+                                                    disabled="{!v.disableCategoryPicklistFields}"
+                                                >
+                                                    <option value="">None</option>                        
+                                                    <aura:iteration items="{!v.roleList}" var="item">
+                                                        <option 
+                                                            value="{!item.Id}"
+                                                            selected="{!item.Id == v.selectedRoleValue}"
+                                                        >{!item.Name}</option>
+                                                    </aura:iteration>                        
+                                                </lightning:select>
+                                            </div>
+                                        </div>
+                                    </td> --> 
+                                    <td>
+                                        <div class="slds-col ">
+                                            <ui:inputSelect aura:Id="makeId" multiple="false" label="Select Month">
+                                                <ui:inputSelectOption label="--None--" text="--None--"/>
+                                                <ui:inputSelectOption value="true" label="Current Month" text="Current Month"/>
+                                                <ui:inputSelectOption label="Next Month" text="Next Month"/>
+                                            </ui:inputSelect>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-col ">
+                                            <ui:inputSelect aura:Id="probId" multiple="false" required="True" label="Select Probability">
+                                                <ui:inputSelectOption label="--None--" text="--None--"/>
+                                                <ui:inputSelectOption label="High" text="High"/>
+                                                <ui:inputSelectOption label="Medium" text="Medium"/>
+                                                <ui:inputSelectOption label="Low" text="Low"/>
+                                            </ui:inputSelect>
+                                        </div>
+                                    </td>
+                                    
+                                </aura:if>
+                            </tr>
+                        </table>
+                        <!--
+                                                <aura:if isTrue="{!v.displaySecondPanel}">
+                                                <aura:if isTrue="{!v.displayGeography}">
+                                                <div class="slds-col ">
+                                                    <c:rspLookUp IconName="custom:rsp_geography__c"
+                                                    selectedRecord = "{!v.selectedGeographyId}"
+                                                    label = "Select Sales Office"
+                                                    indexNumber = ""
+                                                    aura:id = "userLookUpId5"                                 
+                                                    placeHolder = "Search Sales Office.."
+                                                    filterCondition = "select Id,name from rsp_geography__c where Name like : searchKey limit 5" />              
+                                                </div>
+                                            </aura:if>
+                                            
+                                            <aura:if isTrue="{!v.displayVertical}">     
+                                            <div class="slds-col ">
+                                                <div>
+                                                    <lightning:select  
+                                                    aura:id="categoryId" 
+                                                    label="Select Vertical" onchange="{!c.onCategoryChange}"
+                                                    value="{!v.selectedVerticalValue}"
+                                                    disabled="{!v.disableCategoryPicklistFields}">
+                                                    <option value="">None</option>                        
+                                                    <aura:iteration items="{!v.verticalList}" var="item">
+                                                    <option value="{!item.Id}"
+                                                    selected="{!item.Id == v.selectedVerticalValue}">{!item.Name}</option>
+                                                </aura:iteration>                        
+                                            </lightning:select>
+                                        </div>
+                                    </div>
+                                    <aura:if isTrue="{!v.showSubCategoryList}">
+                                    <div class="slds-col ">
+                                        <lightning:select  
+                                        aura:id="subCategoryId"
+                                        label="Select Vertical Category"
+                                        value="{!v.selectedVerticalCategory}"
+                                        onchange = "{!c.onSubCategoryChange}"
+                                        disabled="{!v.disableCategoryPicklistFields}">
+                                        <option value="">None</option>                        
+                                        <aura:iteration items="{!v.verticalCategoryList}" 
+                                        var="item">
+                                        <option value="{!item.Id}" 
+                                        selected="{!item.Id == v.selectedVerticalCategory}">
+                                        {!item.Name}
+                                    </option>
+                                </aura:iteration>                        
+                            </lightning:select>
+                        </div>
+                        </aura:if>
+                        </aura:if>
+
+                        <aura:if isTrue="{!v.displayHorizontal}">
+                        <div class="slds-col ">
+                            <div>
+                                <lightning:select  
+                                aura:id="categoryId" 
+                                label="Select Horizontal" onchange="{!c.onHorizontalChange}"
+                                value="{!v.selectedHorizontalValue}"
+                                disabled="{!v.disableCategoryPicklistFields}">
+                                <option value="">None</option>                        
+                                <aura:iteration items="{!v.horizontalList}" var="item">
+                                <option value="{!item.Id}"
+                                selected="{!item.Id == v.selectedHorizontalValue}">{!item.Name}</option>
+                            </aura:iteration>                        
+                        </lightning:select>
+                        </div>
+                        </div>
+                        </aura:if>
+                        </aura:if> 
+                        -->
+                        
+                        <!--
+                            <div class="slds-col slds-size-1-of-2 slds-p-bottom_small">
+                                <ui:inputSelect label="Select Month" class="dynamic" aura:id="monthID" change="{!c.onMonthPicklistChange}"/>
+                            </div>
+                            
+                            <div class="slds-col slds-size-1-of-2 slds-p-bottom_small">
+                                <ui:inputSelect label="Select Year" class="dynamic" aura:id="yearID" change="{!c.onYearPicklistChange}"/>
+                            </div>
+                        -->
+                        
+                        <!--PRINT-->
+                        <!--
+                            <br/><br/>
+                            <table>
+                                <tr>
+                                    <td class="slds-col"><b>Week</b>
+                                    </td>
+                                    <td class="slds-col"><b>Print Projections</b>
+                                    </td>
+                                    <td class="slds-col"><b>Non Print Projections</b>
+                                    </td>
+                                    <td class="slds-col"><b>Created Projections</b>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="slds-col">1</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-col">
+                                            <lightning:input type="string"
+                                            name="input"  
+                                            value="{!v.ProjectionAmount1}"/>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-col">
+                                            <lightning:input type="string"
+                                            name="input" 
+                                            value="{!v.nonprojectionValue1}"/>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-col">
+                                            <lightning:input type="string"
+                                            name="input" 
+                                            value="{!v.createdprojectionValue1}"/>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="slds-col">8</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-col">
+                                            <lightning:input type="string"
+                                            name="input" 
+                                            value="{!v.ProjectionAmount2}"/>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-col">
+                                            <lightning:input type="string"
+                                            name="input" 
+                                            value="{!v.nonprojectionValue2}"/>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-col">
+                                            <lightning:input type="string"
+                                            name="input" 
+                                            value="{!v.createdprojectionValue2}"/>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="slds-col">15</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-col">
+                                            <lightning:input type="string"
+                                            name="input" 
+                                            value="{!v.ProjectionAmount3}"/>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-col">
+                                            <lightning:input type="string"
+                                            name="input" 
+                                            value="{!v.nonprojectionValue3}"/>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-col">
+                                            <lightning:input type="string"
+                                            name="input" 
+                                            value="{!v.createdprojectionValue3}"/>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="slds-col">22</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-col">
+                                            <lightning:input type="string"
+                                            name="input" 
+                                            value="{!v.ProjectionAmount4}"/>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-col">
+                                            <lightning:input type="string"
+                                            name="input" 
+                                            value="{!v.nonprojectionValue4}"/>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-col">
+                                            <lightning:input type="string"
+                                            name="input" 
+                                            value="{!v.createdprojectionValue4}"/>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="slds-col">29</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-col">
+                                            <lightning:input type="string"
+                                            name="input" 
+                                            value="{!v.ProjectionAmount5}"/>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-col">
+                                            <lightning:input type="string"
+                                            name="input" 
+                                            value="{!v.nonprojectionValue5}"/>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-col">
+                                            <lightning:input type="string"
+                                            name="input" 
+                                            value="{!v.createdprojectionValue5}"/>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        -->
+                    </div>
+                </div>
+            </div>
+            <!--
+                <div class="slds-grid">
+                    <div class="slds-col">
+                        <lightning:input type="number" class="myCustomClass"
+                            id="pID"
+                            name="input" 
+                            label="Probability"
+                            value="{!v.probabilityValue}"
+                        />
+                    </div>
+                </div>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            -->
+            <div class="slds-form-element">
+                <div class="slds-col">   
+                    <aura:if isTrue="{!v.displayProjButton}">
+                        <lightning:button variant="brand" label="Create Projections" title="Create Projections" onclick="{!c.saveActProjection}" />
+                    </aura:if>
+                    <aura:if isTrue="{!v.displayOppButton}">
+                        <lightning:button variant="brand" label="Create Opportunity" title="Create Opportunity" onclick="{!c.openModel }" />
+                    </aura:if>
+                    
+                    <aura:if isTrue="{!v.displayProjFilterButton}">
+                        <lightning:button variant="brand" label="Filter Projections" title="View Projections" onclick="{!c.filterProjection}" />
+                    </aura:if>
+                    <legend class="slds-form-element__legend slds-form-element__label" style="margin-right: -7px; float: right; font-size: 14px;margin-bottom: 12px;"><span style="vertical-align: sub;">Search: </span>
+                        <lightning:input type="search" placeholder="Type Text to Search" onchange="{!c.filter}" value="{!v.filter}" style="width: 270px;float: right; display: flex;" />
+                    </legend>
+                </div>
+            </div>
+            <aura:if isTrue="{!v.adminLogin}">
+                <div class="slds-m-around_medium">
+                    <center style="font-size:large;color:#FF2400">
+                        <h1>* Only last 200 projections records are being displayed.</h1>
+                    </center>
+                </div>
+            </aura:if>
+            <!--</div>-->
+            <!--<lightning:button variant="brand" label="Edit Projections" title="Edit Projection" onclick="{!c.openEditModel }" />-->
+            <div class="slds-form-element">
+                <div class="slds-scrollable" style="height: 15rem;min-width: 100%;">
+                    
+                    <lightning:datatable  
+                        data="{!v.projectionList}"
+                        columns="{!v.mycolumns}"
+                        keyField="id"
+                        hideCheckboxColumn="false"
+                        onrowselection="{!c.handleSelect}"
+                        aura:id="acctTable"
+                        draftValues="{! v.draftValues }"
+                        onsave="{!c.updateProjectionNEWVALUE}"
+                        errors="{! v.errors }"
+                    />
+                </div>
+                <table>
+                    <tr>
+                        <td>
+                            <div class="slds-col " style="padding: 10px;">
+                                <span style="font-weight:bold">Print(Total): </span> <ui:outputNumber value="{!v.totalPrint}" /> Lacs
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-col " style="padding: 10px;">
+                                <span style="font-weight:bold">Non Print(Total): </span> <ui:outputNumber value="{!v.totalNonPrint}" /> Lacs
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-col " style="padding: 10px;">
+                                <span style="font-weight:bold">Created(Total): </span> <ui:outputNumber value="{!v.totalCreated}" /> Lacs
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-col " style="padding: 10px;">
+                                <span style="font-weight:bold">Total Amount: </span> <ui:outputNumber value="{!v.totalAmount}" /> Lacs
+                            </div>
+                        </td>
+                        <!--<td>
+                            <div class="slds-col " style="padding: 10px;">
+                                Total Target Value: <ui:outputText value="{!v.totaltarget}" />
+                            </div>
+                        </td>-->
+                    </tr>
+                </table>
+                
+                <!--Shubham Reason Model-->
+                <aura:if isTrue="{!v.isReasonModalOpen}">
+                    <!-- Modal/Popup Box starts here-->
+                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                        <div class="slds-modal__container">
+                            <!-- Modal/Popup Box Header Starts here-->
+                            <header class="slds-modal__header">
+                                <lightning:buttonIcon 
+                                    iconName="utility:close"
+                                    onclick="{! c.closeModel }"
+                                    alternativeText="close"
+                                    variant="bare-inverse"
+                                    class="slds-modal__close"
+                                />
+                                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Please Enter Justification For Change</h2>
+                            </header>
+                            <!--Modal/Popup Box Body Starts here-->
+                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                                <lightning:input type="textarea" name="Reason" label="Reason" value="{!v.Reason}" />            
+                            </div>
+                            <!--Modal/Popup Box Footer Starts here-->
+                            <footer class="slds-modal__footer">
+                                <lightning:button 
+                                    variant="neutral"
+                                    label="Cancel"
+                                    title="Cancel"
+                                    onclick="{! c.closeModel }"
+                                />
+                                <lightning:button 
+                                    variant="brand"
+                                    label="Save"
+                                    title="Save"
+                                    onclick="{!c.newProjectionwithReason}" 
+                                    aura:id="disablebuttonid"
+                                />
+                            </footer>
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>
+                </aura:if>
+                
+                <!--Shubham Reason Model End-->
+                
+                <!--Shubham View Projections Model-->
+                <aura:if isTrue="{!v.isViewPrjModel}">
+                    <!-- Modal/Popup Box starts here-->
+                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                        <div class="slds-modal__container">
+                            <!-- Modal/Popup Box Header Starts here-->
+                            <header class="slds-modal__header">
+                                <lightning:buttonIcon 
+                                    iconName="utility:close"
+                                    onclick="{! c.closeModel }"
+                                    alternativeText="close"
+                                    variant="bare-inverse"
+                                    class="slds-modal__close"
+                                />
+                                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Filter Criteria</h2>
+                            </header>
+                            <!--Modal/Popup Box Body Starts here-->
+                            <div class="headCont">
+                                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                                    
+                                    <!--ACCOUNT-->
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <div class="slds-col Custom_td ">
+                                                    <div>
+                                                        <lightning:select  
+                                                            aura:id="categoryId" 
+                                                            label="Select Role" onchange="{!c.onRoleChange}"
+                                                            value="{!v.selectedRoleValue}"
+                                                            disabled="{!v.disableCategoryPicklistFields}"
+                                                        >
+                                                            <option value="">--None--</option>                        
+                                                            <aura:iteration items="{!v.roleList}" var="item">
+                                                                <option 
+                                                                    value="{!item.Id}"
+                                                                    selected="{!item.Id == v.selectedRoleValue}"
+                                                                >{!item.Name}</option>
+                                                            </aura:iteration>                        
+                                                        </lightning:select>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="slds-col Custom_td">
+                                                    <c:bccl_Lookup 
+                                                        IconName="standard:account"
+                                                        selectedRecord = "{!v.selectedAccountId}"
+                                                        label = "Select Account"
+                                                        indexNumber = ""
+                                                        aura:id = "userLookUpId1"                                 
+                                                        placeHolder = "Search Account.."
+                                                        filterCondition = "select Id,Unique_Code__c,name from Account where Unique_Code__c!=NULL AND Name like : searchKey" 
+                                                    />              
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="slds-col Custom_td">
+                                                    <ui:inputSelect aura:Id="makeId1" multiple="false" label="Select Month">
+                                                        <ui:inputSelectOption label="None" text="None"/>
+                                                        <ui:inputSelectOption label="Current Month" text="Current Month"/>
+                                                        <ui:inputSelectOption label="Next Month" text="Next Month"/>
+                                                    </ui:inputSelect>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="slds-col Custom_td">
+                                                    <!--  <lightning:select aura:Id="probId1" label="Select Probability">
+                                                        <option value="">None</option>
+                                                        <option value="High">High</option>
+                                                        <option value="Medium">Medium</option>
+                                                        <option value="Low">Low</option>
+                                                    </lightning:select>-->
+                                                    <ui:inputSelect aura:Id="probId1" multiple="false" label="Select Probability">
+                                                        <ui:inputSelectOption label="None" text="None"/>
+                                                        <ui:inputSelectOption label="High" text="High"/>
+                                                        <ui:inputSelectOption label="Medium" text="Medium"/>
+                                                        <ui:inputSelectOption label="Low" text="Low"/>
+                                                    </ui:inputSelect>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <aura:if isTrue="{!v.displayVerticalPanel}">
+                                                <td>
+                                                    <div class="slds-col Custom_td">
+                                                        <ui:inputSelect aura:Id="vertical" multiple="false" label="Select Vertical">
+                                                            <ui:inputSelectOption label="None" text="None"/>
+                                                            <ui:inputSelectOption label="RETAIL" text="RETAIL"/>
+                                                            <ui:inputSelectOption label="MEDIA ENTERTAINMENT" text="MEDIA ENTERTAINMENT"/>
+                                                            <ui:inputSelectOption label="TELECOM" text="TELECOM"/>
+                                                            <ui:inputSelectOption label="REAL ESTATE" text="REAL ESTATE"/>
+                                                            <ui:inputSelectOption label="AIRLINES" text="AIRLINES"/>
+                                                            <ui:inputSelectOption label="EDUCATION" text="EDUCATION"/>
+                                                            <ui:inputSelectOption label="RETAIL HEALTHCARE AND PHARMA" text="RETAIL HEALTHCARE AND PHARMA"/>
+                                                            <ui:inputSelectOption label="CONS.SOFT AND OTC" text="CONS.SOFT AND OTC"/>
+                                                            <ui:inputSelectOption label="BFSI" text="BFSI"/>
+                                                            <ui:inputSelectOption label="B2B" text="B2B"/>
+                                                            <ui:inputSelectOption label="E BUSINESS" text="E BUSINESS"/>
+                                                            <ui:inputSelectOption label="CONS.DURABLES" text="CONS.DURABLES"/>
+                                                            <ui:inputSelectOption label="CONSUMER SERVICES" text="CONSUMER SERVICES"/>
+                                                            <ui:inputSelectOption label="CLOTHING / TEXTILES" text="CLOTHING / TEXTILES"/>
+                                                            <ui:inputSelectOption label="APPOINTMENTS" text="APPOINTMENTS"/>
+                                                            <ui:inputSelectOption label="B3+PSU" text="B3+PSU"/>
+                                                            <ui:inputSelectOption label="CLASSIFIEDS" text="CLASSIFIEDS"/>
+                                                            <ui:inputSelectOption label="OBIT / PERSONAL" text="OBIT / PERSONAL"/>
+                                                            <ui:inputSelectOption label="GOVERNMENT" text="GOVERNMENT"/>
+                                                            <ui:inputSelectOption label="INTERIOR DECOR" text="INTERIOR DECOR"/>
+                                                            <ui:inputSelectOption label="FOOD AND BEVERAGES" text="FOOD AND BEVERAGES"/>
+                                                            <ui:inputSelectOption label="LUXURY" text="LUXURY"/>
+                                                            <ui:inputSelectOption label="TRAVEL AND TOURISM" text="TRAVEL AND TOURISM"/>
+                                                            <ui:inputSelectOption label="INTERNATIONAL" text="INTERNATIONAL"/>
+                                                            <ui:inputSelectOption label="TECHNOLOGY" text="TECHNOLOGY"/>
+                                                            <ui:inputSelectOption label="AUTOMOBILES" text="AUTOMOBILES"/>
+                                                            
+                                                        </ui:inputSelect>
+                                                    </div>
+                                                </td>
+                                            </aura:if>
+                                            
+                                            <aura:if isTrue="{!v.displayBranchPanel}">
+                                                <td>
+                                                    <div class="slds-col Custom_td">
+                                                        <ui:inputSelect aura:Id="BranchId1" multiple="false" label="Select Branch">
+                                                            <ui:inputSelectOption label="None" text="None"/>
+                                                            <ui:inputSelectOption label="LUCKNOW" text="LUCKNOW"/>
+                                                            <ui:inputSelectOption label="PUNE" text="PUNE"/>
+                                                            <ui:inputSelectOption label="NAGPUR" text="NAGPUR"/>
+                                                            <ui:inputSelectOption label="BANGALORE" text="BANGALORE"/>
+                                                            <ui:inputSelectOption label="BHOPAL" text="BHOPAL"/>
+                                                            <ui:inputSelectOption label="JAIPUR" text="JAIPUR"/>
+                                                            <ui:inputSelectOption label="GURGAON" text="GURGAON"/>
+                                                            <ui:inputSelectOption label="COCHIN" text="COCHIN"/>
+                                                            <ui:inputSelectOption label="HYDERABAD" text="HYDERABAD"/>
+                                                            <ui:inputSelectOption label="KOLKATTA" text="KOLKATTA"/>
+                                                            <ui:inputSelectOption label="CHANDIGARH" text="CHANDIGARH"/>
+                                                            <ui:inputSelectOption label="DELHI" text="DELHI"/>
+                                                            <ui:inputSelectOption label="AHMEDABAD" text="AHMEDABAD"/>
+                                                            <ui:inputSelectOption label="CHENNAI" text="CHENNAI"/>
+                                                            <ui:inputSelectOption label="MUMBAI" text="MUMBAI"/>
+                                                            <ui:inputSelectOption label="PATNA" text="PATNA"/>
+                                                            <ui:inputSelectOption label="BHUBANESHWAR" text="BHUBANESHWAR"/>
+                                                        </ui:inputSelect>
+                                                    </div>
+                                                </td>
+                                            </aura:if>
+                                            <!--Shubham-->
+                                            <aura:if isTrue="{!v.displaySofficePanel}">
+                                                <td>
+                                                    <div class="slds-col Custom_td">
+                                                        <div>
+                                                            <lightning:select  
+                                                                aura:id="salesOffId" 
+                                                                label="Select Sales Office" 
+                                                                value="{!v.selectedSalesOfficeValue}"
+                                                            >
+                                                                <option value="">--None--</option>                        
+                                                                <aura:iteration items="{!v.salesOfficeList}" var="item">
+                                                                    <option 
+                                                                        value="{!item.Id}"
+                                                                        selected="{!item.Id == v.selectedSalesOfficeValue}"
+                                                                    >{!item.Name}</option>
+                                                                </aura:iteration>                        
+                                                            </lightning:select>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </aura:if>
+                                            <!--Shubham End-->
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <!--Modal/Popup Box Footer Starts here-->
+                            <footer class="slds-modal__footer">
+                                <lightning:button 
+                                    variant="neutral"
+                                    label="Cancel"
+                                    title="Cancel"
+                                    onclick="{! c.closeModel }"
+                                />
+                                <lightning:button 
+                                    variant="brand"
+                                    label="Search"
+                                    title="Search"
+                                    onclick="{!c.filterProjection}" 
+                                    aura:id="disablebuttonid"
+                                />
+                            </footer>
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>
+                </aura:if>
+                
+                <!--Shubham View Projections Model End-->
+                
+                
+                <aura:if isTrue="{!v.isModalOpen}">
+                    <!-- Modal/Popup Box starts here-->
+                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                        <div class="slds-modal__container">
+                            <!-- Modal/Popup Box Header Starts here-->
+                            <header class="slds-modal__header">
+                                <lightning:buttonIcon 
+                                    iconName="utility:close"
+                                    onclick="{! c.closeModel }"
+                                    alternativeText="close"
+                                    variant="bare-inverse"
+                                    class="slds-modal__close"
+                                />
+                                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Create Opportunity</h2>
+                            </header>
+                            <!--Modal/Popup Box Body Starts here-->
+                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                                <lightning:input type="date" name="Proposed Close Date" label="Proposed Close Date" value="{!v.closeDate}" />
+                                <lightning:input type="textarea" name="Opportunity Description" label="Opportunity Description" value="{!v.Description}" />            
+                                
+                                <aura:if isTrue="{!v.isHorizModal}">     
+                                    <!--VERTICAL-->
+                                    <div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--3-of-12 slds-p-bottom_small">
+                                        <div>
+                                            <lightning:select  
+                                                aura:id="categoryIdV" 
+                                                label="Select Vertical" onchange="{!c.onCategoryChange}"
+                                                value="{!v.selectedVerticalValue}"
+                                                disabled="{!v.disableCategoryPicklistFields}"
+                                            >
+                                                <option value="">--None--</option>                        
+                                                <aura:iteration items="{!v.verticalList}" var="item">
+                                                    <option 
+                                                        value="{!item.Id}"
+                                                        selected="{!item.Id == v.selectedVerticalValue}"
+                                                    >{!item.Name}</option>
+                                                </aura:iteration>                        
+                                            </lightning:select>
+                                        </div>
+                                    </div>
+                                    <!--VERTICAL ENDS-->
+                                    
+                                    <!--VERTICAL CATEGORY-->
+                                    <aura:if isTrue="{!v.showSubCategoryList}">
+                                        <div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--3-of-12 slds-p-bottom_small">
+                                            <lightning:select  
+                                                aura:id="subCategoryIdV"
+                                                label="Select Vertical Category"
+                                                value="{!v.selectedVerticalCategory}"
+                                                onchange = "{!c.onSubCategoryChange}"
+                                                disabled="{!v.disableCategoryPicklistFields}"
+                                            >
+                                                <option value="">--None--</option>                        
+                                                <aura:iteration 
+                                                    items="{!v.verticalCategoryList}" 
+                                                    var="item"
+                                                >
+                                                    <option 
+                                                        value="{!item.Id}" 
+                                                        selected="{!item.Id == v.selectedVerticalCategory}"
+                                                    >
+                                                        {!item.Name}
+                                                    </option>
+                                                </aura:iteration>                        
+                                            </lightning:select>
+                                        </div>
+                                    </aura:if>
+                                    <!--VERTICAL CATEGORY ENDS-->
+                                </aura:if>
+                                
+                            </div>
+                            <!--Modal/Popup Box Footer Starts here-->
+                            <footer class="slds-modal__footer">
+                                <lightning:button 
+                                    variant="neutral"
+                                    label="Cancel"
+                                    title="Cancel"
+                                    onclick="{! c.closeModel }"
+                                />
+                                <lightning:button 
+                                    variant="brand"
+                                    label="Save"
+                                    title="Save"
+                                    onclick="{!c.createOpp}" 
+                                    aura:id="disablebuttonid"
+                                />
+                            </footer>
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>
+                </aura:if>
+
+                <!--
+        <aura:if isTrue="{!v.isEditModalOpen}">
+                <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                    <div class="slds-modal__container">
+                        <header class="slds-modal__header">
+                            <lightning:buttonIcon iconName="utility:close"
+                                                onclick="{!c.closeEditModel}"
+                                                alternativeText="close"
+                                                variant="bare-inverse"
+                                                class="slds-modal__close"/>
+                            <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Edit Revenue Projection</h2>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                <table>
+            <tr>
+                <td class="slds-col"><b>Week</b>
+                </td>
+                <td class="slds-col"><b>Print Projection</b>
+                </td>
+                <td class="slds-col"><b>Non Print Projection</b>
+                </td>
+                <td class="slds-col"><b>Created Projection</b>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                <div class="slds-col">1</div>
+                </td>
+                <td>
+                <div class="slds-col" style="width:150px !IMPORTANT">
+                    <lightning:input type="string"
+                    name="input"  
+                    value="{!v.p1}"/>
+                </div>
+                </td>
+                <td>
+                <div class="slds-col" style="width:150px !IMPORTANT">
+                    <lightning:input type="string"
+                    name="input" 
+                    value="{!v.np1}"/>
+                </div>
+                </td>
+                <td>
+                <div class="slds-col" style="width:150px !IMPORTANT">
+                    <lightning:input type="string"
+                    name="input" 
+                    value="{!v.cp1}"/>
+                </div>
+                </td>
+            </tr>
+            <tr>
+            <td>
+                <div class="slds-col">8</div>
+                </td>
+                <td>
+                <div class="slds-col" style="width:150px !IMPORTANT">
+                    <lightning:input type="string"
+                    name="input" 
+                    value="{!v.p2}"/>
+                </div>
+                </td>
+                <td>
+                <div class="slds-col" style="width:150px !IMPORTANT">
+                    <lightning:input type="string"
+                    name="input" 
+                    value="{!v.np2}"/>
+                </div>
+                </td>
+                <td>
+                <div class="slds-col" style="width:150px !IMPORTANT">
+                    <lightning:input type="string"
+                    name="input" 
+                    value="{!v.cp2}"/>
+                </div>
+                </td>
+            </tr>
+            <tr>
+            <td>
+                <div class="slds-col">15</div>
+                </td>
+                <td>
+                <div class="slds-col" style="width:150px !IMPORTANT">
+                    <lightning:input type="string"
+                    name="input" 
+                    value="{!v.p3}"/>
+                </div>
+                </td>
+                <td>
+                <div class="slds-col" style="width:150px !IMPORTANT">
+                    <lightning:input type="string"
+                    name="input" 
+                    value="{!v.np3}"/>
+                </div>
+                </td>
+                <td>
+                <div class="slds-col" style="width:150px !IMPORTANT">
+                    <lightning:input type="string"
+                    name="input" 
+                    value="{!v.cp3}"/>
+                </div>
+                </td>
+            </tr>
+            <tr>
+            <td>
+                <div class="slds-col">22</div>
+                </td>
+                <td>
+                <div class="slds-col" style="width:150px !IMPORTANT">
+                    <lightning:input type="string"
+                    name="input" 
+                    value="{!v.p4}"/>
+                </div>
+                </td>
+                <td>
+                <div class="slds-col" style="width:150px !IMPORTANT">
+                    <lightning:input type="string"
+                    name="input" 
+                    value="{!v.np4}"/>
+                </div>
+                </td>
+                <td>
+                <div class="slds-col" style="width:150px !IMPORTANT">
+                    <lightning:input type="string"
+                    name="input" 
+                    value="{!v.cp4}"/>
+                </div>
+                </td>
+            </tr>
+            <tr>
+            <td>
+                <div class="slds-col">29</div>
+                </td>
+                <td>
+                <div class="slds-col" style="width:150px !IMPORTANT">
+                    <lightning:input type="string"
+                    name="input" 
+                    value="{!v.p5}"/>
+                </div>
+                </td>
+                <td>
+                <div class="slds-col" style="width:150px !IMPORTANT">
+                    <lightning:input type="string"
+                    name="input" 
+                    value="{!v.np5}"/>
+                </div>
+                </td>
+                <td>
+                <div class="slds-col" style="width:150px !IMPORTANT">
+                    <lightning:input type="string"
+                    name="input" 
+                    value="{!v.cp5}"/>
+                </div>
+                </td>
+            </tr>
+            </table><br/><br/>
+            <lightning:input type="number"
+                    id="pID"
+                    name="input" 
+                    label="Probability"
+                    value="{!v.PV1}"
+                    />
+
+                        </div>
+                        <footer class="slds-modal__footer">
+                            <lightning:button variant="neutral"
+                                            label="Cancel"
+                                            title="Cancel"
+                                            onclick="{!c.closeEditModel}"/>
+                            <lightning:button variant="brand"
+                                            label="Save"
+                                            title="Save"
+                                            onclick="{!c.onSaveCall}"/>
+                        </footer>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+        </aura:if>
+        -->
+            </div>
+        </ui:scrollerWrapper>
+    </div>
+</aura:component>

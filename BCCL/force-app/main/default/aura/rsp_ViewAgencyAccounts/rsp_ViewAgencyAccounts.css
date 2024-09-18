@@ -1,0 +1,9 @@
+.THIS {
+}
+.THIS .slds-card__body {
+    padding-left: 2%;
+    padding-top: none;
+}
+.THIS .button {
+    text-align: center;
+}

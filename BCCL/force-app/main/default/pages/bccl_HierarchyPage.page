@@ -1,0 +1,99 @@
+<apex:page Controller="bccl_HierarchyController" showHeader="false" sidebar="false">
+    <apex:form >
+        <html>
+            <style type='text/css'> 
+            p{ 
+                background-color:gray; 
+                color:white;
+                margin: 10px;
+                font-size:9px;
+            } 
+
+            div 
+            { 
+                color: black; 
+                background-color: 009900;
+                margin: 2px; 
+                font-size: 9px;
+            } 
+
+            table
+            {
+                color: blue;
+                font-size: 12px;
+            }
+            </style> 
+            <head>
+                <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+                <script type="text/javascript"> 
+                    google.charts.load('current', {packages:["orgchart"]});
+                    google.charts.setOnLoadCallback(drawChart);
+
+                    function drawChart() {
+                        //debugger;
+                        var data = new google.visualization.DataTable();
+                        data.addColumn('string', 'Name');
+                        data.addColumn('string', 'Manager');
+                        data.addColumn('string', 'ToolTip');
+
+                        var myList = new Array();
+                        myList = {!listHierarchyRoles};
+                        //alert(myList.length);
+
+                        data.addRows(myList);
+
+                        // Create the chart.
+                        var chart = new google.visualization.OrgChart(document.getElementById('chart_div'));
+                        // Draw the chart, setting the allowHtml option to true for the tooltips.
+
+                        // The select handler. Call the chart's getSelection() method
+                        function selectHandler() {
+
+                            var selectedItem = chart.getSelection()[0];
+
+                            if (selectedItem) {
+                                var value = data.getValue(selectedItem.row, 0);
+                                //alert('The user selected is ' + value);
+                                var collapsed = chart.getCollapsedNodes();
+                                // if the node is collapsed, we want to expand it
+                                // if it is not collapsed, we want to collapse it
+                                var collapse = (collapsed.indexOf(row) == -1);
+                                chart.collapse(row, collapse);
+                                // clear the selection so the next click will work properly
+                                chart.setSelection();
+                            }
+                        }
+
+                        // Listen for the 'select' event, and call my function selectHandler() when
+                        // the user selects something on the chart.
+                        google.visualization.events.addListener(chart, 'select', selectHandler);
+                        chart.draw(data, {allowHtml:true,allowCollapse:true});
+                    }
+                </script>
+            </head>
+            <body>
+                <!--            <table>
+                <tr>
+                    <td>Vertical</td>
+                    <td>Geography</td>
+                </tr>
+                <tr>
+                    <td>
+                        <apex:selectList value="{!VerticalList}" size="1">
+                            <apex:selectOptions value="{!items}"/>
+                        </apex:selectList>
+                    </td>
+                    <td>
+                        <apex:selectList value="{!GeographyList}" size="1">
+                            <apex:selectOptions value="{!geoItems}"/>
+                        </apex:selectList>
+                    </td>
+                </tr>
+                </table><br/><br/>
+                <apex:commandbutton value="Get Hierarchy" action="{!fetchHierarchy}" id="fetchHierarchy"/>
+-->
+                <div id="chart_div"></div>
+            </body>
+        </html>
+    </apex:form>
+</apex:page>

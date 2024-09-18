@@ -1,0 +1,54 @@
+<aura:component controller="rsp_GetOpportunityFromProductHandler" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" access="global" >
+    <aura:handler name="init"
+                  value="{!this}" 
+                  action="{!c.doInit}"/>
+    <ltng:require styles="/resource/slds272/assets/styles/salesforce-lightning-design-system-ltng.min.css" />
+    <aura:attribute name = "opplst" type = "Opportunity[]"/>
+    <lightning:layout>
+        <aura:if isTrue="{!and(v.opplst , v.opplst.length > 0)}">
+            <div>
+                <lightning:layoutItem padding="around-small">
+                    <p><b>Opportunity Records</b>
+                    </p>
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                
+                                <th class="slds-text-title_caps" scope="col" >
+                                    <div class="slds-truncate" title="Opportunity Name">Opportunity Name</div>
+                                </th>
+                                
+                                <th class="slds-text-title_caps" scope="col" >
+                                    <div class="slds-truncate" title="Stage Name">Stage Name</div>
+                                </th>
+                                
+                                <th class="slds-text-title_caps" scope="col" >
+                                    <div class="slds-truncate" title="Close Date">Close Date</div>
+                                </th>
+                                
+                                <th class="slds-text-title_caps" scope="col" >
+                                    <div class="slds-truncate" title="Amount">Amount</div>
+                                </th>
+                                
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:iteration items="{!v.opplst}" var="item" indexVar = "index">
+                               <!-- <tr class="slds-hint-parent">
+                                    <td><ui:outputText value ="{!item.Name}" aura:id= "{!item.Id}" click="{!c.goToRecord}"/> </td>
+                                    <td>{!item.StageName}</td>
+                                    <td>{!item.CloseDate}</td>
+                                    <td>{!item.Amount}</td>
+                                </tr> -->
+                                <c:rsp_viewopportunityonProductChild oppData="{!item}"/>
+                            </aura:iteration>
+                        </tbody>
+                    </table>
+                </lightning:layoutItem>
+            </div>
+            <aura:set attribute="else">
+                No Opportunity Found for this Product.
+            </aura:set>
+        </aura:if>
+    </lightning:layout>
+</aura:component>

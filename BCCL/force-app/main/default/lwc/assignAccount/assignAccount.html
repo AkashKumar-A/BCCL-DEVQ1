@@ -1,0 +1,124 @@
+<!-- sldsValidatorIgnore -->
+<template>
+    <lightning-card title="Assign Accounts">
+        <lightning-spinner lwc:if={showSpinner} variant="brand" size="medium"></lightning-spinner>
+        <template lwc:if={showAssignmentsModal}>
+            <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container" style="width: 70%; max-width: 100%;">
+                    <lightning-button-icon 
+                        class="slds-modal__close"
+                        icon-name="utility:close"
+                        title="Cancel and close"
+                        size="large"
+                        variant="bare-inverse"
+                        onclick={closeAssignmentsModal}
+                    ></lightning-button-icon>
+                    <div class="slds-modal__header">
+                        <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">All Assignments</h1>
+                    </div>
+                    <div class="slds-modal__content slds-p-horizontal_medium" id="modal-content-id-1">
+                        <lightning-datatable
+                            key-field="Id"
+                            columns={assignmentColumns}
+                            data={assignments}
+                            selected-rows={selectedAssignments}
+                            onrowselection={assignmentSelected}
+                            show-row-number-column
+                            hide-checkbox-column
+                        ></lightning-datatable>
+                    </div>
+                    <div class="slds-modal__footer">
+                        <lightning-layout>
+                            <lightning-layout-item>
+                                <div lwc:if={greenWarning} class="green-color">
+                                    Note: Currently active assignment.
+                                </div>
+                                <div lwc:if={orangeWarning} class="orange-color">
+                                    Note: Most recent assignment.
+                                </div>
+                            </lightning-layout-item>
+                            <lightning-layout-item alignment-bump="left">
+                                <lightning-button 
+                                    class="slds-button"
+                                    label="Close" 
+                                    onclick={closeAssignmentsModal}
+                                ></lightning-button>
+                            </lightning-layout-item>
+                        </lightning-layout>
+                    </div>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+        </template>
+        <lightning-layout vertical-align="end">
+            <lightning-layout-item padding="horizontal-small" size="3">
+                <c-searchable-combobox
+                    class="auto-width-combobox"
+                    label="Select Role"
+                    data-name="role"
+                    options={roleList}
+                    value={selectedRole}
+                    onchange={fieldChanged}
+                    placeholder="Type to search..."
+                ></c-searchable-combobox>
+            </lightning-layout-item>
+            <lightning-layout-item>
+                <lightning-button
+                    label="Search Accounts"
+                    title="Search Accounts"
+                    icon-name="utility:search"
+                    onclick={searchAccounts}
+                ></lightning-button>
+            </lightning-layout-item>
+            <lightning-layout-item lwc:if={accountsAvailable} padding="horizontal-small">
+                <lightning-input
+                    label="Search Accounts"
+                    placeholder="Type something.."
+                    data-name="search"
+                    type="search"
+                    value={searchTerm}
+                    onchange={fieldChanged}
+                ></lightning-input>
+            </lightning-layout-item>
+            <lightning-layout-item lwc:if={accountsAvailable}>
+                <lightning-button
+                    label={buttonLabel}
+                    variant="brand"
+                    title={buttonLabel}
+                    disabled={disabledAssignmentButton}
+                    onclick={handleAssignmentButtonClick}
+                ></lightning-button>
+            </lightning-layout-item>
+            <lightning-layout-item alignment-bump="left" padding="horizontal-small" lwc:if={accountsAvailable}>
+                <lightning-input
+                    class="toggle-class"
+                    type="toggle"
+                    name="unassignedfilter"
+                    message-toggle-active="Unassigned Accounts"
+                    message-toggle-inactive="All Accounts"
+                    checked={showUnassigned}
+                    onchange={toggleFilterChange}
+                ></lightning-input>
+            </lightning-layout-item>
+        </lightning-layout>
+
+        <div lwc:if={accountsAvailable} class="datatable-div slds-scrollable_y">
+            <lightning-datatable
+                key-field="Id"
+                columns={accountColumns}
+                data={data}
+                selected-rows={selectedAccounts}
+                draft-values={draftValues}
+                is-loading={loadingMoreAccounts}
+                errors={errors}
+                enable-infinite-loading={infiniteLoadingEnabled}
+                suppress-bottom-bar
+                onrowselection={accountSelected}
+                onrowaction={getAssignmentDetails}
+                onheaderaction={handleHeaderAction}
+                oncellchange={handleInlineEdit}
+                onloadmore={loadMoreRecords}
+            ></lightning-datatable>
+        </div>
+    </lightning-card>
+</template>

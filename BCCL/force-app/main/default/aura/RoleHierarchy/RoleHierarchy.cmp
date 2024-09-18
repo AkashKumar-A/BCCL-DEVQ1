@@ -1,0 +1,126 @@
+<aura:component controller="showRoleHierarchy" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global">
+    <!--<aura:attribute name="hData" type="String" description="Hierarchy Data"/>-->
+    <aura:attribute name="verticals" type="String[]"/>
+    <aura:attribute name="geographies" type="String[]"/>
+    <aura:attribute name="hierarchyTypeString" type="String"/>
+    <aura:attribute name="enableRoleHierarchy" type="Boolean" default="false"/>
+    <aura:attribute name="showHierachyValues" type="Boolean" default="false"/>
+    <aura:attribute name="invokedFromTab" type="Boolean" default="True"/>
+    <aura:attribute name ="rootNode1" type="kkltng.HierarchyComponentController"/>
+    <aura:attribute name="listGeographyWrapper" type="showRoleHierarchy.geographyListWrapper[]"/>
+
+
+    <aura:handler name="init" action="{!c.doinit}" value="{!this}"/>
+    <aura:registerEvent name="kkltng:rebuildhierarchy"
+                        type="kkltng:rebuildhierarchy"/>
+    
+    <!-- To show Role hiearchy from the tab  -->
+    <aura:if isTrue="{!v.invokedFromTab}">
+        <lightning:card title="Hierarchy Structure" class="lgtCard">
+            
+            <!--<lightning:layout horizontalAlign="center">-->
+                <div class="slds-grid slds-wrap slds-align_absolute-center">
+                    <div class="slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-3">
+                        <lightning:layoutItem padding="around-medium">
+                            <lightning:select label="Select Hierarchy Type" aura:id="hierarchyID" 
+                                              onchange="{!c.getHierarchy}">
+                                <option text="--Select a value--" value=""/>
+                                <option text="Vertical" value="Vertical"/>
+                                <option text="Horizontal" value="Horizontal"/>
+                                <option text="Geography" value="Geography"/>
+                            </lightning:select>
+                        </lightning:layoutItem>
+                    </div>
+                
+                <aura:if isTrue="{!v.showHierachyValues}">
+                    <div class="slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-3">
+                        <lightning:layoutItem padding="around-medium">
+                            <lightning:select label="{! 'Select ' + v.hierarchyTypeString+':'}" aura:id="verticalID" 
+                                              onchange="{!c.getVerticalRoles}">
+                                <!--<option text="" value=""/>-->
+                                <aura:if isTrue ="{!v.verticalID == Null}"><option text="--Select--"/>
+                                <aura:set attribute="else">    
+                                <option text="--Select--" value=""/>
+                                  </aura:set>  
+                                 </aura:if> 
+                                <aura:iteration items="{!v.verticals}" var="item">
+                                    <option text="{!item.label}" value="{!item.value}" selected="{!item.selected}"/>
+                                </aura:iteration>
+                            </lightning:select>
+                        </lightning:layoutItem>
+                    </div>
+                    <div class="slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-3">
+                        <lightning:layoutItem padding="around-medium">
+                            <aura:if isTrue="{!v.hierarchyTypeString != 'Geography'}">
+                                <lightning:select label="{!'Select Geography'}" aura:id="geoId" 
+                                                  onchange="{!c.getVerticalANDGeoRoles}">
+                                    <option text="--Select--" value="true"/>
+                                    <aura:iteration items="{!v.geographies}" var="item">
+                                        <option text="{!item.label}" value="{!item.value}" selected="{!item.selected}"/>
+                                    </aura:iteration>
+                                </lightning:select>
+                            </aura:if>
+                        </lightning:layoutItem>
+                    </div>
+                </aura:if>
+                    
+                </div>
+                
+            <!--</lightning:layout>--> 
+            
+            <div class="slds-align_absolute-center">
+            <div class="slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-3">
+                 <div class="slds-text-align_center divHeight">
+                     <lightning:button variant="brand" class="actionBtn" label="Reset"
+                                                  onclick="{!c.resetValues}" />
+                     </div>
+            </div>
+        </div>
+        </lightning:card>
+        
+    </aura:if>
+    <aura:if isTrue="{!and(v.enableRoleHierarchy, v.invokedFromTab)}">
+        <div class="slds-scrollable_x slds-scrollable cstm_div1">
+            <span class="cstm_span_height">
+                <kkltng:Hierarchy aura:id="rebuildHierarchy" hierarchyData=""
+                                  apexClassForData="showRoleHierarchy"
+                                  fetchFullData="true" 
+                                  apexInput="this is a test"
+                                  showSearch="false"
+                                  />
+            </span>
+        </div>
+    </aura:if>
+    <!-- To show hiearchy on role Detail page -->
+    <aura:if isTrue="{!and(v.enableRoleHierarchy, (!v.invokedFromTab))}">
+        <article class="slds-card">
+            <div class="slds-card__header slds-grid">
+                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                    <div class="slds-media__figure">
+                        <span class="slds-icon_container slds-icon-standard-account" title="Roles">
+                            <lightning:icon iconName="custom:custom47" alternativeText="" 
+                                            size="small" />
+                            <span class="slds-assistive-text">account</span>
+                        </span>
+                    </div>
+                    <div class="slds-media__body">
+                        <h2 class="slds-card__header-title">
+                            <div class="slds-card__header-link slds-truncate" 
+                                 title="Hierarchy Structure">
+                                <span class="slds-text-heading_small">Hierarchy Structure</span>
+                            </div>
+                        </h2>
+                    </div>
+                </header>
+            </div>
+            <div class="slds-card__body">
+                <kkltng:Hierarchy aura:id="rebuildHierarchy" hierarchyData=""
+                                  apexClassForData="showRoleHierarchy"
+                                  fetchFullData="false" 
+                                  apexInput="this is a test"
+                                  showSearch="false"
+                                  />
+            </div>
+        </article>
+    </aura:if>
+</aura:component>

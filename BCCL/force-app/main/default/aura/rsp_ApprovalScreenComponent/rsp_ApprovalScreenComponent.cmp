@@ -1,0 +1,10 @@
+<aura:component controller ="rspQuotePlatformTriggerHandler" 
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+	<aura:handler name="init"
+                  value="{!this}" 
+                  action="{!c.doInit}"/>
+    <aura:attribute name = "html_Data" type = "String"/>
+    <div class="slds-form-element" style="background:white">
+    <aura:unescapedHtml value="{!v.html_Data}"/>
+        </div>
+</aura:component>

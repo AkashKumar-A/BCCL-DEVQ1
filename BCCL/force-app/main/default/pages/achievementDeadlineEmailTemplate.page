@@ -1,0 +1,90 @@
+<apex:page controller="AchievementDeadlineController">
+    <div style="margin: 0pt 2% 0pt; width: 96%;">
+        <div style="text-align: center; color: #080707; font-size: 21pt; font-family: Helvetica, sans-serif;">
+            <b>Pending Open Achievements</b>
+        </div>
+            <table style="width: 100%">
+                <tr>
+                    <td style="width: 50%;">
+                        <div style="color: #080707; font-size: 21pt; font-family: Helvetica, sans-serif; text-align: left;">
+                            <b>Branch: </b>
+                            <span style="font-weight: normal;">{!branchName}</span>
+                        </div>
+                    </td>
+                    <td style="width: 50%;">
+                        <div style="color: #080707; font-size: 21pt; font-family: Helvetica, sans-serif; text-align: right;">
+                            <b>Month: </b>
+                            <span style="font-weight: normal;">{!monthName}</span>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        <div style="margin-top: 30pt;">
+            <div style="padding: 5pt 0pt; color:#16325C; font-size:9pt; font-family: Helvetica, sans-serif; ">
+                As per President Response guidelines, open achievements should be assigned on or before 7th of the month
+            </div>
+            <table border="1" style="border-collapse: collapse; width: 100%">
+                <tbody>
+                    <tr>
+                        <td nowrap="" style="padding: 4pt 2pt 2pt 3pt;">
+                            <div style="color: #000; font-size: 11pt; font-family: Helvetica, sans-serif;">
+                                <span>
+                                    Vertical {!horizontal}
+                                </span>
+                            </div>
+                        </td>
+                        <td nowrap="" style="padding: 4pt 2pt 2pt 3pt;">
+                            <div style="color: #000; font-size: 11pt; font-family: Helvetica, sans-serif;">
+                                <span>
+                                    Role Name
+                                </span>
+                            </div>
+                        </td>
+                        <td nowrap="" style="padding: 4pt 2pt 2pt 3pt;">
+                            <div style="color: #000; font-size: 11pt; font-family: Helvetica, sans-serif;">
+                                <span>
+                                    User Name
+                                </span>
+                            </div>
+                        </td>
+                        <td nowrap="" style="padding: 4pt 2pt 2pt 3pt;">
+                            <div style="color: #000; font-size: 11pt; font-family: Helvetica, sans-serif;">
+                                <span>
+                                    Open Achievement Value
+                                </span>
+                            </div>
+                        </td>
+                    </tr>
+                    <apex:repeat value="{!rowList}" var="row">
+                    <tr>
+                        <apex:repeat value="{!row.columnList}" var="col">
+                        <td nowrap="" valign="top" rowspan="{!col.rowSpan}" colspan="{!col.colSpan}" style="{!col.style}">
+                            <div style="color: #16325C; font-size: 9pt; font-family: Helvetica, sans-serif;">
+                                <span>
+                                    {!col.data}
+                                </span>
+                            </div>
+                        </td>
+                        </apex:repeat>
+                    </tr>
+                    </apex:repeat>
+                    <tr>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td nowrap="" style="padding: 4pt 2pt 2pt 3pt;">
+                            <div style="color: #000; font-size: 11pt; font-family: Helvetica, sans-serif;">
+                                <b>Total: </b>
+                            </div>
+                        </td>
+                        <td nowrap="" style="padding: 4pt 2pt 2pt 3pt;">
+                            <div style="color: #000; font-size: 11pt; font-family: Helvetica, sans-serif;">
+                                <b>{!totalValue}</b>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</apex:page>

@@ -1,0 +1,51 @@
+<aura:component controller="bccl_GetGeoLocation" access="global" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName">        
+     <!-- attributes -->
+    <aura:attribute name="recordId" type="Id"/>
+    <aura:attribute name="latitude" type="Decimal"/>
+    <aura:attribute name="longitude" type="Decimal"/>
+    <aura:attribute name="spinner" type="boolean" default="FALSE"/>
+    <aura:attribute name="displayMap" type="boolean" default="FALSE"/>
+    <aura:attribute name="disableButton" type="boolean" default="TRUE"/>
+    <aura:attribute name="disableCheckInButton" type="boolean" default="FALSE"/>
+    <aura:attribute name="disableCheckOutButton" type="boolean" default="FALSE"/>
+    <aura:attribute name="disableGeoButton" type="boolean" default="FALSE"/>
+    <aura:attribute name="objClassController" type="string"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> 
+    
+    <!--aura handler with waiting and done waiting events-->
+    <aura:handler event="aura:waiting" action="{!c.showSpinner}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/>
+
+     <!--loading spinner start-->
+    <aura:if isTrue="{!v.spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading...</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </aura:if>
+    <!-- Loading spinner end--> 
+    <div><b>Please make sure that GPS/Location service is enabled on your device.</b></div>
+    <div><b>Please after clicking on the button, tap/click anywhere on the screen(if the screen doesn't move ahead after 30 seconds).</b></div><br/>
+    <aura:if isTrue="{!v.disableButton}">
+    	<center>
+            <lightning:button onclick="{!c.geoLocationFunc}" disabled="{!v.disableGeoButton}" label="Get Geo Location" variant="brand"/>
+            <br/><br/>
+            <aura:if isTrue="{!v.disableGeoButton}">
+                <div><b>Please wait while we fetch your Location.</b></div>
+                <div><b>It may take sometime depending on your internet speed, location and server traffic.</b></div>
+                <div><b>Please tap/touch anywhere on the screen after 30 seconds if the screen doesn't load/move ahead.</b></div>
+            </aura:if>
+        </center>
+    </aura:if>
+	<aura:if isTrue="{!v.displayMap}">
+        <center>
+            <lightning:button onclick="{!c.checkInFunc}" disabled="{!v.disableCheckInButton}"  label="Check In" variant="brand"/>
+            <lightning:button onclick="{!c.checkOutNewFunc}" disabled="{!v.disableCheckOutButton}"  label="Check Out" variant="brand"/>
+        <div>Address- {!v.objClassController}</div>
+        </center><br/>
+    </aura:if>
+</aura:component>

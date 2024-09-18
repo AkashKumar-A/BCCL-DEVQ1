@@ -1,0 +1,19 @@
+<design:component label="Custom Four-ColumneBTN Layout">
+    
+	<flexipage:template>
+        
+        <flexipage:region name="BTN1_col" defaultWidth="Large" />
+        <flexipage:region name="BTN2_col" defaultWidth="Large" />
+        <flexipage:region name="BTN3_col" defaultWidth="Large" />
+        <flexipage:region name="BTN4_col" defaultWidth="Large" />
+       
+        <flexipage:region name="left_col" defaultWidth="Large" />
+        <flexipage:region name="leftmid_col" defaultWidth="Large" />
+        <flexipage:region name="rightmid_col" defaultWidth="Large" />
+        <flexipage:region name="right_col" defaultWidth="Large" />
+                
+        <flexipage:region name="footer" defaultWidth="Large" />
+        
+     </flexipage:template>
+    
+</design:component>

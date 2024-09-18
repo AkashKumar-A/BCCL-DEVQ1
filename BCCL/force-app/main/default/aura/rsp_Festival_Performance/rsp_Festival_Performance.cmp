@@ -1,0 +1,10 @@
+<aura:component Controller="rsp_TableauController" implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:appHostable" access="global" >
+    <aura:handler name="init"
+                  value="{!this}" 
+                  action="{!c.doInit}"/>
+    <aura:attribute name = "url" type = "String"/>
+    <aura:if isTrue="{!$Browser.isTablet || $Browser.isPhone}">
+        <a href="{!v.url}" target="_blank">View - Festival Performance</a>
+    </aura:if>
+    <iframe src="{!v.url}" width="100%" height="900px;" class="ifr"/>        
+</aura:component>

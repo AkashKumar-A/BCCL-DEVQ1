@@ -1,0 +1,221 @@
+<aura:component implements="c:rsp_OCAAppScreenInterface,force:appHostable,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction,lightning:actionOverride" 
+                access="global" 
+                controller = "CustQuestAppScreenCtrl">
+    <aura:attribute name="disableApproval" type="Boolean" default="true" />
+    <aura:handler name="init" 
+                  value="{!this}" 
+                  action="{!c.doInit}"/>
+    <aura:attribute name="lstOfAppQuest" 
+                    type="CustQuestAppScreenCtrl.WrapperMain"  
+                    description = ""/>
+    
+    <aura:attribute name="QuestionaireForUpdate" type="map" />
+    <aura:attribute name="valueParent" type="rsp_OCA_questionnaire__c[]" />
+    <aura:attribute name="accept" type="List" default="['.jpg', '.jpeg', '.png', '.txt']"/>
+    <aura:attribute name="multiple" type="Boolean" default="false"/>
+    <aura:attribute name="disabled" type="Boolean" default="false"/>
+    <aura:attribute name="answersFeedbackSubmitted" type="String[]" default="Yes,No,NA,Not Acted"/>
+    <aura:attribute name="answers" type="String[]" default="Yes,No,NA,Not Acted"/>    
+    <aura:attribute name="profileList" type="Profile__c[]"/>
+    <aura:attribute name="selectedProfile" type="String" access="PRIVATE"/>
+    <aura:attribute name="mapProfileVSUser" type="map" access="PRIVATE"/>
+    
+    <aura:attribute name="msg" type ="String" default="OCA records has been approved successfully."/>
+    <aura:attribute name="prefixURL" type="String" default="/sfc/servlet.shepherd/version/download/" />
+    
+    <aura:attribute name ="hideSubmitButton" type="Boolean" default="false" />
+    <aura:attribute name="isModalOpened" 
+                    type="Boolean"
+                    default = "false"
+                    description = "Holds whether modal is opened or not"/>
+    
+    
+    
+    
+    <div class="slds-scrollable--y">
+        <div class="">
+            <lightning:layout class="slds-page-header slds-page-header--object-home">
+                <lightning:layoutItem>
+                    <lightning:icon iconName="standard:scan_card" alternativeText="My Expenses"/>
+                </lightning:layoutItem>
+                <lightning:layoutItem padding="horizontal-small">
+                    <div class="page-section page-header">
+                        <h1 class="slds-text-heading--label">Approve OCA</h1>
+                        <h2>
+                            
+                        </h2>
+                    </div>
+                </lightning:layoutItem>
+            </lightning:layout>
+        </div>
+        <div style ="background : #fff">
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_2-of-4">
+                <lightning:layoutItem padding="around-small">
+                    <lightning:select name="profileName" 
+                                      label="Profiles for selecting Questions:" 
+                                      aura:id="profileId" 
+                                      value="{!v.selectedProfile}" 
+                                      onchange="{!c.onProfileSelect}">
+                        <option value="" text="--NONE--"></option>
+                        <aura:iteration items="{!v.profileList}" var="varProfile">
+                            <option value="{!varProfile.Id}" text="{!varProfile.Name}"></option>
+                        </aura:iteration>
+                    </lightning:select>
+                </lightning:layoutItem>
+            </div>
+            
+            
+            <div class="slds-p-around_small">
+                <aura:iteration items="{!v.lstOfAppQuest.lstWrapHeader}" var="varHeader" indexVar = "index">
+                    <H1 class="slds-text-heading_medium slds-p-around_small" style="background-color : #F3F2F2">{!varHeader.strHeader}</H1> <br/>
+                    <div class="slds-m-left_medium">
+                        <aura:iteration items="{!varHeader.lstWrapSubHeader}" var="varSubHeader" indexVar = "index">
+                            <H2 class="slds-text-heading_small slds-p-around_small" style="background-color : #E9EAEC">{!varSubHeader.strSubHeader}</H2>
+                            <div >
+                                <lightning:accordion aura:id="accordion" activeSectionName="a">
+                                    <aura:iteration items="{!varSubHeader.lstWrapQuestion}" var="varQuestion" indexVar = "index">
+                                        <div class="slds-m-left_x-small">
+                                            <lightning:accordionSection name="TableAccordian" label="{!varQuestion.strQuestion}">
+                                                
+                                                <table class="slds-table slds-table--bordered slds-table--cell-buffer slds-max-medium-table_stacked-horizontal">
+                                                    <thead>
+                                                        <tr class="slds-text-title--caps">
+                                                            <th title="User Name">
+                                                                <span class="slds-truncate" title="Name">User Name</span>      
+                                                            </th>
+                                                            <th title="Risk Category">
+                                                                <span class="slds-truncate" title="Name">Risk Category</span>      
+                                                            </th>
+                                                            <th title="Risk Statement">
+                                                                <span class="slds-truncate" title="Name">Risk Statement</span>      
+                                                            </th>
+                                                            <th title="Sample Size">
+                                                                <span class="slds-truncate" title="Name">Sample Size</span>      
+                                                            </th>
+                                                            <th title="Feedback (Submitted)">
+                                                                <span class="slds-truncate" title="Name">Feedback (Submitted)</span>      
+                                                            </th>
+                                                            <th title="Remarks (Submitted)">
+                                                                <span class="slds-truncate" title="Name">Remarks (Submitted)</span>      
+                                                            </th>
+                                                            <th title="Feedback">
+                                                                <span class="slds-truncate" title="Name">Feedback</span>      
+                                                            </th>
+                                                            <th title="Remarks (If any)">
+                                                                <span class="slds-truncate" title="Name">Remarks (If any)</span>      
+                                                            </th>
+                                                            <th title="Attachment">
+                                                                <span class="slds-truncate" title="Name">Attachment</span>      
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <aura:iteration items="{!varQuestion.lstWrapQuestionaire}" var="varQuestionnaire" indexVar = "index">
+                                                            <tr>
+                                                                <td data-label="User Name" style="white-space:normal;">
+                                                                    <ui:outputText value="{!varQuestionnaire.strAssignedToUserName}" aura:id="detailContURL12"/>
+                                                                </td>
+                                                                <td data-label="Risk Category" style="white-space:normal;">
+                                                                    <ui:outputText value="{!varQuestionnaire.objQuestionaire.rsp_Risk_Category__c}" aura:id="RiskCat"/>
+                                                                </td>
+                                                                <td data-label="Risk Statement" style="white-space:normal;">
+                                                                    <ui:outputText value="{!varQuestionnaire.objQuestionaire.rsp_Risk_Statement__c}" aura:id="RistState"/>
+                                                                </td>
+                                                                <td data-label="Sample Size" style="white-space:normal;">
+                                                                    <ui:outputText value="{!varQuestionnaire.objQuestionaire.rsp_Sample_Size__c}" aura:id="SampleSize"/>
+                                                                </td>
+                                                                <td data-label="Feedback (Submitted)" scope="row">
+                                                                    <lightning:select name="ansId" aura:id="ansId" class="lightning-disbaled-pointers-event" value="{!varQuestionnaire.objQuestionaire.rsp_Answer__c}" disabled ="true">
+                                                                        <aura:iteration items="{!v.answersFeedbackSubmitted}" var="optionFeedback">
+                                                                            <option text="{!optionFeedback}" value="{!optionFeedback}" selected="{!varQuestionnaire.objQuestionaire.rsp_Answer__c}"/>
+                                                                        </aura:iteration>
+                                                                    </lightning:select>
+                                                                </td>
+                                                                <td data-label="Remarks (Submitted)" scope="row">
+                                                                    <lightning:textarea name="input1"  value="{!varQuestionnaire.objQuestionaire.rsp_Reason__c}" disabled="true"  />  
+                                                                </td>
+                                                                <td data-label="Feedback" scope="row">
+                                                                    <lightning:select name="appAnsId" aura:id="appAnsId" value="{!varQuestionnaire.objQuestionaire.rsp_Approver_Feedback__c}" disabled ="false">
+                                                                        <aura:iteration items="{!v.answers}" var="option">
+                                                                            <option text="{!option}" value="{!option}" />
+                                                                        </aura:iteration>
+                                                                    </lightning:select>
+                                                                </td>
+                                                                <td data-label="Remarks (If any)" scope="row">
+                                                                    <lightning:textarea name="input1"  value="{!varQuestionnaire.objQuestionaire.rsp_Approver_Remarks__c}" disabled="false" required = "{!if(varQuestionnaire.objQuestionaire.rsp_Approver_Feedback__c == 'No',true,false)}"  />  
+                                                                    <div id ="{!varQuestionnaire.objQuestionaire.Id + index}" style="color: red;"></div>
+                                                                </td>
+                                                                <td data-label="Attachment">
+                                                                    <div class="slds-grid slds-gutters">
+                                                                        <!--<div class="slds-col slds-size_1-of-3">
+                                                                        <div class="customFileUpload">
+                                                                            <lightning:fileUpload
+                                                                                                  label=  "abcd"
+                                                                                                  multiple="{!v.multiple}"
+                                                                                                  
+                                                                                                  accept="{!v.accept}"
+                                                                                                  disabled="false"
+                                                                                                  recordId ="{!varQuestionnaire.objQuestionaire.Id}"
+                                                                                                  name = "{!varQuestionnaire.objQuestionaire.Id}"
+                                                                                                  onuploadfinished="{!c.handleUploadFinished}"                   
+                                                                                                  />
+                                                                        </div>
+                                                                    </div>-->
+                                                                        <div class="slds-col slds-size_2-of-3 fileViewDiv">
+                                                                            <aura:iteration items="{!varQuestionnaire.lstdoc}" var="docVar" indexVar = "docIndex">
+                                                                                <aura:renderIf isTrue= "{!if(varQuestionnaire.objQuestionaire.Id == docVar.LinkedEntityId,true,false)}">
+                                                                                    <lightning:fileCard fileId="{!docVar.ContentDocumentId}" hideDescription = "true" />
+                                                                                </aura:renderIf>
+                                                                            </aura:iteration>
+                                                                            <div id ="{!varQuestionnaire.objQuestionaire.Id}" style="color: red;">
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                                
+                                                            </tr>
+                                                        </aura:iteration>
+                                                    </tbody>
+                                                </table>
+                                                
+                                            </lightning:accordionSection>
+                                            <!-- <c:mapEntryChild map="{!v.lstOfAppQuest.mapQuestionVSQuestionaire}" mapQuestionnaire="{!v.lstOfAppQuest.mapQuestionairesForUpdate}" key="{!varQuestion.strQuestion}"/><br/>  -->
+                                        </div>
+                                    </aura:iteration>
+                                </lightning:accordion>
+                            </div>
+                        </aura:iteration>
+                    </div>
+                </aura:iteration>
+            </div>
+            <div style = "display: block;margin-left: auto;margin-right: auto;width: fit-content;margin-top: 2%;margin-bottom:2%">
+                <aura:renderIf isTrue="{!!v.objSurveyQuestion.objOCASurvey.rsp_Is_submitted__c}">
+                    <lightning:button variant="brand" disabled="{!v.disableApproval}" label="Submit/Approve" title="Brand action" onclick="{!c.approveQuestionnaire}"/>
+                </aura:renderIf>
+            </div>
+            <aura:if isTrue = "{!v.isModalOpened}">
+                <div class="demo-only" style="height: 640px;">
+                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                        <div class="slds-modal__container">
+                            <header class="slds-modal__header">
+                                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                                </button>
+                                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">OCA Confirmation</h2>
+                            </header>
+                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                                <p>{!v.msg}</p>
+                            </div>
+                            <footer class="slds-modal__footer">
+                                <lightning:button variant="brand" label="Ok" title="Brand action" onclick="{! c.closeBtn}" />
+                            </footer>
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>
+                </div>
+            </aura:if>
+        </div>
+    </div> 
+    
+    
+    
+</aura:component>

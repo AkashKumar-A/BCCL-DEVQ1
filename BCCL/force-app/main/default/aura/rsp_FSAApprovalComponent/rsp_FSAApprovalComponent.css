@@ -1,0 +1,37 @@
+.THIS .headCont{
+    padding:15px;
+    background:#fff;
+}
+
+.THIS .slds-table td, .THIS .slds-table th
+{
+    padding:10px;
+}
+
+.THIS.slds-table td::before
+{
+    
+    font-weight:bold;
+}
+
+.THIS .tipCont 
+{
+   position:relative;
+   overflow:unset;
+}
+
+.THIS .tipCont .slds-dropdown
+{
+    position: absolute;
+    left: -80px;
+}
+
+.THIS.scrollerSize{
+    height: 100%;
+    width: 100%;
+    
+}
+
+.THIS.btncssfilter{
+   margin-top: 20px; 
+}

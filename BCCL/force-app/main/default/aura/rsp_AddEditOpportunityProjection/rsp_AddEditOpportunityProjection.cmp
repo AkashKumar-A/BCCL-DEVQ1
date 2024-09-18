@@ -1,0 +1,255 @@
+<!--
+Parent Opportunity projection Lightning Component
+-->
+<aura:component controller="rsp_AddEditOppProjectionController" Implements="flexipage:availableForRecordHome,force:hasRecordId,
+                                                                            force:appHostable,force:hasRecordId,
+                                                                            forceCommunity:availableForAllPageTypes,
+                                                                            force:lightningQuickAction">
+    <!--
+    Init handler which is call doInit js function on component Load
+    -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <!--
+     Aura Attributes
+     -->
+    <aura:attribute name="oppProjectionList" type="rsp_Opportunity_Projection__c[]"  />
+    <aura:attribute name="totalAmount" type="Decimal" default="0.00"/>
+    <aura:attribute name="totalPercentage" type="Integer" default="0"/>
+
+    <aura:attribute name="existingOppProjectionList" type="rsp_Opportunity_Projection__c[]"/>
+    <aura:attribute name="isDisplayProjectionTable" type="Boolean" default="false"/>
+    <aura:attribute name="isViewMode" type="Boolean" default="false"/>
+    <!--Added by Ashish-->
+    <aura:attribute name="isViewModeTillProposal" type="Boolean" default="false"/>    
+	<!--   End -->
+    <aura:attribute name="isViewModeForClosedOpp" type="Boolean" default="false"/>
+    <aura:attribute name="oppProjection" type="rsp_Opportunity_Projection__c" default="{'sobjectType':'rsp_Opportunity_Projection__c'}" />
+    <aura:attribute name="oppRecord" type="Opportunity" default="{'sobjectType':'Opportunity'}" />
+    <aura:attribute name="selectedFrequency" type="String" default="Weekly" />
+    <aura:attribute name="numberOfRowsList" type="Integer[]"/>
+
+    <aura:attribute name="oldStartDateValue" type="Date"/>
+    <aura:attribute name="oldEndDateValue" type="Date"/>
+    <aura:attribute name="oldFrequency" type="String"/>
+    <aura:attribute name="initialEstimatedAmount" type="Integer"/>
+    <aura:attribute name="oldEstimatedAmount" type="Integer"/>
+    <aura:attribute name="previousEstimatedAmount" type="Integer"/>
+    <aura:attribute name="isFilterChanged" type="Boolean" default="false"/>
+    <aura:attribute name="disableSaveButton" type="Boolean" default="false"/>
+    <aura:attribute name="isCreatingProjection" type="Boolean" default="false"/>
+    <aura:attribute name="disableCreateProjectionButton" type="Boolean" default="false"/>
+    <aura:attribute name="oppRecordId" type="Id" />
+    <aura:attribute name="currentOppRecordId" type="Id" />
+    
+    <aura:attribute name="errorMsg" type="String" />
+    <aura:attribute name="projectionErrorMsg" type="String" />
+
+
+    <aura:attribute name="picklistValues" type="Object" />
+    <c:PickListComponent sObjectName="Opportunity" fieldName="rsp_Frequency__c" picklistValues="{!v.picklistValues}" />
+
+
+    <!--Header Part-->
+    <div class="slds-page-header">
+        <center><h1 class="slds-page-header__title">Add/Edit Opportunity Projection</h1></center>
+    </div>
+    <ui:scrollerWrapper class="scrollerSize">
+        <aura:if isTrue="{!not(empty(v.projectionErrorMsg))}">
+            <ui:message title="Error" severity="error" closable="true">
+                {!v.projectionErrorMsg}
+            </ui:message>
+        </aura:if>
+    <div class="c-container">
+        <div class="slds-grid slds-wrap">
+            <div class="slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-3">
+                <lightning:layoutItem padding="around-small">
+                    <lightning:input type="number" value="{!v.oppRecord.rsp_Estimated_Amount__c}"
+                                     name="input1" label="Projection Amount(In Lacs)" min="0" 
+                                     disabled="{!or(v.isViewMode,v.isViewModeTillProposal)}"
+                                     onchange="{!c.onEstimatedAmountChange}"
+                                     onkeyup="{!c.setEstimatedAmount}"
+                                     maxlength="11"
+                                     step="any"
+                                     onblur="{!c.checkProjectionAmount}"
+                                     aura:Id="projectionAmount"/>
+                </lightning:layoutItem>
+            </div>
+
+            <div class="slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-3">
+                <lightning:layoutItem padding="around-small">
+                    <lightning:input type="date" name="input1" value="{!v.oppRecord.rsp_Projection_Start_Date__c}"
+                                     label="Start date"
+                                     aura:id="startDateId"
+                                     disabled="{!or(v.isViewMode,v.isViewModeTillProposal)}"
+                                     onchange="{!c.onFieldChange}"/>
+                </lightning:layoutItem>
+            </div>
+
+            <div class="slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-3">
+                <lightning:layoutItem padding="around-small">
+                    <lightning:input type="date" name="input2" value="{!v.oppRecord.rsp_Projection_End_Date__c}"
+                                     label="End date"
+                                     aura:id="endDateId"
+                                     disabled="{!or(v.isViewMode,v.isViewModeTillProposal)}"
+                                     onchange = "{!c.onFieldChange}"/>
+                </lightning:layoutItem>
+            </div>
+
+            <div class="slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-3">
+                <!--<lightning:layoutItem padding="around-small">
+                    <lightning:select name="frequency" label="Select Frequency:"
+                                      aura:id="frequencyId" value="{!v.selectedFrequency}"
+                                      disabled="{!v.isViewMode}"
+                                      onchange = "{!c.onFieldChange}">
+                        <option value="">None</option>
+                        <aura:iteration items="{!v.picklistValues}" var="item">
+                            <option value="{!item.value}">{!item}</option>
+                        </aura:iteration>
+                    </lightning:select>
+                </lightning:layoutItem>-->
+                <lightning:layoutItem padding="around-small">
+                <lightning:input type="text" value="Weekly"
+                                     name="input1" label="Frequency" 
+                                     disabled="true"
+                                     />
+                </lightning:layoutItem>
+            </div>
+
+            <div class="slds-button-group slds-m-top_large" role="group">
+                <lightning:layoutItem padding="around-small">
+                    <lightning:button variant="brand" label="Create Projection"
+                                      title="Create Projection"
+                                      onclick="{!c.createProjection}"
+                                      disabled="{!or(v.isViewMode,v.disableCreateProjectionButton)}"/>
+                </lightning:layoutItem>
+            </div>
+        </div>
+
+        <!--
+          Table Part
+        -->
+        <aura:if isTrue="{!v.isDisplayProjectionTable}">
+            <div class="slds-scrollable cstm_div_projection_table" >
+                <!-- START - Monthly Table View -->
+                <aura:if isTrue="{!v.selectedFrequency == 'Monthly'}">
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer1 tableCont">
+                        <thead>
+                            <tr class="slds-text-title_caps">
+                                <th scope="col" width="20%">
+                                    <div class="slds-truncate">
+                                        Month
+                                    </div>
+                                </th>
+                                <th scope="col" width="15%">
+                                    <div class="slds-truncate " title="Date">Date</div>
+                                </th>
+                                <th scope="col" width="20%">
+                                    <div class="slds-truncate" title="Percent">Percent</div>
+                                </th>
+                                <th scope="col" width="35%">
+                                    <div class="slds-truncate" title="Amount">Amount(In Lacs)</div>
+                                </th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:iteration items="{!v.oppProjectionList}" var="item" indexVar="index">
+                                <c:rsp_AddEditOpportunityProjectionChild oppProjection="{!item}" rowIndex="{!index}"
+                                                                         totalAmount="{!v.totalAmount}"
+                                                                         totalPercentage="{!v.totalPercentage}"
+                                                                         oppProjectionListChild="{!v.oppProjectionList}"
+                                                                         estimatedAmount="{!v.oppRecord.rsp_Estimated_Amount__c}"
+                                                                         isViewMode="{!v.isViewMode}"
+                                                                         selectedFrequency ="{!v.selectedFrequency}"/>
+                            </aura:iteration>
+                        </tbody>
+                    </table>
+                </aura:if>
+            </div>
+            <div class="slds-scrollable" style="max-height: 350px; width: auto;">
+                <!-- START - Weekly Table View -->
+                <aura:if isTrue="{!v.selectedFrequency == 'Weekly'}">
+                     <table class="slds-table slds-table_bordered slds-table_cell-buffer1 tableCont">
+                        <thead>
+                            <tr class="slds-text-title_caps">
+                                <th scope="col" width="66px">
+                                    <div class="slds-truncate " title="Date">Month</div>
+                                </th>
+                                <th scope="col" width="59px">
+                                    <div class="slds-truncate " title="weekNo">Week</div>
+                                </th>
+                                <!--<th scope="col" width="22%">
+                                    <div class="slds-truncate " title="weekStartDate">Start Date</div>
+                                </th>
+                                <th scope="col" width="22%">
+                                    <div class="slds-truncate " title="weekEndDate">End date</div>
+                                </th>-->
+                                <th scope="col" width="18%">
+                                    <div class="slds-truncate " title="dateRange">Date Range</div>
+                                </th>
+
+                               <!-- <th scope="col" width="20%">
+                                    <div class="slds-truncate" title="days">Days</div>
+                                </th>-->
+                                <th scope="col" width="26%">
+                                    <div class="slds-truncate" title="perent">Percent</div>
+                                </th>
+                                <th scope="col" width="29%">
+                                    <div class="slds-truncate" title="Amount">Amount(In Lacs)</div>
+                                </th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:iteration items="{!v.oppProjectionList}" var="item" indexVar="index">
+                                <c:rsp_AddEditOpportunityProjectionChild oppProjection="{!item}" rowIndex="{!index}"
+                                                                         totalAmount="{!v.totalAmount}"
+                                                                         totalPercentage="{!v.totalPercentage}"
+                                                                         oppProjectionListChild="{!v.oppProjectionList}"
+                                                                         estimatedAmount="{!v.oppRecord.rsp_Estimated_Amount__c}"
+                                                                         isViewMode="{!v.isViewMode}"
+                                                                         selectedFrequency="{!v.selectedFrequency}"/>
+                            </aura:iteration>
+                        </tbody>
+                    </table>
+                </aura:if>
+
+
+            </div><br/>
+            <div class="slds-box slds-box_x-small slds-theme_shade">
+                <span class="slds-m-right_xx-large"><strong>Total Percentage:&nbsp;</strong>{!v.totalPercentage}%
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <strong>Total Amount: </strong><lightning:formattedNumber value="{!v.totalAmount}"
+                                                                              /> Lacs</span>
+
+            </div>
+            <aura:if isTrue="{!not(empty(v.errorMsg))}">
+                <ui:message title="Error" severity="error" closable="true">
+                  {!v.errorMsg}
+                </ui:message>
+            </aura:if>
+            <br/>
+            <center>
+                <div class="slds-button-group slds-m-top_large" role="group">
+                    <!--<lightning:button variant="brand" label="Discard Changes"
+                          title="Discard Changes" onclick="{!c.discardChanges}" />-->
+                    &nbsp;&nbsp;<lightning:button variant="brand" label="Save" title="Save"
+                                                  onclick="{!c.Save}"
+                                                  disabled="{!or(v.isViewMode,v.disableSaveButton)}"/>
+                    &nbsp;&nbsp;<lightning:button variant="brand" label="Edit"
+                                                  aura:id="editButtonId"
+                                                  title="Edit"
+                                                  onclick="{!c.editProjection}"
+                                                  disabled="{!or(and(v.isViewMode,v.isViewModeForClosedOpp),not(v.isViewMode))}"/>
+
+                    &nbsp;&nbsp;<lightning:button variant="brand" label="Cancel"
+                                                  title="Cancel"
+                                                  onclick="{!c.reloadPage}"
+                                                  disabled="{!v.isViewMode}"/>
+                </div>
+            </center>
+        </aura:if>
+    </div>
+   </ui:scrollerWrapper>
+</aura:component>

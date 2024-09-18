@@ -1,0 +1,3 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:appHostable" access="global"> 
+<iframe src="https://uatauthorize.timesgroup.com/TestForm.aspx" width="100%" height="1000px;" frameBorder="0"/> 
+</aura:component>

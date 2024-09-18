@@ -1,0 +1,5 @@
+<aura:event type="COMPONENT" description="Event template" >
+    <aura:attribute name="indexOfRemovedRow" type="String"/>
+    <aura:attribute name="currentProductId" type="String"/>
+    <aura:attribute name="randomId" type="Long"/>
+</aura:event>

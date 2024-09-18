@@ -1,0 +1,75 @@
+<aura:interface description="Interface template">
+    <!-- <aura:attribute name="loggedInAsAdmin" type="Boolean" default="false" access="PRIVATE"/> -->
+    
+    <aura:attribute name="fiscalYear" type="Integer"/>
+    <aura:attribute name="fiscalYearEnd" type="Integer"/>
+    
+    <aura:attribute name="selectedFilter" type="String" default="A"/>
+    <aura:attribute name="allRolesList" type="rsp_Role__c[]"/>
+    
+    <aura:attribute name="geographies" type="list" default="[]"/>
+    <aura:attribute name="selectedGeography" type="String" access="PRIVATE"/>
+
+    <aura:attribute name="selectedMonth" type="string"/>
+    <aura:attribute name="showTargetsOfMonth" type="boolean" default="true"/>
+    <aura:attribute name="startDate" type="Date"/>
+    <aura:attribute name="endDate" type="Date"/>
+    
+    <aura:attribute name="verticalTarget" type="string" default="0"/>
+    <aura:attribute name="horizontalTarget" type="string" default="0"/>
+    <aura:attribute name="approvedTarget" type="string" default="0"/>
+    <aura:attribute name="pendingTarget" type="string" default="0"/>
+    <aura:attribute name="pendingSubmission" type="string" default="0"/>
+
+    <aura:attribute name="mainWrappers" type="list" default="[]"/>
+    <aura:attribute name="KPIList" type="list" default="[]"/>
+    <aura:attribute name="existingTargetColumns" type="list" default="[]"/>
+    <aura:attribute name="existingTargetData" type="list" default="[]"/>
+    <aura:attribute name="selectedExistingTargetRows" type="list" default="[]"/>
+    <aura:attribute name="draftTargetValues" type="list"/>
+    <aura:attribute name="updateTargetErrors" type="Object"/>
+
+    <aura:attribute name="newTargetColumns" type="list" default="[]"/>
+    <!-- <aura:attribute name="newTargetData" type="list" default="[]"/> -->
+    <!-- <aura:attribute name="existingTargetTableHeight" type="string" default="height: auto;"/> -->
+
+    <!-- <aura:attribute name="filteredExistingTargetData" type="list" default="[]"/> -->
+    <!-- <aura:attribute name="backDatedValue" type="Integer" access="PRIVATE"/> -->
+    <!-- <aura:attribute name="showTargetBtn" type="boolean" default="true"/> -->
+    
+    <!-- <aura:attribute name="profilesList" type="String[]" access="PRIVATE"/> -->
+    
+    <!-- <aura:attribute name="activeSections" type="list" default="[]"/> -->
+
+    <!-- <aura:attribute name="horizontalList" type="rsp_Horizontal__c[]"/> -->
+    <!-- <aura:attribute name="selectedHorizontal" type="String" access="PRIVATE"/> -->
+    <!-- <aura:attribute name="disableHorizontal" type="Boolean" access="PRIVATE" default="false"/> -->
+    
+    <!-- <aura:attribute name="verticalList" type="rsp_Vertical__c[]"/> -->
+    <!-- <aura:attribute name="selectedVertical" type="String" access="PRIVATE"/> -->
+    <!-- <aura:attribute name="disableVertical" type="Boolean" access="PRIVATE" default="false"/> -->
+    
+    <!-- <aura:attribute name="geographyList" type="String[]"/> -->
+    
+    <!-- <aura:attribute name="roleList" type="rsp_Role__c[]"/> -->
+    <!-- <aura:attribute name="selectedRole" type="String" access="PRIVATE"/> -->
+    <!-- <aura:attribute name="disableRole" type="Boolean" access="PRIVATE" default="True"/> -->
+    
+    <!-- <aura:attribute name="showDatePicklist" type="Boolean" access="PRIVATE" default="true"/> -->
+    <!-- <aura:attribute name="showTargetTable" type="Boolean" access="PRIVATE" default="false"/> -->
+    <!-- <aura:attribute name="showAlreadyTargetExitsTable" type="Boolean" access="PRIVATE" 
+                    default="false"/> -->
+    <!-- <aura:attribute name="showSaveTargetbtn" type="Boolean" access="PUBLIC" default="True"/> -->
+    <!-- <aura:attribute name="disableTargetSplitBtn" type="Boolean" access="PUBLIC" default="True"/> -->
+    
+    <!-- <aura:attribute name="mainWrapper" type="rsp_AssignTargets.MainTargetWrapper"/> -->
+    <!-- <aura:attribute name="Spinner" type="boolean" default="false"/> -->
+    
+    <!-- <aura:attribute name="verticalCategoryList" type="rsp_Vertical_Category__c[]"/>
+    <aura:attribute name="showVerticalCateogry" type="Boolean" access="PRIVATE" default="false"/>
+    <aura:attribute name="selectedVerticalCateogry" type="String" access="PRIVATE" default=""/> -->
+    
+    
+    <!-- <aura:attribute name="disableStartDate" type="boolean" default="false"/>
+    <aura:attribute name="disableEndDate" type="boolean" default="false"/> -->
+</aura:interface>

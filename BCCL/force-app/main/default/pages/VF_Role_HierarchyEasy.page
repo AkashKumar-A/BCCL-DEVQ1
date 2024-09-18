@@ -1,0 +1,58 @@
+<apex:page sidebar="false" showHeader="true" readOnly="true" docType="html-5.0" cache="true">
+    
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=0.5, user-scalable=yes"/>
+        <apex:includeScript value="http://hammerjs.github.io/dist/hammer.min.js"/>
+         <style>
+             
+        .google-visualization-orgchart-noderow-medium td img{
+            display:none;
+        }
+        .google-visualization-orgchart-noderow-medium td div{
+            display:none;
+        }
+            #costomchange {
+                overflow-y: hidden!important;
+            }
+        #costomchange .google-visualization-orgchart-node,
+        .google-visualization-orgchart-node {
+            font-size:12px!important;
+            background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#fff))!important;
+            box-shadow:none;
+            border-color:#46a4f5!important;
+            border-width:1px!important;
+            min-width:120px;
+        }
+        .google-visualization-orgchart-table *{
+        padding:6px 1px!important;
+        }
+        .google-visualization-orgchart-node br{
+        display:none;
+        }
+        #costomchange .google-visualization-orgchart-node a,
+        .google-visualization-orgchart-node a{
+        font-size:11px!important;
+        color:#666!important;
+        }
+        .google-visualization-orgchart-node-medium{}
+        
+        body {
+            -ms-transform:scale(1); // Req for IE9
+            transform:scale(1);
+  
+            }
+    </style>
+    </head>
+    
+    
+    <body>
+        <apex:outputLabel title="testtt"></apex:outputLabel>
+    
+        <div style="overflow: scroll; width: 100%; height: 100%;" id="costomchange">
+        <apex:include pageName="Easy_Drill__Hierarchy_OrgChart"/>
+        </div>
+    </body>
+    
+   
+    
+</apex:page>

@@ -1,0 +1,59 @@
+<aura:interface description="Interface For Target Viewer Component">
+    
+    <aura:attribute name="horizontalList" type="rsp_Horizontal__c[]"/>
+    <aura:attribute name="selectedHorizon" type="String" access="PRIVATE"/>
+    <aura:attribute name="disabledHorizon" type="Boolean" access="PRIVATE" default="false"/>
+    
+    <aura:attribute name="verticalList" type="rsp_Vertical__c[]"/>
+    <aura:attribute name="selectedVertical" type="String" access="PRIVATE"/>
+    <aura:attribute name="disabledVertical" type="Boolean" access="PRIVATE" default="false"/>
+    
+    <aura:attribute name="usersList" type="User[]"/>
+    <aura:attribute name="selectedUser" type="String" access="PRIVATE"/>
+    <aura:attribute name="disabledUser" type="Boolean" access="PRIVATE" default="false"/>
+    
+    <aura:attribute name="roleList" type="rsp_Role__c[]"/>
+    <aura:attribute name="selectedRole" type="String" access="PRIVATE"/>
+    <aura:attribute name="disabledRole" type="Boolean" access="PRIVATE" default="false"/>
+    
+    <aura:attribute name="yearsList" type="String[]"/>
+    <aura:attribute name="selectedYear" type="String" access="PRIVATE"/>
+    <aura:attribute name="currentFinancialYear" type="String" access="PRIVATE"/>
+    <aura:attribute name="currentFinancialYearValue" type="String" access="PRIVATE"/>
+
+    
+    <aura:attribute name="monthMap" type="Map"/>
+    <aura:attribute name="monthList" type="String[]"/>
+    <aura:attribute name="weekList" type="Integer[]"/>
+    <aura:attribute name="weekListClone" type="Integer[]"/>
+    <aura:attribute name="selectedMonth" type="String" access="PRIVATE"/>
+    
+    <aura:attribute name="displayMonthTable" type="Boolean" default="false" access="PRIVATE"/>
+    <aura:attribute name="displayWeekTable" type="Boolean" default="false" access="PRIVATE"/>
+    <aura:attribute name="displayDailyTable" type="Boolean" default="false" access="PRIVATE"/>
+    
+    <aura:attribute name="kraToTargetsMap" type="Map"/>
+    <aura:attribute name="kraList" type="String[]"/>
+    <aura:attribute name="kraMapValues" type="object" /> 
+    
+    <aura:attribute name="totalRowSumMap" type="object" />
+    <aura:attribute name="wrapperList" type="rsp_ViewTarget.UserTargetMainWrapper"/>
+    <aura:attribute name="spinner" type="Boolean" default="false"/>
+    
+    <aura:attribute name="isNoRecord" type="Boolean" default="false"/>
+    <aura:attribute name="roleIdList" type="String[]"/>
+    <aura:attribute name="userInfo" type="User"/>  
+    
+    <aura:attribute name="isAdmin" type="Boolean" default="false" access="PRIVATE"/>    
+    <aura:attribute name="isRoleHolder" type="Boolean" default="false" access="PRIVATE"/>
+    
+    <aura:attribute name="selectedWeek" type="String" />
+    <aura:attribute name="dateList" type="Date[]" />
+    <aura:attribute name="dateListClone" type="Date[]" />
+    
+    <!-- added by Karthik on 22/01/2019 for BR-817  -->
+    <aura:attribute name="verticalCategoryList" type="rsp_Vertical_Category__c[]"/>
+    <aura:attribute name="selectedVerticalCategory" type="String" access="PRIVATE"/>
+    <aura:attribute name="showAssessmentEdit" type="Boolean" access="PRIVATE" default="false"/>
+    <aura:attribute name="showRatingEdit" type="Boolean" access="PRIVATE" default="false"/>
+</aura:interface>

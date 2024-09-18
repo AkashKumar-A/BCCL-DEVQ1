@@ -1,0 +1,14 @@
+/*depending on level, add more indentation*/
+.THIS .ab{
+    text-align: center;
+    background-color: aqua;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.THIS .box-custom{
+    min-height: 84px;
+    box-shadow: 0px 2px 4px 0px #a4c9d6;
+    margin: 5px;
+    border-radius: 3px;
+}

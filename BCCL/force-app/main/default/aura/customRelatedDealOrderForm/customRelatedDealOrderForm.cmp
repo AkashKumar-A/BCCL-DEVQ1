@@ -1,0 +1,127 @@
+<!--
+@author :- Rahul Katarpawar
+@Company :- Bccl
+@description :-  Display all order from view all button of realtedOppOrderInDeal LWC
+Created Date: 18-Sep-2023
+Edited By : Rahul Katarpawar 
+Modified Date :
+ -->
+<aura:component controller="RealtedOppOrderInDeal" implements="lightning:isUrlAddressable,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+	<aura:attribute name="dealId" type="string" />
+    <aura:attribute name="orderitemObj" type="order[]"/>
+    <aura:attribute name="totalOrders" type="string" />
+    <aura:attribute name="sumOfOrderAmount" type="Decimal" default="0.00" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+ <!--  <aura:handler name="change" value="{!v.pageReference}" action="{!c.reInit}"/> -->
+    <aura:handler name="change" value="{!v.pageReference}" action="{!c.reInit}" />
+
+    <aura:html tag="style">
+   		.slds-modal__container{
+        	height : 100%;
+        	width: 100%;
+        	max-width: 80rem;
+        }
+         .modal-body{
+        	height : 400px !important;
+        	max-height: 550px !important;
+        }
+        .cuf-content {
+        	padding: 0 0rem !important;
+        }
+        .slds-p-around--medium {
+        	padding: 0rem !important;
+        }       
+        .slds-modal__content{
+        	overflow-y:0rem !important;
+        	height:unset !important;
+        	max-height:unset !important;
+        }
+        html{
+			background-color: white;
+        }
+    </aura:html>
+  
+    <div class="mod slds-scrollable">
+        <div class="slds-page-header" style="text-align:left;background-color:#E5E8E8;padding-bottom:20px;">
+         <lightning:icon iconName="standard:order" alternativeText="Order" title="Order" />    
+         <h1 class="slds-page-header__title">Deal Orders</h1>
+            <p style="float:left;"><h3>{!v.totalOrders} </h3></p><p style="float:right;text-align:right;"><h3>Sum of Order Amount: <ui:outputCurrency value="{!v.sumOfOrderAmount}"/></h3></p>  
+        </div>
+        
+     <div class="slds-scrollable" style="height:550Px;width:100%">
+        <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-scrollable" style="width:100%;font-size:12px;overflow:scroll;" cellpadding="0">
+        
+          <thead>
+                 <tr class="slds-text-title_caps;" >
+                     
+                     <th scope="col" style="width:5%;font-size:12px;background-color:#E5E8E8;border:0.5px solid #dddddd;">
+                    <div class="slds-truncate">S.No</div>
+                    </th>
+                     
+                    <th scope="col" style="width:15%;font-size:12px;background-color:#E5E8E8;text-align:left;border:0.5px solid #dddddd;">
+                    <div class="slds-truncate">Name</div>
+                    </th>
+                     
+                    <th scope="col" style="width:17%;font-size:12px;background-color:#E5E8E8;text-align:left;border:0.5px solid #dddddd;">
+                    <div class="slds-truncate" title="Order Name">Order Name</div>
+                    </th>
+                 
+                    <th scope="col" style="width:15%;font-size:12px;background-color:#E5E8E8;text-align:left;border:0.5px solid #dddddd;">
+                    <div class="slds-truncate" title="Status">Status</div>
+                    </th>
+                   <!-- 
+                    <th scope="col" style="width:18%;font-size:12px;background-color:#E5E8E8;text-align:left;border:0.5px solid #dddddd;">
+                    <div class="slds-truncate" title="Publication">Publication</div>
+                    </th> -->
+                     
+                    <th scope="col" style="width:15%;font-size:12px;background-color:#E5E8E8;text-align:left;border:0.5px solid #dddddd;">
+                    <div class="slds-truncate" title="Order Start Date">Order Start Date</div>
+                    </th>
+
+                    <th scope="col" style="width:15%;font-size:12px;background-color:#E5E8E8;text-align:left;border:0.5px solid #dddddd;">
+                    	<div class="slds-truncate" title="Order Amount">Order Amount</div>
+                    </th>
+        
+                 </tr>
+             </thead>
+             <tbody>
+                 <aura:iteration items="{!v.orderitemObj}" var="ord" indexVar="rowIndex">
+                     <tr>
+                         
+                         <td style="width:5%;font-size:12px;border:0.5px solid #dddddd;"> 
+                            {!rowIndex + 1}
+                         </td>
+
+                         <td style="width:15%;font-size:12px;border:0.5px solid #dddddd;">
+                         	<a href="{!'https://bcclresponse--qa1.sandbox.lightning.force.com/'+ord.Id}">    
+                				{!ord.OrderNumber}
+                 			</a>                                                         
+                         </td>
+
+                         <td style="width:17%;font-size:12px;border:0.5px solid #dddddd;">
+                             {!ord.Name}
+                         </td>
+                         
+                         <td style="width:15%;font-size:12px;border:0.5px solid #dddddd;">
+                             {!ord.Status}
+                         </td>
+                         
+                         <!--<td style="width:18%;font-size:12px;border:0.5px solid #dddddd;">
+                             
+                         </td>-->
+                         
+                         <td data-label="Order Start Date" style="width:15%;font-size:12px;border:0.5px solid #dddddd;">
+                             <ui:outputDate aura:id="expdate" value="{!ord.EffectiveDate}" />
+                         </td>
+                         
+                         <td style="width:15%;font-size:12px;border:0.5px solid #dddddd;">
+                             <ui:outputCurrency value="{!ord.TotalAmount}"/>
+                         </td>
+                         
+                     </tr>
+                 </aura:iteration>
+             </tbody>    
+    </table>
+            </div>
+        </div>
+</aura:component>

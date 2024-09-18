@@ -1,0 +1,48 @@
+<aura:component controller="rsp_NewsRSSFeedAccontHandler" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" access="global" >
+	<aura:handler name="init"
+                  value="{!this}" 
+                  action="{!c.doInit}"/>
+    <aura:attribute name = "wrapLst" type = "rsp_NewsRSSFeedAccontHandler.wrapItemData[]"/>
+    <aura:attribute name="ChatterTitle" type="String" />
+    
+    <div class="slds-scrollable,headwidth" >
+        <div class="slds-grid slds-gutters">
+            <aura:if isTrue="{!and(v.wrapLst , v.wrapLst.length > 0)}">
+            <aura:iteration items="{!v.wrapLst}" var="item" indexVar = "index">
+                <lightning:card>
+                    <aura:set attribute="body">
+                        <p>                        
+                            <a href="{!item.link}" target="_blank">
+                                <b>  <ui:outputText value="{!item.title}" /> </b>
+                            </a>
+                        </p><br/>
+                        <img src="{!item.image}" class="newsImage" align="middle" alt="" width="" height =""/>
+                        
+                  
+                        <div id="{!index}"
+                             onclick="{!c.createFeedPost}">
+                            <lightning:icon iconName="utility:share"
+                                            size="xx-small"
+                                            title="share"
+                                            class="slds-icon-share" />
+                            
+                        </div>
+                        <p class ="pcls">
+                        <ui:outputText value="{!item.MatchedKeys}" />
+                        </p>
+                        
+                    </aura:set>
+                    <aura:set attribute="footer">
+                        &nbsp;
+                    </aura:set>
+                </lightning:card>
+            </aura:iteration>
+            <aura:set attribute="else">
+                <lightning:card>
+                    No News Found for this Account .
+                </lightning:card>
+            </aura:set>
+        </aura:if>
+        </div> 
+    </div>
+</aura:component>

@@ -1,0 +1,48 @@
+<apex:page contentType="text/plain">
+    <h1 style="font-size:24pt;font-family:Calibri,sans-serif;text-align:center;margin-right:0;margin-bottom:3pt;margin-left:0;line-height:36.0pt;">
+        <span style="color:#080707;font-size:21pt;font-family:Helvetica,sans-serif;font-weight:normal;">
+            Change in Projection (In lacs)
+        </span>
+    </h1>
+    
+    <div align="center" style="margin: 17px 0">
+        <span valign="top" style="background-color:#0070D2;padding:9pt 12pt;">
+            <span align="center" style="font-size:11pt;font-family:Calibri,sans-serif;text-align:center;margin:0;">
+                <span style="color:#16325C;">
+                    <a href="{1}" target="_blank" title="Click to open Report in Salesforce">
+                        <span style="color:white;font-size:10pt;font-family:Helvetica,sans-serif;">
+                            OPEN IN SALESFORCE
+                        </span>
+                    </a>
+                </span>
+            </span>
+        </span>
+    </div>
+    <p style="font-size:11pt;font-family:Calibri,sans-serif;margin-right:0;margin-left:18pt;">
+        <span style="color:#16325C;font-size:12pt;font-family:Helvetica,sans-serif;">
+            Summary
+        </span>
+    </p>
+    <table border="0" cellspacing="3" cellpadding="0" style="margin-left:18pt;">
+        <tbody>
+            <tr>
+                <td nowrap="" style="padding:0.75pt 12pt 0.75pt 0.75pt;">
+                    <p style="font-size:11pt;font-family:Calibri,sans-serif;margin:0 0 12pt 0;">
+                        <span style="color:#080707;font-size:10pt;font-family:Helvetica,sans-serif;">
+                            Total Records
+                        </span>
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top" nowrap="" style="empty-cells:show;padding:0.75pt 12pt 0.75pt 0.75pt;">
+                    <p style="font-size:11pt;font-family:Calibri,sans-serif;margin:0 0 12pt 0;line-height:18.75pt;">
+                        <span style="color:#16325C;font-size:16.5pt;font-family:Helvetica,sans-serif;">
+                            {2}
+                        </span>
+                    </p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</apex:page>
