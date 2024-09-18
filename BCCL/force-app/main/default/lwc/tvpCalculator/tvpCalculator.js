@@ -4,7 +4,6 @@ import getRoleWiseRevenue from '@salesforce/apex/TvpController.getRoleWiseRevenu
 
 
 export default class CommittedFixedTabs extends LightningElement {
-    // Variables to hold selected month values
     @track spinner = false;
     selectedMonth = '';
     @track tableColumns = [
@@ -19,7 +18,6 @@ export default class CommittedFixedTabs extends LightningElement {
     ];
     @track roleWiseRevenue = [];
     @track userWiseRevenue = [];
-    // Month options dynamically generated
     monthOptions;
 
     connectedCallback() {
