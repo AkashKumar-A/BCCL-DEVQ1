@@ -167,7 +167,9 @@ public class rsp2CmpBehaviouralTargetController{
                 for(rsp_Role_Achievement__c objRA: [
                     SELECT Id, Name, rsp_Role_Assignment__r.rsp_Role_Name__c, rsp_User_Achievement__r.rsp_Month__c, rsp_Revenue_Target__c, NTC__c, 
                     rsp_Revenue_Achievement__c, rsp_Revenue_Achievement_Percent__c, Response_Revenue_Print__c, Response_Revenue_Print_Percent__c, 
-                    Target_not_Provided_by_AOP__c, Target_not_Submitted_by_User__c 
+                    Target_not_Provided_by_AOP__c, Target_not_Submitted_by_User__c, LANG_KPI__c, Achieved_LANG_KPI__c, MT_KPI__c, Achieved_MT_KPI__c, 
+                    SAMAY_KPI__c, Achieved_SAMAY_KPI__c, NBT_KPI__c, Achieved_NBT_KPI__c, Total_Publications_Achieved_KPI__c, Total_Publications_KPI__c,
+                    VK_KPI__c, Achieved_VK_KPI__c, rsp_From_Date__c, rsp_To_Date__c
                     FROM rsp_Role_Achievement__c WHERE 
                     rsp_User_Achievement__c IN :userAchIdSet
                 ]) {
@@ -248,6 +250,37 @@ public class rsp2CmpBehaviouralTargetController{
                             objRAwrap.month = objRA.rsp_User_Achievement__r.rsp_Month__c;
                             objRAwrap.ntc = objRA.NTC__c;
                             objRAwrap.target = objRA.rsp_Revenue_Target__c ?? 0; // != null ? objRA.rsp_Revenue_Target__c / 100000 : 0;
+                            List<KpiWrapper> listOfKpi = new List<KpiWrapper>();
+                            KpiWrapper kpiObj = new KpiWrapper();
+                            kpiObj.kpiName = 'LANG KPI';
+                            kpiObj.assignedKPI = objRA.LANG_KPI__c ?? 0;
+                            kpiObj.totalAchieved = objRA.Achieved_LANG_KPI__c ?? 0;
+                            listOfKpi.add(kpiObj);
+                            KpiWrapper kpiObj2 = new KpiWrapper();
+                            kpiObj2.kpiName = 'MT KPI';
+                            kpiObj2.assignedKPI = objRA.MT_KPI__c ?? 0;
+                            kpiObj2.totalAchieved = objRA.Achieved_MT_KPI__c ?? 0;
+                            listOfKpi.add(kpiObj2);
+                            KpiWrapper kpiObj3 = new KpiWrapper();
+                            kpiObj3.kpiName = 'SAMAY KPI';
+                            kpiObj3.assignedKPI = objRA.SAMAY_KPI__c ?? 0;
+                            kpiObj3.totalAchieved = objRA.Achieved_SAMAY_KPI__c ?? 0;
+                            listOfKpi.add(kpiObj3);
+                            KpiWrapper kpiObj4 = new KpiWrapper();
+                            kpiObj4.kpiName = 'NBT KPI';
+                            kpiObj4.assignedKPI = objRA.NBT_KPI__c ?? 0;
+                            kpiObj4.totalAchieved = objRA.Achieved_NBT_KPI__c ?? 0;
+                            listOfKpi.add(kpiObj4);
+                            KpiWrapper kpiObj5 = new KpiWrapper();
+                            kpiObj5.kpiName = 'Total Publications KPI';
+                            kpiObj5.assignedKPI = objRA.Total_Publications_KPI__c ?? 0;
+                            kpiObj5.totalAchieved = objRA.Total_Publications_KPI__c ?? 0;
+                            listOfKpi.add(kpiObj5);
+                            KpiWrapper kpiObj6 = new KpiWrapper();
+                            kpiObj6.kpiName = 'VK KPI';
+                            kpiObj6.assignedKPI = objRA.VK_KPI__c ?? 0;
+                            kpiObj6.totalAchieved = objRA.Achieved_VK_KPI__c ?? 0;
+                            listOfKpi.add(kpiObj6);
                             if (objRA.Target_not_Provided_by_AOP__c || objRA.Target_not_Submitted_by_User__c) {
                                 objRAwrap.target = 10;
                             }
@@ -258,6 +291,7 @@ public class rsp2CmpBehaviouralTargetController{
                             objRAwrap.achievementPercent = objRA.rsp_Revenue_Achievement_Percent__c != null ? (objRA.rsp_Revenue_Achievement_Percent__c / 100) : 0;
                             objRAwrap.responseRevenueAchievement = objRA.Response_Revenue_Print__c != null ? objRA.Response_Revenue_Print__c / 100000 : 0;
                             objRAwrap.responseRevenueAchievementPercent = objRA.Response_Revenue_Print_Percent__c != null ? (objRA.Response_Revenue_Print_Percent__c / 100) : 0;
+                            objRAwrap.kpis = listOfKpi;
                             objWISTR.roleAchievements.add(objRAwrap);
                         }
                     }
@@ -315,6 +349,17 @@ public class rsp2CmpBehaviouralTargetController{
         public Decimal responseRevenueAchievement{get;set;}
         @AuraEnabled
         public Decimal responseRevenueAchievementPercent{get;set;}
+        @AuraEnabled
+        public List<KpiWrapper> kpis{get;set;}
+    }
+    
+    public class KpiWrapper {
+        @AuraEnabled
+        public String kpiName{get;set;}
+        @AuraEnabled
+        public Decimal assignedKPI{get;set;}
+        @AuraEnabled
+        public Decimal totalAchieved{get;set;}
     }
 
     @AuraEnabled

@@ -18,26 +18,31 @@ public class TvpController {
 					revenueObj.roleName = each.Name;
 					Response res = getRevenueForCommitted(each, dateStr);
 					if(res != null) {
-						revenueObj.committedPipline = res.committedPipline != null ?(res.committedPipline/10000000).setScale(8):res.committedPipline;
-						revenueObj.scheduledtoPrint = res.scheduledtoPrint != null ?(res.scheduledtoPrint/10000000).setScale(8) :res.scheduledtoPrint ;
-						revenueObj.published = res.published != null ?(res.published/10000000).setScale(8):res.published ;
+						revenueObj.committedPipline = ((res.committedPipline)/100000).setScale(2);
+						revenueObj.scheduledtoPrint = ((res.scheduledtoPrint)/100000).setScale(2);
+						revenueObj.published = ((res.published)/100000).setScale(2);
 					}
-					revenueObj.invoiceBilled = getRevenueForFixed(each,dateStr) != null? (getRevenueForFixed(each,dateStr)/10000000).setScale(8):getRevenueForFixed(each,dateStr);
-					revenueObj.roleTarget = mapRoleToTarget.get(each.Id)?.rsp_Assigned_Target__c != null ? ((mapRoleToTarget.get(each.Id)?.rsp_Assigned_Target__c)/10000000 ).setScale(8): mapRoleToTarget.get(each.Id)?.rsp_Assigned_Target__c;
-					userTarget += revenueObj.roleTarget != null ? revenueObj.roleTarget :0;
-					committedPiplineUser += revenueObj.committedPipline != null ? revenueObj.committedPipline :0;
-					scheduledtoPrintUser += revenueObj.scheduledtoPrint != null ? revenueObj.scheduledtoPrint :0;
-					publishedUser += revenueObj.published != null ? revenueObj.published :0;
-					invoiceBilledUser += revenueObj.invoiceBilled != null ? revenueObj.invoiceBilled :0;
+					else {
+						revenueObj.committedPipline = 0;
+						revenueObj.scheduledtoPrint = 0;
+						revenueObj.published = 0;
+					}
+					revenueObj.invoiceBilled = getRevenueForFixed(each,dateStr) != null? (getRevenueForFixed(each,dateStr)/100000).setScale(2):0.00;
+					revenueObj.roleTarget = mapRoleToTarget.get(each.Id)?.rsp_Assigned_Target__c != null ? ((mapRoleToTarget.get(each.Id)?.rsp_Assigned_Target__c)/100000 ).setScale(2): 0.00;
+					userTarget += revenueObj.roleTarget != null ? (revenueObj.roleTarget).setScale(2) :0.00;
+					committedPiplineUser += revenueObj.committedPipline != null ? (revenueObj.committedPipline).setScale(2) :0.00;
+					scheduledtoPrintUser += revenueObj.scheduledtoPrint != null ? (revenueObj.scheduledtoPrint).setScale(2) :0.00;
+					publishedUser += revenueObj.published != null ? (revenueObj.published).setScale(2) :0.00;
+					invoiceBilledUser += revenueObj.invoiceBilled != null ? (revenueObj.invoiceBilled).setScale(2) :0.00;
 					if (revenueObj.committedPipline != null && revenueObj.roleTarget != null && revenueObj.roleTarget > 0) {
 						revenueObj.preCommittedAchievement = ((revenueObj.committedPipline / revenueObj.roleTarget) * 100).setScale(2);
 					} else {
-						revenueObj.preCommittedAchievement = 0;
+						revenueObj.preCommittedAchievement = 0.00;
 					}
 					if (revenueObj.invoiceBilled != null && revenueObj.roleTarget != null && revenueObj.roleTarget > 0) {
 						revenueObj.perFixedAchievement = ((revenueObj.invoiceBilled / revenueObj.roleTarget) * 100).setScale(2);
 					} else {
-						revenueObj.perFixedAchievement = 0;
+						revenueObj.perFixedAchievement = 0.00;
 					}
 					listToResponse.add(revenueObj);
 				}
@@ -46,12 +51,14 @@ public class TvpController {
 			List<Response> listToUser = new List<Response>();
 			Response res = new Response();
 			res.roleTarget = userTarget;
-			res.committedPipline = committedPiplineUser;
-			res.scheduledtoPrint = scheduledtoPrintUser;
-			res.published = publishedUser;
+			res.committedPipline = (committedPiplineUser).setScale(2);
+			res.scheduledtoPrint = (scheduledtoPrintUser).setScale(2);
+			res.published = (publishedUser).setScale(2);
 			res.preCommittedAchievement = ((res.committedPipline / ((res.roleTarget != null && res.roleTarget >0) ? res.roleTarget :1))*100).setScale(2);
-			res.invoiceBilled  = invoiceBilledUser;
+			res.invoiceBilled  = (invoiceBilledUser).setScale(2);
 			res.perFixedAchievement = ((res.invoiceBilled /((res.roleTarget != null && res.roleTarget >0) ? res.roleTarget :1))*100).setScale(2);
+			res.fixedIncentivePayout = getPayoutPercentage(dateStr, res.perFixedAchievement);
+			res.projectedIncentivePayout = getPayoutPercentage(dateStr, res.preCommittedAchievement);
 			listToUser.add(res);
 			response.userWise = listToUser;
 			return response;
@@ -156,6 +163,28 @@ public class TvpController {
 		}
 		return roleToTarget;
 	}
+	private static Decimal  getPayoutPercentage(String dateStr, Decimal percentage) {
+		currentMonthDate dateOfMoth = getCurrentMonth(dateStr);
+		List<rsp_Incentive_Mapping__c> listOfMapping = [
+			SELECT id, Min_Achievement__c, Max_Achievement__c, Min_Payout__c, Max_Payout__c, rsp_Start_Date__c, rsp_End_Date__c 
+			FROM rsp_Incentive_Mapping__c WHERE
+			rsp_Start_Date__c <= :dateOfMoth.startDate AND
+			rsp_End_Date__c >= :dateOfMoth.endDate
+		];
+		rsp_Incentive_Mapping__c incentiveMapping = null;
+		if(listOfMapping != null && listOfMapping.size() > 0 ) {
+			for (rsp_Incentive_Mapping__c mapping : listOfMapping) {
+				if (percentage >= mapping.Min_Achievement__c && percentage <= mapping.Max_Achievement__c) {
+					incentiveMapping =  mapping;
+				}
+			}
+		}
+		if(incentiveMapping != null && percentage > 0) {
+			Decimal incentivePercentage = incentiveMapping.Min_Payout__c + ((incentiveMapping.Max_Payout__c - incentiveMapping.Min_Payout__c) * (percentage - incentiveMapping.Min_Achievement__c))/(incentiveMapping.Max_Achievement__c - incentiveMapping.Min_Achievement__c);
+			return incentivePercentage;
+		}
+		return 0;		
+	}
 	private static currentMonthDate getCurrentMonth(String dateStr) {
 		String[] parts = dateStr.split('-');
         Integer month = Integer.valueOf(parts[0]);
@@ -189,6 +218,7 @@ public class TvpController {
 		@AuraEnabled public Decimal preCommittedAchievement;
 		@AuraEnabled public Decimal invoiceBilled;
 		@AuraEnabled public Decimal perFixedAchievement;
-		
+		@AuraEnabled public Decimal fixedIncentivePayout;
+		@AuraEnabled public Decimal projectedIncentivePayout;
 	}
 }

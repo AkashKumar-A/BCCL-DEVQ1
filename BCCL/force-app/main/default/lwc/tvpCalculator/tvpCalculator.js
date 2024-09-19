@@ -8,13 +8,13 @@ export default class CommittedFixedTabs extends LightningElement {
     selectedMonth = '';
     @track tableColumns = [
         { label: 'Role Name', fieldName: 'roleName' },
-        { label: 'Role Target', fieldName: 'roleTarget',wrapText: true, hideDefaultActions: true,initialWidth: 100 },
-        { label: 'Committed Pipline', fieldName: 'committedPipline' , wrapText: true, hideDefaultActions: true ,initialWidth: 140},
-        { label: 'Scheduled to Print', fieldName: 'scheduledtoPrint', wrapText: true, hideDefaultActions: true , initialWidth: 130},
-        { label: 'Published', fieldName: 'published', wrapText: true, hideDefaultActions: true,initialWidth: 100 },
+        { label: 'Role Target', fieldName: 'roleTarget', wrapText: true, hideDefaultActions: true, initialWidth: 100 },
+        { label: 'Committed Pipline', fieldName: 'committedPipline', wrapText: true, hideDefaultActions: true, initialWidth: 140 },
+        { label: 'Scheduled to Print', fieldName: 'scheduledtoPrint', wrapText: true, hideDefaultActions: true, initialWidth: 130 },
+        { label: 'Published', fieldName: 'published', wrapText: true, hideDefaultActions: true, initialWidth: 100 },
         { label: '%Committed Achievement', fieldName: 'preCommittedAchievement', wrapText: true, hideDefaultActions: true, initialWidth: 160 },
-        { label: 'Invoice Billed', fieldName: 'invoiceBilled', wrapText: true, hideDefaultActions: true,initialWidth: 100 },
-        { label: '%Fixed Achievement', fieldName: 'perFixedAchievement', wrapText: true, hideDefaultActions: true,initialWidth: 150 }
+        { label: 'Invoice Billed', fieldName: 'invoiceBilled', wrapText: true, hideDefaultActions: true, initialWidth: 100 },
+        { label: '%Fixed Achievement', fieldName: 'perFixedAchievement', wrapText: true, hideDefaultActions: true, initialWidth: 150 }
     ];
     @track roleWiseRevenue = [];
     @track userWiseRevenue = [];
@@ -27,44 +27,90 @@ export default class CommittedFixedTabs extends LightningElement {
         const currentYear = today.getFullYear();
         this.selectedMonth = `${currentMonth}-${currentYear}`;
         this.spinner = true;
-        getRoleWiseRevenue({dateStr:this.selectedMonth})
-        .then(res=>{
-            this.spinner = false;
-            this.roleWiseRevenue = res.roleWise;
-            this.userWiseRevenue = res.userWise;
-            console.log(JSON.stringify(res,null,2));
-            
-        })
-        .catch(error=>{
-            this.spinner = false;
-            this.dispatchEvent(new ShowToastEvent({
-                title: "Error!",
-                message: error.body.message,
-                variant: "error"
-            }));
-        })
-        
+        getRoleWiseRevenue({ dateStr: this.selectedMonth })
+            .then(res => {
+                this.spinner = false;
+                // Format roleWiseRevenue decimals to two decimal places
+                this.roleWiseRevenue = res.roleWise.map(item => ({
+                    ...item,
+                    roleTarget: item.roleTarget ? item.roleTarget.toFixed(2) : '0.00',
+                    committedPipline: item.committedPipline ? item.committedPipline.toFixed(2) : '0.00',
+                    scheduledtoPrint: item.scheduledtoPrint ? item.scheduledtoPrint.toFixed(2) : '0.00',
+                    published: item.published ? item.published.toFixed(2) : '0.00',
+                    preCommittedAchievement: item.preCommittedAchievement ? item.preCommittedAchievement.toFixed(2) : '0.00',
+                    invoiceBilled: item.invoiceBilled ? item.invoiceBilled.toFixed(2) : '0.00',
+                    perFixedAchievement: item.perFixedAchievement ? item.perFixedAchievement.toFixed(2) : '0.00',
+                }));
+
+                // Format userWiseRevenue decimals to two decimal places
+                this.userWiseRevenue = res.userWise.map(item => ({
+                    ...item,
+                    roleTarget: item.roleTarget ? item.roleTarget.toFixed(2) : '0.00',
+                    committedPipline: item.committedPipline ? item.committedPipline.toFixed(2) : '0.00',
+                    scheduledtoPrint: item.scheduledtoPrint ? item.scheduledtoPrint.toFixed(2) : '0.00',
+                    published: item.published ? item.published.toFixed(2) : '0.00',
+                    preCommittedAchievement: item.preCommittedAchievement ? item.preCommittedAchievement.toFixed(2) : '0.00',
+                    invoiceBilled: item.invoiceBilled ? item.invoiceBilled.toFixed(2) : '0.00',
+                    perFixedAchievement: item.perFixedAchievement ? item.perFixedAchievement.toFixed(2) : '0.00',
+                    fixedIncentivePayout: item.fixedIncentivePayout ? item.fixedIncentivePayout.toFixed(2) : '0.00',
+                    projectedIncentivePayout: item.projectedIncentivePayout ? item.projectedIncentivePayout.toFixed(2) : '0.00',
+                }));
+            })
+            .catch(error => {
+                this.spinner = false;
+                this.dispatchEvent(new ShowToastEvent({
+                    title: "Error!",
+                    message: error.body.message,
+                    variant: "error"
+                }));
+            });
+
+
     }
 
     handleMonthChange(event) {
         this.selectedMonth = event.target.value;
         this.spinner = true;
-        getRoleWiseRevenue({dateStr:this.selectedMonth})
-        .then(res=>{
-            this.spinner= false;
-            this.roleWiseRevenue = res.roleWise;
-            this.userWiseRevenue = res.userWise;
-            console.log(JSON.stringify(res,null,2));
-            
-        })
-        .catch(error=>{
-            this.spinner = false;
-            this.dispatchEvent(new ShowToastEvent({
-                title: "Error!",
-                message: error.body.message,
-                variant: "error"
-            }));
-        })
+        getRoleWiseRevenue({ dateStr: this.selectedMonth })
+            .then(res => {
+                this.spinner = false;
+                console.log(JSON.stringify(res,null,2));
+                
+                // Format roleWiseRevenue decimals to two decimal places
+                this.roleWiseRevenue = res.roleWise.map(item => ({
+                    ...item,
+                    roleTarget: item.roleTarget ? item.roleTarget.toFixed(2) : '0.00',
+                    committedPipline: item.committedPipline ? item.committedPipline.toFixed(2) : '0.00',
+                    scheduledtoPrint: item.scheduledtoPrint ? item.scheduledtoPrint.toFixed(2) : '0.00',
+                    published: item.published ? item.published.toFixed(2) : '0.00',
+                    preCommittedAchievement: item.preCommittedAchievement ? item.preCommittedAchievement.toFixed(2) : '0.00',
+                    invoiceBilled: item.invoiceBilled ? item.invoiceBilled.toFixed(2) : '0.00',
+                    perFixedAchievement: item.perFixedAchievement ? item.perFixedAchievement.toFixed(2) : '0.00',
+                }));
+
+                // Format userWiseRevenue decimals to two decimal places
+                this.userWiseRevenue = res.userWise.map(item => ({
+                    ...item,
+                    roleTarget: item.roleTarget ? item.roleTarget.toFixed(2) : '0.00',
+                    committedPipline: item.committedPipline ? item.committedPipline.toFixed(2) : '0.00',
+                    scheduledtoPrint: item.scheduledtoPrint ? item.scheduledtoPrint.toFixed(2) : '0.00',
+                    published: item.published ? item.published.toFixed(2) : '0.00',
+                    preCommittedAchievement: item.preCommittedAchievement ? item.preCommittedAchievement.toFixed(2) : '0.00',
+                    invoiceBilled: item.invoiceBilled ? item.invoiceBilled.toFixed(2) : '0.00',
+                    perFixedAchievement: item.perFixedAchievement ? item.perFixedAchievement.toFixed(2) : '0.00',
+                    fixedIncentivePayout: item.fixedIncentivePayout ? item.fixedIncentivePayout.toFixed(2) : '0.00',
+                    projectedIncentivePayout: item.projectedIncentivePayout ? item.projectedIncentivePayout.toFixed(2) : '0.00',
+                }));
+            })
+            .catch(error => {
+                this.spinner = false;
+                this.dispatchEvent(new ShowToastEvent({
+                    title: "Error!",
+                    message: error.body.message,
+                    variant: "error"
+                }));
+            });
+
     }
     generateMonthOptions() {
         // Get the current year
@@ -102,5 +148,5 @@ export default class CommittedFixedTabs extends LightningElement {
                 value: `${month.value}-${nextYear}`
             }))
         ];
-    }    
+    }
 }

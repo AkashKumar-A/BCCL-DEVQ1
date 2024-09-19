@@ -51,9 +51,41 @@
                 hideDefaultActions: true,
                 initialWidth: 122,
                 cellAttributes: { alignment: 'center', "class": { fieldName: 'className' } } 
+            },
+            { 
+                label: 'Show KPIs',
+               	type: 'button',
+                typeAttributes: {label: 'Show KPIs', name: 'showKPIs', variant: 'base',},
+                hideDefaultActions: true,
+                initialWidth: 90
+            }
+        ];
+        var kpiColumns = [
+            { 
+                label: 'KPI Name', 
+                fieldName: 'kpiName', 
+                type: 'text', 
+                hideDefaultActions: true, 
+                cellAttributes: { alignment: 'left' }, 
+                wrapText: true
+            }, { 
+                label: 'Assigned KPI',
+                fieldName: 'assignedKPI',
+                type: 'number',
+                typeAttributes: { minimumFractionDigits: 2, maximumFractionDigits: 2 },
+                hideDefaultActions: true,
+                cellAttributes: { alignment: 'left'} 
+            }, { 
+                label: 'Total Achieved KPI',
+                fieldName: 'totalAchieved',
+                type: 'number',
+                typeAttributes: { minimumFractionDigits: 2, maximumFractionDigits: 2 },
+                hideDefaultActions: true,
+                cellAttributes: { alignment: 'left' } 
             }
         ];
         component.set('v.columns', columns);
+        component.set('v.kpiColumns', kpiColumns);
         helper.IHISTY(component, event, helper);
         var toggleText = component.find("cmIST");
         $A.util.toggleClass(toggleText, "slds-hide");
@@ -122,6 +154,9 @@
     closePopup: function(cmp, evt, hlp) {
         cmp.set('v.showDetails', false);
     },
+    closePopupKpi:function(cmp, evt, hlp) {
+        cmp.set('v.showKpis', false);                        
+    },                    
  
 	// this function automatic call by aura:waiting event  
     showSpinner: function(component, event, helper) {
@@ -140,5 +175,19 @@
         var index = event.getSource().get("v.name");
         var lstWIST = component.get("v.lstWIST");
         component.set("v.lstWISTR", lstWIST[index].lstWISTR);
+    },
+    handleRowAction: function (component, event, helper) {
+        var action = event.getParam('action');
+        var row = event.getParam('row');
+        if (action.name === 'showKPIs') {
+            var roleName = row.roleName;
+        	console.log('KeyField (roleName):', roleName);
+            console.log(component.get('v.roleAchievements'));
+            var roleAchievementsList = component.get('v.roleAchievements');
+            component.set('v.showKpis', true);
+            component.set('v.kpiList',roleAchievementsList[0].kpis);
+            console.log(component, row);
+        }
     }
+                            
 })

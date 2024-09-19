@@ -18,11 +18,13 @@
     <aura:attribute name="NRF" type="boolean" default="false"/>
     <aura:attribute name="noDetails" type="boolean" default="false"/>
     <aura:attribute name="showDetails" type="boolean" default="false"/>
+    <aura:attribute name="showKpis" type="boolean" default="false"/>
     <aura:attribute name="showNTCWarning" type="boolean" default="false"/>
     <aura:attribute name="modalHeading" type="String"/>
     <aura:attribute name="columns" type="List"/>
+    <aura:attribute name="kpiColumns" type="List"/>
     <aura:attribute name="roleAchievements" type="List"/>
-    
+    <aura:attribute name="kpiList" type="List"/>
     <aura:handler name="init" value="{!this}" action="{!c.IY}" />
     <aura:html tag="style">
     	.slds-popover.slds-popover_tooltip{
@@ -61,6 +63,7 @@
                                 data="{!v.roleAchievements}"
                                 hideCheckboxColumn="true"
                                 showRowNumberColumn="true"
+                                onrowaction="{!c.handleRowAction}"
                             />
                             <aura:if isTrue="{!v.showNTCWarning}">
                                 <div class="ntc-warning">
@@ -82,7 +85,53 @@
         </section>
         <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
     </aura:if>
-    
+    <!-- show kpis -->
+    <aura:if isTrue="{!v.showKpis}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open slds-modal_medium">
+            <div class="slds-modal__container">
+                <lightning:buttonIcon 
+                    class="slds-modal__close"
+                    variant="border-inverse"
+                    iconName="utility:close"
+                    alternativeText="Close Modal"
+                    title="Close"
+                    onclick="{!c.closePopupKpi}"
+                />
+                <div class="slds-modal__header">
+                    <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">{!v.modalHeading}</h1>
+                </div>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="padding-bottom: 0;">
+                    <aura:if isTrue="{!v.noDetails}">
+                        <div class="popup-note">No Details Available</div>
+                        <aura:set attribute="else">
+                            <lightning:datatable
+                                keyField="roleName"
+                                columns="{!v.kpiColumns}"
+                                data="{!v.kpiList}"
+                                hideCheckboxColumn="true"
+                                showRowNumberColumn="true"
+                            />
+                            <aura:if isTrue="{!v.showNTCWarning}">
+                                <div class="ntc-warning">
+                                    Note: Achievements of highlighted roles are already accounted as part of your higher role.
+                                </div>
+                            </aura:if>
+                        </aura:set>
+                    </aura:if>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button 
+                        variant="neutral" 
+                        label="Close"
+                        title="Close"
+                        onclick="{!c.closePopupKpi}"
+                    />
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+    </aura:if>
+    <!-- end -->
     <aura:if isTrue="{!not(v.NRF)}">
         <!--loading spinner start... style=Brand Medium (blue dots)-->
         <aura:if isTrue="{!v.Spinner}">

@@ -16,26 +16,29 @@
         </div>
         <table style="margin-left: 10px; margin-top: 10px;margin-bottom:10px;">
             <tr style="font-weight: bold;">
-                <td>User Target</td>
-                <td>Committed Pipline</td>
+                <td>User Target</td> 
                 <td>Scheduled to Print</td>
                 <td>Published</td>
+                <td>Committed Pipline</td>
                 <td>%Committed Achievement</td>
                 <td>Invoice Billed</td>
                 <td>%Fixed Achievement</td>
+                <td>Fixed Incentive Payout %</td>
+                <td>Projected Incentive Payout %</td>
             </tr>
             <template for:each={userWiseRevenue} for:item="item">
                 <tr key={item}>
-                    <td>{item.roleTarget} Cr</td>
-                    <td>{item.committedPipline} Cr</td>
-                    <td>{item.scheduledtoPrint} Cr</td>
-                    <td>{item.published} Cr</td>
+                    <td>{item.roleTarget} lac</td>
+                    <td>{item.scheduledtoPrint} lac</td>
+                    <td>{item.published} lac</td>
+                    <td>{item.committedPipline} lac</td>
                     <td>{item.preCommittedAchievement}</td>
-                    <td>{item.invoiceBilled} Cr</td>
+                    <td>{item.invoiceBilled} lac</td>
                     <td>{item.perFixedAchievement}</td>
+                    <td>{item.fixedIncentivePayout}</td>
+                    <td>{item.projectedIncentivePayout}</td>
                 </tr>
             </template>
-            
         </table>
         <div style="height: 49vh;">
         <lightning-datatable
