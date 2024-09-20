@@ -253,23 +253,23 @@ public class rsp2CmpBehaviouralTargetController{
                             List<KpiWrapper> listOfKpi = new List<KpiWrapper>();
                             KpiWrapper kpiObj = new KpiWrapper();
                             kpiObj.kpiName = 'LANG KPI';
-                            kpiObj.assignedKPI = objRA.LANG_KPI__c ?? 0;
-                            kpiObj.totalAchieved = objRA.Achieved_LANG_KPI__c ?? 0;
+                            kpiObj.assignedKPI = objRA.LANG_KPI__c/100000 ?? 0;
+                            kpiObj.totalAchieved = objRA.Achieved_LANG_KPI__c/100000 ?? 0;
                             listOfKpi.add(kpiObj);
                             KpiWrapper kpiObj2 = new KpiWrapper();
                             kpiObj2.kpiName = 'MT KPI';
-                            kpiObj2.assignedKPI = objRA.MT_KPI__c ?? 0;
-                            kpiObj2.totalAchieved = objRA.Achieved_MT_KPI__c ?? 0;
+                            kpiObj2.assignedKPI = objRA.MT_KPI__c/100000 ?? 0;
+                            kpiObj2.totalAchieved = objRA.Achieved_MT_KPI__c/100000 ?? 0;
                             listOfKpi.add(kpiObj2);
                             KpiWrapper kpiObj3 = new KpiWrapper();
                             kpiObj3.kpiName = 'SAMAY KPI';
-                            kpiObj3.assignedKPI = objRA.SAMAY_KPI__c ?? 0;
-                            kpiObj3.totalAchieved = objRA.Achieved_SAMAY_KPI__c ?? 0;
+                            kpiObj3.assignedKPI = objRA.SAMAY_KPI__c/100000 ?? 0;
+                            kpiObj3.totalAchieved = objRA.Achieved_SAMAY_KPI__c/100000 ?? 0;
                             listOfKpi.add(kpiObj3);
                             KpiWrapper kpiObj4 = new KpiWrapper();
                             kpiObj4.kpiName = 'NBT KPI';
-                            kpiObj4.assignedKPI = objRA.NBT_KPI__c ?? 0;
-                            kpiObj4.totalAchieved = objRA.Achieved_NBT_KPI__c ?? 0;
+                            kpiObj4.assignedKPI = objRA.NBT_KPI__c/100000 ?? 0;
+                            kpiObj4.totalAchieved = objRA.Achieved_NBT_KPI__c/100000 ?? 0;
                             listOfKpi.add(kpiObj4);
                             KpiWrapper kpiObj5 = new KpiWrapper();
                             /*kpiObj5.kpiName = 'Total Publications KPI';
@@ -278,8 +278,8 @@ public class rsp2CmpBehaviouralTargetController{
                             listOfKpi.add(kpiObj5);*/
                             KpiWrapper kpiObj6 = new KpiWrapper();
                             kpiObj6.kpiName = 'VK KPI';
-                            kpiObj6.assignedKPI = objRA.VK_KPI__c ?? 0;
-                            kpiObj6.totalAchieved = objRA.Achieved_VK_KPI__c ?? 0;
+                            kpiObj6.assignedKPI = objRA.VK_KPI__c/100000 ?? 0;
+                            kpiObj6.totalAchieved = objRA.Achieved_VK_KPI__c/100000 ?? 0;
                             listOfKpi.add(kpiObj6);
                             if (objRA.Target_not_Provided_by_AOP__c || objRA.Target_not_Submitted_by_User__c) {
                                 objRAwrap.target = 10;

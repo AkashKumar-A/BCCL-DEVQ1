@@ -69,14 +69,14 @@
                 cellAttributes: { alignment: 'left' }, 
                 wrapText: true
             }, { 
-                label: 'Assigned KPI',
+                label: 'Assigned KPI (In Lacs)',
                 fieldName: 'assignedKPI',
                 type: 'number',
                 typeAttributes: { minimumFractionDigits: 2, maximumFractionDigits: 2 },
                 hideDefaultActions: true,
                 cellAttributes: { alignment: 'left'} 
             }, { 
-                label: 'Total Achieved KPI',
+                label: 'Total Achieved KPI (In Lacs)',
                 fieldName: 'totalAchieved',
                 type: 'number',
                 typeAttributes: { minimumFractionDigits: 2, maximumFractionDigits: 2 },
