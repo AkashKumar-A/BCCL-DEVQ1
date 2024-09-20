@@ -272,10 +272,10 @@ public class rsp2CmpBehaviouralTargetController{
                             kpiObj4.totalAchieved = objRA.Achieved_NBT_KPI__c ?? 0;
                             listOfKpi.add(kpiObj4);
                             KpiWrapper kpiObj5 = new KpiWrapper();
-                            kpiObj5.kpiName = 'Total Publications KPI';
+                            /*kpiObj5.kpiName = 'Total Publications KPI';
                             kpiObj5.assignedKPI = objRA.Total_Publications_KPI__c ?? 0;
                             kpiObj5.totalAchieved = objRA.Total_Publications_KPI__c ?? 0;
-                            listOfKpi.add(kpiObj5);
+                            listOfKpi.add(kpiObj5);*/
                             KpiWrapper kpiObj6 = new KpiWrapper();
                             kpiObj6.kpiName = 'VK KPI';
                             kpiObj6.assignedKPI = objRA.VK_KPI__c ?? 0;

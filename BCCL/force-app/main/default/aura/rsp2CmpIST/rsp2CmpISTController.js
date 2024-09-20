@@ -155,7 +155,8 @@
         cmp.set('v.showDetails', false);
     },
     closePopupKpi:function(cmp, evt, hlp) {
-        cmp.set('v.showKpis', false);                        
+        cmp.set('v.showKpis', false);
+        cmp.set('v.showDetails',true);
     },                    
  
 	// this function automatic call by aura:waiting event  
@@ -185,6 +186,7 @@
             console.log(component.get('v.roleAchievements'));
             var roleAchievementsList = component.get('v.roleAchievements');
             component.set('v.showKpis', true);
+            component.set('v.showDetails',false);
             component.set('v.kpiList',roleAchievementsList[0].kpis);
             console.log(component, row);
         }
