@@ -58,7 +58,8 @@ public class TvpController {
 			res.invoiceBilled  = (invoiceBilledUser).setScale(2);
 			res.perFixedAchievement = ((res.invoiceBilled /((res.roleTarget != null && res.roleTarget >0) ? res.roleTarget :1))*100).setScale(2);
 			res.fixedIncentivePayout = getPayoutPercentage(dateStr, res.perFixedAchievement);
-			res.projectedIncentivePayout = getPayoutPercentage(dateStr, res.preCommittedAchievement);
+			Decimal projectPercentage = (((res.committedPipline != null ? res.committedPipline :0) + (res.invoiceBilled != null ? res.invoiceBilled : 0 ))/((res.roleTarget != null && res.roleTarget >0) ? res.roleTarget :1))*100;
+			res.projectedIncentivePayout = getPayoutPercentage(dateStr, projectPercentage);
 			listToUser.add(res);
 			response.userWise = listToUser;
 			return response;
