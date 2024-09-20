@@ -185,10 +185,14 @@
         	console.log('KeyField (roleName):', roleName);
             console.log(component.get('v.roleAchievements'));
             var roleAchievementsList = component.get('v.roleAchievements');
-            component.set('v.showKpis', true);
-            component.set('v.showDetails',false);
-            component.set('v.kpiList',roleAchievementsList[0].kpis);
-            console.log(component, row);
+            var matchingRole = roleAchievementsList.find(function(item) {
+            	return item.roleName === roleName;
+        	});
+            if (matchingRole) {
+                component.set('v.showKpis', true);
+                component.set('v.showDetails',false);
+                component.set('v.kpiList',matchingRole.kpis);
+            }
         }
     }
                             

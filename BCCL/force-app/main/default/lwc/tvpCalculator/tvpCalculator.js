@@ -74,7 +74,7 @@ export default class CommittedFixedTabs extends LightningElement {
         getRoleWiseRevenue({ dateStr: this.selectedMonth })
             .then(res => {
                 this.spinner = false;
-                console.log(JSON.stringify(res,null,2));
+                //console.log(JSON.stringify(res,null,2));
                 
                 // Format roleWiseRevenue decimals to two decimal places
                 this.roleWiseRevenue = res.roleWise.map(item => ({
