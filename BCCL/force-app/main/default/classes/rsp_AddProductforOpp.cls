@@ -531,12 +531,9 @@ public class rsp_AddProductforOpp {
             return objMainProductWrapper;
         
     }
-
-    //, string SponsorshipCode
     @AuraEnabled 
     public static String createOppLineItem(String lstWrapperString, Id opportunityId, List<OpportunityLineItem> deleteLineItems,
     Integer insertionData, Boolean submitOpportunity, String innovationPositionId){
-        //system.debug('SponsorshipCode-'+SponsorshipCode);
         Boolean isOppNonprint = true;
         String errorMessage = '';
         String opportunityStage = '';
@@ -581,7 +578,7 @@ public class rsp_AddProductforOpp {
                 objOppProduct.rsp_PackageId__c = objWrapper.mainPackageID;
                 objOppProduct.rsp_Ad_Category__c = mainProductWrapperData.adCategory;
                 objOppProduct.rsp_Ad_Sub_Category__c = mainProductWrapperData.adSubCategory;
-                objOppProduct.rsp_Estimated_Price__c = objWrapper.estimtedAmount;
+                objOppProduct.rsp_Estimated_Price__c = objWrapper.estimtedAmount * 100000;
                 objOppProduct.TotalPrice = 100000;
                 objOppProduct.rsp_Height__c = objWrapper.heightValue;
                 objOppProduct.rsp_width__c = objWrapper.widthValue;
@@ -685,93 +682,9 @@ public class rsp_AddProductforOpp {
             Set<String> oppIds = new Set<String>();
             oppIds.add(oppId);
             rsp_PushProductToSap.pushProductToSap(oppIds,true);
-            //Added by Gaurav Khandekar on 03-Feb-2020
-            //Commented by Laxman, throwing exception on add product submission
-            //Issue Fixed by Gaurav Khandekar on 05-Feb-2020
-            //              :- The groups were not present and hence the query threw exception
-            //              :- Fixed to check if the group exists and if only in that case move ahead. 
-            PostToChatter(oppId);
-            //Mod Ends
             return null;
         
     }
-
-    /** Added by Gaurav Khandekar on 03-Feb-2020
-    **  Purpose-  Scheduling Teams need to be informed that Opportunity along Products are submitted to SAP 
-    **          1) When the User submits the Product then the information is flown to SAP.
-    **          2) At the same time a chatter Post will be made to User's respective group 
-    **             along with Opportunity details. That will help Scheduling team start with their process.
-    **/
-    public static void PostToChatter(String oppId)
-    {
-        string tableContent='';
-        map<string,string> mapGroupNameId=new map<string,string>();
-        list<collaborationgroup> collabGroupList=new list<collaborationgroup>();
-
-        Opportunity oppValue=new Opportunity();
-        string queryString = 'select id,rsp_role__c';
-        for(Schema.FieldSetMember fld :SObjectType.Opportunity.FieldSets.bccl_Chatter_Post_Template_Fields.getFields()) {
-            queryString += ', ' + fld.getFieldPath();
-        }
-        queryString += ' from Opportunity where id=\''+oppId+'\'';
-
-        system.debug('queryString-'+queryString);
-        oppValue = Database.query(queryString);
-
-        if(oppValue.rsp_role__c!=null)
-        {
-            Opportunity opp=[select id,rsp_role__r.rsp_geography__r.rsp_Branch__c,account.name,owner.name
-                             from Opportunity where id=:oppId];
-
-            tableContent='Opportunity Details: \\n';
-            tableContent +='Opportunity Id : ' + oppValue.id+'\\n';
-            for(Schema.FieldSetMember fld :SObjectType.Opportunity.FieldSets.bccl_Chatter_Post_Template_Fields.getFields()) {
-                if(fld.getLabel()!='Name')
-                    tableContent +=fld.getLabel() +' : ' + oppValue.get(fld.getFieldPath())+'\\n';
-                else
-                    tableContent +='Opportunity Name : ' + oppValue.get(fld.getFieldPath())+'\\n';
-            }
-            tableContent+='Account Name : '+opp.Account.name+'\\n';
-            tableContent+='Opportunity Owner Name : '+opp.Owner.name+'\\n';
-
-            system.debug('tableContent-'+tableContent);
-            if(string.isNotBlank(opp.rsp_role__r.rsp_geography__r.rsp_Branch__c)){
-                string grpName=opp.rsp_role__r.rsp_geography__r.rsp_Branch__c.toUpperCase()+' - Scheduling';
-                string q='select id,name from collaborationgroup where name like \'%'+opp.rsp_role__r.rsp_geography__r.rsp_Branch__c+'%\'';
-                system.debug('q-'+q);
-                collabGroupList = Database.query(q);
-
-                if(collabGroupList.size()>0)
-                {
-                    for(collaborationgroup collab:collabGroupList)
-                    {
-                        mapGroupNameId.put(collab.name,collab.id);
-                    }
-                    //collaborationgroup groupid=[select id,name from collaborationgroup where name=:grpName];
-
-                    if(mapGroupNameId.containsKey(grpName))
-                    {
-                        if(mapGroupNameId.get(grpName)!=null)
-                        {
-                            FeedItem post = new FeedItem();
-                            post.ParentId = mapGroupNameId.get(grpName);//groupid.id;
-                            post.Body =tableContent;
-    
-                            try{
-                                insert post;
-                                system.debug('post-'+post);
-                            }
-                            catch(Exception e)
-                            {
-                                system.debug('Error-'+e);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    /**Mod Ends**/
     
     @AuraEnabled
     public static string getOpportunityId(string oppId){
@@ -812,40 +725,6 @@ public class rsp_AddProductforOpp {
             return errorMessage;
         
     }
-
-    /**
-    ** Added b Gaurav Khandekar(BCCL) on 28/Jan/2020
-    ** To fetch picklist values of Sponsorship Code
-    **/
-    @AuraEnabled
-    public static List<String> getSponsorshipCode(){
-        List<String> options = new List<String>();
-        Schema.DescribeFieldResult fieldResult = Opportunity.bccl_Sponsorhip_Code__c.getDescribe();
-        List<Schema.PicklistEntry> pList = fieldResult.getPicklistValues();
-        for (Schema.PicklistEntry p: pList) {
-            options.add(p.getLabel());
-        }
-        return options;
-    }
-    /**Method Ends**/
-
-    /**
-    ** Added b Gaurav Khandekar(BCCL) on 28/Jan/2020
-    ** To fetch name of AD Category (BCC)
-    **/
-    @AuraEnabled
-    public static string getCategoryName(string categoryId){
-        string bccNameValue='';
-        if(String.isNotBlank(categoryId))
-        {
-            rsp_BCC__c bccName=[select id,name from rsp_BCC__c where id=:categoryId];
-            if(bccName!=null)
-                bccNameValue=bccName.name;
-        }
-        return bccNameValue;
-    }
-    /** MOD ENDS**/
-
     public class MainProductWrapper{
         @AuraEnabled public String adCategory;
         @AuraEnabled public String adSubCategory;

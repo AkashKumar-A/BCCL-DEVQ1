@@ -32,7 +32,7 @@
     },
     onAdSizeChange : function(component, event, helper) {
         console.log('Ad size change clicked');
-		debugger;
+		//debugger;
         var showWidthHeightFields = false;
         var selectedValueId  = component.find("sizeId");
         var selectedValue = selectedValueId.get("v.value");
@@ -62,7 +62,7 @@
         cmpEvent.fire();    
     },
     widthChange : function(component, event, helper){
-        debugger;
+        //debugger;
         var oneRowData = component.get("v.productWrapperRecord");
         var pageFormat = oneRowData.pageFormat;
         var enteredWidthValue = oneRowData.widthValue;
@@ -93,7 +93,7 @@
         
     },
     heightChange : function(component, event, helper) {
-        debugger;
+        //debugger;
         var oneRowData = component.get("v.productWrapperRecord");
         var pageFormat = oneRowData.pageFormat;
         var enteredHeightValue = oneRowData.heightValue;

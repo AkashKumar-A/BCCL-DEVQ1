@@ -3,6 +3,8 @@
                 access="global">
     <aura:attribute name="errmsg" type="String"/>
     <aura:attribute name="customSettings" type="rsp_Global_Setting__c"/>
+    <aura:attribute name="projAmount" type="Decimal"/>
+    <aura:attribute name="oppRecord" type="Object"/>
     <aura:handler name="init" 
                   action="{!c.doInit}" 
                   value="{!this}"/>
@@ -47,7 +49,13 @@
                       targetError ="{!v.recordError}"
                       targetRecord ="{!v.record}"
                       targetFields ="{!v.simpleRecord}"
-                      mode="VIEW"/> 
+                      mode="VIEW"/>
+     <force:recordData
+        recordId="{!v.oppRecordId}"
+        layoutType="FULL"
+        targetFields="{!v.oppRecord}"
+        fields="rsp_Projection_Amount__c"
+        mode="VIEW" />
     
     <div class="c-container">
         <h2 class="tableHeading">Opportunity Details</h2>  
@@ -70,8 +78,17 @@
                         </div>
                     </div>
                     <div class="slds-grid slds-wrap divClass slds-show_large">
+                        <!--
                          <div class="slds-col">
                             <lightning:outputField fieldName="rsp_Projection_Amount_In_Rs__c" />
+                        </div>
+                        -->
+                        
+                        <div class="slds-col">
+                            <span  style="padding-right: 30px;">Projection Amount</span>
+                            <lightning:formattedNumber  value="{!v.oppRecord.rsp_Projection_Amount__c}" minimumFractionDigits="2"
+                                               maximumFractionDigits="2"/><br/> (In Lacs)
+                            
                         </div>
                         <div class="slds-col">
 
@@ -85,7 +102,7 @@
                         
                     </div>
                     <div class="slds-hide_medium  topHeadBox">
-                        <div class="innerCont slds-p-around_small"> 
+                        <div class="innerCont slds-p-around_small">	
                             <h2>Add Products 
                                 <span class="iconTog ">
                                     <lightning:icon iconName="utility:add" size="small"
@@ -128,7 +145,7 @@
                         <div>
                             <lightning:select 
                                               aura:id="adPositionId" label="Innovations/Ad Position Type"
-                                              onchange="{!c.onInnovationChange}"
+                                              
                                               value="{!v.selectedValuePosition}">
                                 <option value="">--None--</option>                        
                                 <aura:iteration items="{!v.adProductList}" var="item">
@@ -182,16 +199,6 @@
                             </lightning:select>
                         </div>
                     </aura:if>
-                    <!--Added by Gaurav Khandekar(BCCL) on 28-01-2020-->
-                    <!--To incorporate Sponsorship Code Field for "Win Easy"-->
-                    <aura:if isTrue="{!v.showSponsorValues}">
-                      <div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--3-of-12 slds-p-bottom_small">
-                          <ui:inputSelect label="Sponsorship Code" class="dynamic" aura:id="InputSponsorshipCode" change="{!c.onPicklistChange}"/>
-                      </div>
-                      <div type="hidden">{!v.InputSponsorshipCode}</div>
-                    </aura:if>
-                    <!--Mod Ends-->
-
                 </div>
                 <aura:if isTrue="{!v.showSearchBox}">
                     <h2 class="tableHeading1 slds-show_large">Add Product/Packages</h2>
@@ -219,7 +226,7 @@
                                 <th class="slds-text-title_caps" scope="col">Product</th>
                                 <th class="slds-text-title_caps" scope="col">Package</th>
                                 <th class="slds-text-title_caps" scope="col">Ad Position</th>
-                                <th class="slds-text-title_caps" scope="col">Ad Size</th>
+                                <th class="slds-text-title_caps" scope="col">Ad Size / Estimated Price (In Lacs)</th>
                                 <th class="slds-text-title_caps" scope="col" >Action</th>
                             </tr>
                             <aura:iteration items="{!v.productWrapper.productWrapperList}" 

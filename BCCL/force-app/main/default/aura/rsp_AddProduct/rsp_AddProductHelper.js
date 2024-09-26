@@ -17,63 +17,10 @@
         });
         $A.enqueueAction(action);  
     },
-
-    //Added by Gaurav Khandekar (BCCL) on 28/Jan/2020
-    //To fetch category Name
-    fetchCategoryName : function(component, event, helper)
-    {
-        var categoryValue = component.get("v.selectedValueCategory");
-        //alert(categoryValue); 
-        var action = component.get("c.getCategoryName");
-        action.setParams({
-            "categoryId": categoryValue
-        })
-
-        action.setCallback(this, function(response) {
-            //store state of response
-            var state = response.getState();
-            if (state === "SUCCESS") {
-                //alert(response.getReturnValue());
-                if(response.getReturnValue()=='WIN EASY'){
-                    //alert(response.getReturnValue());
-                    component.set("v.showSponsorValues",true); 
-                    this.oppSponsorhipValues(component, event, helper);
-                }
-                else
-                {
-                    component.set("v.showSponsorValues",false); 
-                }
-            } 
-        });
-        $A.enqueueAction(action); 
-    },
-
-    //Added by Gaurav Khandekar (BCCL) on 28/Jan/2020
-    //To fetch Sponshorship Code picklist values
-    oppSponsorhipValues : function(component, event, helper) {
-        var action = component.get("c.getSponsorshipCode");
-        var InputSponsorshipCode = component.find("InputSponsorshipCode");
-        var opts=[];
-        action.setCallback(this, function(a) {
-            opts.push({
-                class: "optionClass",
-                label: "--- None ---",
-                value: ""
-            });
-            for(var i=0;i< a.getReturnValue().length;i++){
-                opts.push({"class": "optionClass", label: a.getReturnValue()[i], value: a.getReturnValue()[i]});
-            }
-            InputSponsorshipCode.set("v.options", opts);
-             
-        });
-        $A.enqueueAction(action);
-    },
-    //Mod Ends
-
     adCategoryValues : function(component, event, helper) {
         var action =  component.get("c.getAdCategoryList");
         action.setCallback(this,function(response){
-            var state =  response.getState();   
+            var state =  response.getState();
             if(state === 'SUCCESS'){
                 component.set("v.adCategoryList",response.getReturnValue()); 
             }
@@ -131,7 +78,7 @@
                             "intRandomCount" : lineItemsInOpp[i].intRandomCount
                         };
                     }else{
-                        lineItem = {
+						lineItem = {
                             "idProductOrPackage" : lineItemsInOpp[i].productId,
                             "nameProductOrPackage" : '',
                             "isProductOrPackage" : false,
@@ -235,7 +182,7 @@
             }
         });
         $A.enqueueAction(dealproductAction);  
-    },
+	},
     createOppProductsInOpp : function(component, event, helper, submitIsClicked) {
         helper.showSpinner(component);
         var allProductAndPackages = component.get("v.productWrapper");
@@ -245,13 +192,6 @@
         var deleteList = component.get("v.deleteLineItemsList");
         var insertionValue  = component.get("v.insertionValue");
         var innovationPositionValue  = component.get("v.selectedValuePosition");
-
-        //
-        /*var selectedIndustry = component.find("InputSponsorshipCode");
-        alert(selectedIndustry.get("v.value"));
-        var SponsorshipCodeValue=selectedIndustry.get("v.value");
-        alert(SponsorshipCodeValue);*/
-        //
         productAction.setParams({
             "lstWrapperString": JSON.stringify(allProductAndPackages),
             "opportunityId" : oppId,
@@ -259,7 +199,6 @@
             "insertionData" : insertionValue,
             "submitOpportunity" : submitIsClicked,
             "innovationPositionId" : innovationPositionValue
-            //"SponsorshipCode" : SponsorshipCodeValue
         });
         productAction.setCallback(this,function(response){
             var state =  response.getState();
@@ -270,8 +209,8 @@
                     
                     
                     if(!submitIsClicked){
-                        helper.showSuccessToast(component, event,$A.get("$Label.c.rsp_ProductScreenSaveAndCloseAction"));
-                        //window.parent.location = '/' + oppId;
+                    	helper.showSuccessToast(component, event,$A.get("$Label.c.rsp_ProductScreenSaveAndCloseAction"));
+                    	//window.parent.location = '/' + oppId;
                     }
                     if(submitIsClicked){
                         helper.sendDataToPushClass(component, event, helper);
@@ -297,12 +236,12 @@
                 }
                 else{
                     helper.showErrorToast(component, event,resultData);
-                    helper.hideSpinner(component);
+            		helper.hideSpinner(component);
                 }
             }
             else{
                 helper.showErrorToast(component, event,'Something went wrong, contact your administrator.');
-                helper.hideSpinner(component);
+            	helper.hideSpinner(component);
             }
         });
         $A.enqueueAction(productAction);  
@@ -336,7 +275,7 @@
         });
         $A.enqueueAction(action); 
     },
-    vaidateNumberInput  : function(component, event, helper) {
+	vaidateNumberInput  : function(component, event, helper) {
         debugger;
         var isDataValid = true;
         var valueInsertion = component.get("v.insertionValue");
@@ -377,6 +316,10 @@
                 if($A.util.isEmpty(estimatedAmountValue)){
                     isDataValid = false;
                     this.showErrorToast(component, event, 'Required Data is Missing'); 
+                }
+                else if (estimatedAmountValue < 0 || estimatedAmountValue > 2000) {
+                    isDataValid = false;
+                    this.showErrorToast(component, event, 'Estimated Value should be less than 20 Crores'); 
                 }
             }
         }

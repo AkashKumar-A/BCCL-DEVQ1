@@ -9,9 +9,7 @@
         });
         $A.enqueueAction(action);
         
-        //
-        //helper.oppSponsorhipValues(component, event, helper);
-        //
+        
         
         var packageImage = $A.get("$Label.c.rsp_PackageImage");
         component.set("v.packageImage", packageImage);
@@ -128,18 +126,11 @@
         component.set("v.errmsg","Your selection will disappear once you change Innovation. Do you still wish to continue?");
     },
     onCategoryChange : function(component, event, helper) {
-        debugger;
+        //debugger;
         var isDealrelated = component.get("v.idDeal");
         var lstProducts = component.get("v.productWrapper").productWrapperList;
         var categoryValue = component.get("v.selectedValueCategory");
-        //alert(categoryValue);
         component.set("v.showTable", false);
-
-        //Added by Gaurav Khandekar(BCCL) oon 28/Jan/2020
-        //To fetch category Name
-        helper.fetchCategoryName(component, event, helper);
-        //Mod Ends
-
         //When a deal is tagged to an Opportunity, but no line item is there on opp and 
         //we are changing the category, then Deal Bcc will used populate categories/Sub categories.
         if(isDealrelated != null){
@@ -976,14 +967,5 @@
             component.set("v.productWrapper.productWrapperList",lstProducts);
         }
         */
-    },
-    //
-    onPicklistChange: function(component, event, helper) {
-        //get the value of select option
-        debugger;
-        var selectedIndustry = component.find("InputSponsorshipCode");
-        alert(selectedIndustry.get("v.value"));
-        component.set("v.InputSponsorshipCode",selectedIndustry.get("v.value"));
     }
-    //
 })

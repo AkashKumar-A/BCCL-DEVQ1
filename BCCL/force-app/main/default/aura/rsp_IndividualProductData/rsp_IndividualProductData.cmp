@@ -210,7 +210,7 @@
                     <div class="slds-truncate Amountdiv">
                         <lightning:input type="number" name="input7" 
                                          label="" placeholder="Enter Estimated Amount" 
-                                         variant="label-hidden" formatter="currency" step="0.01"
+                                         variant="label-hidden" step="0.01"
                                          value="{!v.productWrapperRecord.estimtedAmount}"/>
                     </div> 
                 </td>
