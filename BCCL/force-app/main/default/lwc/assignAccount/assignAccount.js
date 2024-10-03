@@ -31,7 +31,12 @@ export default class AssignAccount extends LightningElement {
     @track selectedAccounts = [];
     @track assignments = [];
     @track errors;
-
+    filterValue = 'all';
+    filterOptions = [
+        { label: 'All', value: 'all' },
+        { label: 'Assigned', value: 'assigned' },
+        { label: 'Unassigned', value: 'unassigned' }
+    ];
     @track ORIGINAL_ACTIONS = [
         {label: 'All', checked: true, name: 'all'},
         {label: 'To Assign', checked: false, name: 'assign'}, 
@@ -344,12 +349,19 @@ export default class AssignAccount extends LightningElement {
             this.applyFilters();
         })
     }
-
+    handleChangeFilter(event) {
+        console.log(event.target.value);
+        this.filterValue = event.target.value;
+        this.showSpinnerDuring(() =>{
+            this.filterValue = this.filterValue;
+            this.applyFilters();
+        })  
+    }
     applyFilters() {
         console.log('applying filters')
         const SEARCH_TERM = this.searchTerm;
         const CURRENT_ACTION_NAME = this.currentActionName;
-        const SHOW_UNASSIGNED_ACCOUNTS = this.showUnassigned;
+        const SHOW_FILTERED_ACCOUNTS = this.filterValue;
         let filterList = this.accList;
 
         // add filtered records for search term
@@ -386,8 +398,11 @@ export default class AssignAccount extends LightningElement {
         }
 
         // toggle the unassigned accounts
-        if (SHOW_UNASSIGNED_ACCOUNTS) {
+        if (SHOW_FILTERED_ACCOUNTS == 'unassigned') {
             filterList = filterList.filter(_acc => !_acc.AssignedTo);
+        }
+        else if (SHOW_FILTERED_ACCOUNTS == 'assigned') {
+            filterList = filterList.filter(_acc => _acc.AssignedTo);
         }
 
         // render data table for the filtered data.

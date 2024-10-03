@@ -90,6 +90,14 @@
                 ></lightning-button>
             </lightning-layout-item>
             <lightning-layout-item alignment-bump="left" padding="horizontal-small" lwc:if={accountsAvailable}>
+                <lightning-combobox
+                    label="Select Filter"
+                    value={filterValue}
+                    placeholder="Select Progress"
+                    options={filterOptions}
+                    onchange={handleChangeFilter} style="width: 115px;" >
+                </lightning-combobox>
+                <!--
                 <lightning-input
                     class="toggle-class"
                     type="toggle"
@@ -99,6 +107,7 @@
                     checked={showUnassigned}
                     onchange={toggleFilterChange}
                 ></lightning-input>
+                -->
             </lightning-layout-item>
         </lightning-layout>
 
