@@ -91,11 +91,29 @@ public class rsp2CmpBehaviouralTargetControllerTest {
     @IsTest
     static void viISTCY(){
         id idRecType = Schema.SObjectType.rsp_Payout__c.getRecordTypeInfosByName().get('Incentive Payout').getRecordTypeId();
+        Date currentDate = System.today();
+        Integer currentMonth = currentDate.month();
+        String trimester;
+        if (currentMonth >= 4 && currentMonth <= 7) {
+            trimester = '1';
+        } else if (currentMonth >= 8 && currentMonth <= 11) {
+            trimester = '2';
+        } else {
+            trimester = '3'; 
+        }
+        String currentYear;
+        if(currentMonth == 1 || currentMonth == 2 || currentMonth ==3) {
+            currentYear = String.valueOf(currentDate.year()-1);
+        }
+        else {
+            currentYear = String.valueOf(currentDate.year());
+        }
+            
 		rsp_Payout__c objPayout = new rsp_Payout__c();
-        objPayout.rsp_Year__c = '2019';
+        objPayout.rsp_Year__c = currentYear;
         objPayout.rsp_Status__c = 'Completed';
         objPayout.RecordTypeId = idRecType;
-        objPayout.rsp_Month__c = '1';
+        objPayout.rsp_Month__c = '2';
         insert objPayout;
         
         List<User> newUser  = [SELECT Id,Name,Profile.name FROM User LIMIT 1];
@@ -122,6 +140,24 @@ public class rsp2CmpBehaviouralTargetControllerTest {
         objUserAch.rsp_Total_Achievement_Percent__c = 10;  
         objUserAch.rsp_Payout_Percent__c = 10;
         insert objUserAch;
+        
+        rsp_Role_Achievement__c roleAchObj = new rsp_Role_Achievement__c();
+        roleAchObj.rsp_User_Achievement__c = objUserAch.Id;
+        roleAchObj.Name = 'Role AchievementREV-010523';
+        roleAchObj.rsp_Payout__c = objPayout.Id;
+        roleAchObj.rsp_From_Date__c = System.today();
+       	roleAchObj.rsp_To_Date__c = System.today() +40;
+        roleAchObj.LANG_KPI__c = 10;  
+        roleAchObj.Achieved_LANG_KPI__c = 10;
+        roleAchObj.MT_KPI__c = 10;
+        roleAchObj.Achieved_MT_KPI__c = 10;
+        roleAchObj.SAMAY_KPI__c = 10;
+        roleAchObj.Achieved_SAMAY_KPI__c = 10;
+        roleAchObj.NBT_KPI__c = 10;
+        roleAchObj.Achieved_NBT_KPI__c = 10;
+        roleAchObj.VK_KPI__c = 10;
+        roleAchObj.Achieved_VK_KPI__c = 10;
+        insert roleAchObj;
         
         Test.startTest();
         String x = newUser[0].id;

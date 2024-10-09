@@ -16,7 +16,8 @@ public class rsp_TargetTriggerHandler
     
     //Defined By Gaurav Khandekar
     public static boolean fireOnce=false;
-    
+    public static Map<String, rsp_Role__c> roleMap = new Map<String, rsp_Role__c>();
+    public static Map<String, List<rsp_Role__c>> bHRoleMap = new Map<String, List<rsp_Role__c>>();
     
     // This method Calculated the total Target assigned on all child target records and update on a field over parent target record
     public void rsp_rollupTarget(Map<Id,rsp_Target__c> newTargetMap, Map<Id,rsp_Target__c> oldTargetMap, Boolean isInsert, Boolean isUpdate) 
@@ -69,17 +70,6 @@ public class rsp_TargetTriggerHandler
         Date endDateOfYear = Date.newInstance(year + 1, 3, 31);
 
         for (rsp_Target__c objTarget: triggerNew) {
-            if (
-                triggerOldMap != null && 
-                triggerOldMap.get(objTarget.Id).rsp_Approval_Status__c != objTarget.rsp_Approval_Status__c && 
-                objTarget.rsp_Approval_Status__c == 'Approved' && (
-                    triggerOldMap.get(objTarget.Id).rsp_Assigned_Target__c != objTarget.rsp_Assigned_Target__c || 
-                    triggerOldMap.get(objTarget.Id).TIL_Target__c != objTarget.TIL_Target__c
-                )
-            ) {
-                objTarget.Approved_By__c = UserInfo.getUserId();
-                objTarget.Approved_On__c = System.today();
-            }
             if (
                 objTarget.rsp_Start_Date__c != null && 
                 objTarget.rsp_Start_Date__c >= startDateOfYear &&
@@ -282,7 +272,6 @@ public class rsp_TargetTriggerHandler
                 oldTargetMap.get(target.Id).Total_Collected_Amount__c != target.Total_Collected_Amount__c || 
                 oldTargetMap.get(target.Id).Total_Collected_Resp_Rev_Amount__c != target.Total_Collected_Resp_Rev_Amount__c || 
                 oldTargetMap.get(target.Id).Total_Key_Account_Revenue__c != target.Total_Key_Account_Revenue__c || 
-                oldTargetMap.get(target.Id).Total_Qualified_Achievement__c != target.Total_Qualified_Achievement__c || 
                 target.Is_Triggered__c == true  
             ) {
                 if (target.rsp_Parent_Target__c != null) {
@@ -297,8 +286,7 @@ public class rsp_TargetTriggerHandler
                 SELECT Id, (
                     SELECT Id, rsp_Total_Value_Achieved__c, rsp_Total_Volume_Achieved__c, 
                     Total_Response_Revenue_Print__c, Total_Achieved_TIL_Revenue__c, 
-                    Total_Collected_Amount__c, Total_Collected_Resp_Rev_Amount__c, Total_Key_Account_Revenue__c, 
-                    Total_Qualified_Achievement__c
+                    Total_Collected_Amount__c, Total_Collected_Resp_Rev_Amount__c, Total_Key_Account_Revenue__c 
                     FROM Targets__r
                 ) 
                 FROM rsp_Target__c WHERE 
@@ -311,7 +299,6 @@ public class rsp_TargetTriggerHandler
                 Decimal teamCollectedAmount = 0;
                 Decimal teamCollectedRespRevAmount = 0;
                 Decimal teamKeyAccountAmount = 0;
-                Decimal teamQualifiedAmountForRewardProgram = 0;
                 for(rsp_Target__c childTarget :target.Targets__r) {
                     System.debug('===childTarget === '+childTarget );
                     teamAchievedValue += (childTarget.rsp_Total_Value_Achieved__c ?? 0);
@@ -321,7 +308,6 @@ public class rsp_TargetTriggerHandler
                     teamCollectedAmount += (childTarget.Total_Collected_Amount__c ?? 0);
                     teamCollectedRespRevAmount += (childTarget.Total_Collected_Resp_Rev_Amount__c ?? 0);
                     teamKeyAccountAmount += (childTarget.Total_Key_Account_Revenue__c ?? 0);
-                    teamQualifiedAmountForRewardProgram += (childTarget.Total_Qualified_Achievement__c ?? 0);
                 }                
                 
                 //Final Parent Target
@@ -332,7 +318,6 @@ public class rsp_TargetTriggerHandler
                 target.Team_s_Collected_Amount__c = teamCollectedAmount;
                 target.Team_s_Collected_Resp_Rev_Amount__c = teamCollectedRespRevAmount;
                 target.Team_s_Key_Account_Revenue__c = teamKeyAccountAmount;
-                target.Team_s_Qualified_Achievement__c = teamQualifiedAmountForRewardProgram;
                 targetToUpdate.add(target);
             }
         }
@@ -550,6 +535,7 @@ public class rsp_TargetTriggerHandler
     
     public void rsp_assignParentTarget_ApprovalUser(List<rsp_Target__c> newTargetList, Map<Id,rsp_Target__c> oldTargetMap, Boolean isInsert, Boolean isUpdate) 
     {
+        /*
         Set<Id>roleIDSet = new Set<Id>();
         Set<Id>kraSet = new Set<Id>();
         Set<Id>ParentroleIDSet = new Set<Id>();
@@ -584,7 +570,7 @@ public class rsp_TargetTriggerHandler
         }
         
         if(!roleIDSet.isEmpty())
-        {
+        {   
             roleList=[Select id,Parent_Role__c,
                       Parent_Role__r.rsp_Pass_through__c,
                       Parent_Role__r.Parent_Role__c,
@@ -654,7 +640,7 @@ public class rsp_TargetTriggerHandler
         if(parentRoleToUserId != null)
         {
             //added 1171 CPU API Limit Exceeded Error while uploading Target via Data Loader.
-            /*
+            / *
             for(rsp_Target__c target : newTargetList) 
             {
             if((isInsert && target.rsp_Role__c != null && target.rsp_KRA_Assignment__c != null) || (isUpdate && target.rsp_KRA_Assignment__c != null && oldTargetMap.get(target.id).rsp_Role__c != target.rsp_Role__c)) 
@@ -666,16 +652,55 @@ public class rsp_TargetTriggerHandler
             target.rsp_Parent_Target__c= ParenTargetId;
             }
             }
-            */
+            * /
             for(rsp_Target__c target : filterTargetList)
             {
                 Id ParenTargetId = RoleIdToTargetId.get(parentRoleId);
                 Id ParentRoleIdToUpdate = roleToParentRole.get(target.rsp_Role__c);
-                Id UserID = parentRoleToUserId.get(ParentRoleIdToUpdate);
-                target.rsp_Reporting_Manager__c= UserID;
+                    Id UserID = parentRoleToUserId.get(ParentRoleIdToUpdate);
+                    target.rsp_Reporting_Manager__c= UserID;
                 //target.rsp_Parent_Target__c= ParenTargetId;
             }
-        }        
+        }
+        */
+        System.debug('test'+trigger.operationType);
+        Map<Id,Id> roleToParentUserId = new Map<Id,Id>();
+        set<Id> setOfRoleId = new set<Id>();
+        if (bHRoleMap == null) {
+            bHRoleMap = new Map<String, List<rsp_Role__c>>();
+        }
+        if(roleMap == null) {
+            roleMap = new Map<String, rsp_Role__c>();
+        }
+        if(bHRoleMap.isEmpty() && roleMap.isEmpty()) {
+            populateMap();
+        }
+        for(rsp_Target__c each :newTargetList) {
+            setOfRoleId.add(each.rsp_role__c);
+        }
+        Map<Id, rsp_role__c> mapIdToRole = new Map<Id, rsp_role__c>([
+            SELECT Id, Name, rsp_Geography__r.rsp_Branch_Name__c, rsp_Profile__r.Name
+            FROM rsp_role__c WHERE
+            Id IN :setOfRoleId
+        ]);
+        for(rsp_Target__c each :newTargetList) 
+        {
+            rsp_role__c role = mapIdToRole.get(each.rsp_role__c);
+            if(role != null) {
+                each.rsp_role__r = role;
+            }
+        }
+        for(rsp_Target__c each :newTargetList) {
+            roleToParentUserId.put(each.rsp_role__c, findParentUser(each));
+        }
+        for(rsp_Target__c target : newTargetList) 
+        {
+            if((isInsert && target.rsp_Role__c != null && target.rsp_KRA_Assignment__c != null) || (isUpdate && target.rsp_KRA_Assignment__c != null && oldTargetMap.get(target.id).rsp_Role__c != target.rsp_Role__c)) 
+            {
+                Id parentUserId = roleToParentUserId.get(target.rsp_role__c);
+                target.rsp_Reporting_Manager__c= parentUserId;
+            }
+        }       
     }
     
     /*------------------------------------------------------------
@@ -1782,7 +1807,88 @@ public class rsp_TargetTriggerHandler
         achievement3.rsp_achievement_Date__c = Date.today();
         achievement3.rsp_achievement_External_Id__c = string.valueof(Datetime.now());
     }
-    
+
+    public Id findParentUser(rsp_Target__c childTarget) {
+        rsp_Role__c parentRole;
+        rsp_Role__c tempRole = roleMap.get(childTarget.rsp_Role__c);
+        while (tempRole != null && tempRole.Parent_Role__c != null) {
+            System.debug('current Role Name: ' +  tempRole.Name);
+            tempRole = roleMap.get(tempRole.Parent_Role__c);
+            if ((tempRole.rsp_Profile__r.Name == 'Branch Vertical Head' || tempRole.rsp_Profile__r.Name == 'Branch Horizontal Head' || tempRole.rsp_Profile__r.Name == 'Branch Head'))  {
+                parentRole = tempRole;
+                break;
+            }
+        }
+        if (parentRole != null) {
+            System.debug('Parent Role name: ' + parentRole.Name);
+            if (parentRole.Role_Assignment__r != null && parentRole.Role_Assignment__r.size() > 0) {
+                for (rsp_Role_Assignment__c objAssign: parentRole.Role_Assignment__r) {
+                    if (
+                        objAssign.rsp_start_date__c <= childTarget.rsp_End_Date__c && (
+                            objAssign.rsp_End_date__c == null ||
+                            objAssign.rsp_End_date__c >= childTarget.rsp_End_Date__c
+                        )
+                    ) {
+                        return objAssign.rsp_User__c;
+                    }
+                }
+            }
+        }
+        if(childTarget.rsp_Role__r.Name?.contains('KEY ACCOUNT') == false) {
+            String key = childTarget.rsp_Role__r.rsp_Geography__r.rsp_Branch_Name__c?.toUpperCase();
+            // = [select id, name,rsp_Current_User__c,rsp_Current_User__r.id from rsp_Role__c where rsp_Profile__r.name='Branch Head' and rsp_Horizontal__r.name= 'BRANCH SALES' and rsp_Geography__r.rsp_Branch_Name__c= :target.rsp_Role__r.rsp_Geography__r.rsp_Branch_Name__c and rsp_Current_User__c!=null limit 1];
+
+            if (bHRoleMap.get(key) != null) {
+                for (rsp_Role__c objRole: bHRoleMap.get(key)) {
+                    if (objRole.Role_Assignment__r != null && objRole.Role_Assignment__r.size() > 0) {
+                        for (rsp_Role_Assignment__c objAssign: objRole.Role_Assignment__r) {
+                            if (
+                                objAssign.rsp_start_date__c <= childTarget.rsp_End_Date__c && (
+                                    objAssign.rsp_End_date__c == null ||
+                                    objAssign.rsp_End_date__c >= childTarget.rsp_End_Date__c
+                                )
+                            ) {
+                                return objAssign.rsp_User__c;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    public void populateMap() {
+        Integer year = System.today().year();
+        if (System.today().month() < 4) {
+            year--;
+        }
+        Date startDate = Date.newInstance(year, 4, 1);
+        Date endDate = Date.newInstance(year + 1, 3, 31);
+        for (rsp_Role__c objRole: [
+            SELECT Id, Name, rsp_Current_User__c, Parent_Role__c, rsp_Pass_through__c, 
+            rsp_Geography__r.rsp_Branch_Name__c, rsp_Profile__r.Name, 
+            rsp_Horizontal__c, rsp_Horizontal__r.Name, (  
+                SELECT Id, rsp_User__c, rsp_start_date__c, rsp_End_date__c, 
+                rsp_Active__c, rsp_User__r.Id, rsp_User__r.IsActive 
+                FROM Role_Assignment__r WHERE
+                rsp_Active__c = true
+            ) FROM rsp_Role__c ORDER BY Name DESC
+        ]) {
+            roleMap.put(objRole.Id, objRole);
+            if (
+                objRole.rsp_Profile__r.Name == 'Branch Head' && 
+                objRole.rsp_Horizontal__c != null && 
+                objRole.rsp_Horizontal__r.Name == 'BRANCH SALES'
+            ) {
+                String key = objRole.rsp_Geography__r.rsp_Branch_Name__c?.toUpperCase();
+                if (bHRoleMap.get(key) == null) {
+                    bHRoleMap.put(key, new List<rsp_Role__c>());
+                }
+                bHRoleMap.get(key).add(objRole);
+            }
+        }
+    }
     /*------------------------------------------------------------
     Methood to SendNotification to user on chnage of Deployed target/ Streched Target      
     <Date>          <Authors Name>      <Brief Description of Change>

@@ -578,7 +578,7 @@ public class rsp_AddProductforOpp {
                 objOppProduct.rsp_PackageId__c = objWrapper.mainPackageID;
                 objOppProduct.rsp_Ad_Category__c = mainProductWrapperData.adCategory;
                 objOppProduct.rsp_Ad_Sub_Category__c = mainProductWrapperData.adSubCategory;
-                objOppProduct.rsp_Estimated_Price__c = objWrapper.estimtedAmount * 100000;
+                objOppProduct.rsp_Estimated_Price__c = (objWrapper.estimtedAmount ?? 0) * 100000;
                 objOppProduct.TotalPrice = 100000;
                 objOppProduct.rsp_Height__c = objWrapper.heightValue;
                 objOppProduct.rsp_width__c = objWrapper.widthValue;
