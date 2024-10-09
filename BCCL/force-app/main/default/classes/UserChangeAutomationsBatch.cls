@@ -226,7 +226,7 @@ public class UserChangeAutomationsBatch implements Database.Batchable<SObject>, 
         while (tempRole != null && tempRole.Parent_Role__c != null) {
             System.debug('current Role Name: ' +  tempRole.Name);
             tempRole = this.roleMap.get(tempRole.Parent_Role__c);
-            if (!tempRole.rsp_Pass_through__c) {
+            if (tempRole.rsp_Profile__r.Name == 'Branch Vertical Head' || tempRole.rsp_Profile__r.Name == 'Branch Horizontal Head' || tempRole.rsp_Profile__r.Name == 'Branch Head') {
                 parentRole = tempRole;
                 break;
             }
