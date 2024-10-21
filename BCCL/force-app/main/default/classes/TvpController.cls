@@ -164,7 +164,9 @@ public class TvpController {
 		}
 		return roleToTarget;
 	}
-	private static Decimal  getPayoutPercentage(String dateStr, Decimal percentage) {
+
+	@AuraEnabled
+	public static Decimal  getPayoutPercentage(String dateStr, Decimal percentage) {
 		currentMonthDate dateOfMoth = getCurrentMonth(dateStr);
 		List<rsp_Incentive_Mapping__c> listOfMapping = [
 			SELECT id, Min_Achievement__c, Max_Achievement__c, Min_Payout__c, Max_Payout__c, rsp_Start_Date__c, rsp_End_Date__c 
