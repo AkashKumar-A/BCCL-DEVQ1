@@ -23,14 +23,16 @@ export default class AssignAccount extends LightningElement {
     showUnassigned
     
     @track roleList = [];
-
+    @track isFilterChange = false;
     @track accList = [];
     @track filterList = [];
     @track data = [];
-    
+    @track alreadySelectedRows = [];
+    isSelectedAccounts = false;
     @track selectedAccounts = [];
     @track assignments = [];
     @track errors;
+    @track selectedAccountCount = 0;
     filterValue = 'all';
     filterOptions = [
         { label: 'All', value: 'all' },
@@ -176,10 +178,10 @@ export default class AssignAccount extends LightningElement {
     }
 
     get disabledAssignmentButton() {
-        if(this.selectedAccounts != null && this.selectedAccounts.length > 0) {
+        if(this.alreadySelectedRows != null && this.alreadySelectedRows.length > 0) {
             let typeSet = new Set();
-            let dataMap = new Map(this.data.map(item => [item.Id, item]));
-            this.selectedAccounts.forEach(accId => {
+            let dataMap = new Map(this.accList.map(item => [item.Id, item]));
+            this.alreadySelectedRows.forEach(accId => {
                 let _type = dataMap.get(accId)?.actionType;
                 if(_type) {
                     typeSet.add(_type);
@@ -194,10 +196,10 @@ export default class AssignAccount extends LightningElement {
 
     get buttonLabel() {
         let label = 'Assign';
-        if(this.selectedAccounts != null && this.selectedAccounts.length > 0) {
+        if(this.alreadySelectedRows != null && this.alreadySelectedRows.length > 0) {
             let typeSet = new Set();
-            let dataMap = new Map(this.data.map(item => [item.Id, item]));
-            this.selectedAccounts.forEach(accId => {
+            let dataMap = new Map(this.accList.map(item => [item.Id, item]));
+            this.alreadySelectedRows.forEach(accId => {
                 let _type = dataMap.get(accId)?.actionType;
                 if(_type) {
                     typeSet.add(_type);
@@ -358,12 +360,13 @@ export default class AssignAccount extends LightningElement {
         })  
     }
     applyFilters() {
-        console.log('applying filters')
+        console.log('applying filters');
+        this.isFilterChange = true;
         const SEARCH_TERM = this.searchTerm;
         const CURRENT_ACTION_NAME = this.currentActionName;
         const SHOW_FILTERED_ACCOUNTS = this.filterValue;
         let filterList = this.accList;
-
+        
         // add filtered records for search term
         if(SEARCH_TERM) {
             filterList = filterList.filter(acc => {
@@ -414,6 +417,14 @@ export default class AssignAccount extends LightningElement {
         }
 
         this.filterList = filterList;
+        const dataIds = new Set(this.data.map(item => item.Id)); // Extract IDs from `data`
+        let sublist = this.alreadySelectedRows.filter(id => dataIds.has(id)); // IDs not present in `data`
+        let updatedAlreadySelectedRows = [...sublist];
+        this.selectedAccounts = updatedAlreadySelectedRows;
+        console.log(JSON.stringify(this.selectedAccounts));
+        
+        this.isFilterChange = false;
+        
     }
 
     fieldChanged(evt) {
@@ -431,6 +442,9 @@ export default class AssignAccount extends LightningElement {
                     this.selectedUserId = role?.userId;
                     this.selectedUserName = role?.userName;
                     this.activeRoleAssignment = role?.roleAssignmentId;
+                    this.alreadySelectedRows = [];
+                    this.selectedAccountCount = this.alreadySelectedRows.length;
+                    this.isSelectedAccounts = (this.selectedAccountCount > 0);
                     console.log('assignment id', this.activeRoleAssignment)
                     this.accountColumns = JSON.parse(JSON.stringify(this.ORIGINAL_COLUMNS));
                     if(role?.vRole) {
@@ -640,8 +654,8 @@ export default class AssignAccount extends LightningElement {
     }
 
     handleInlineEdit(evt) {
-        let dataMap = new Map(this.data.map(item => [item.Id, item]));
-        let selectedItemSet = new Set(this.selectedAccounts);
+        let dataMap = new Map(this.accList.map(item => [item.Id, item]));
+        let selectedItemSet = new Set(this.alreadySelectedRows);
         this.draftValues = evt.target.draftValues;
         evt.target.draftValues?.forEach(draftValue => {
             if(draftValue.hasOwnProperty('StartDate')) {
@@ -665,15 +679,48 @@ export default class AssignAccount extends LightningElement {
                 dataMap.get(draftValue.Id).EndDate = draftValue.EndDate;
             }
         });
-        this.selectedAccounts = [...selectedItemSet];
+        this.alreadySelectedRows = [...selectedItemSet];
     }
-
+    /*
     accountSelected(evt) {
+        console.log('filter change '+this.isFilterChange);
+        
+        if (evt.detail.selectedRows && (!this.isFilterChange)) {
+            this.selectedAccounts = evt.detail.selectedRows.map(item => item.Id);
+            this.selectedAccountCount = this.selectedAccounts.length;
+        }
+        if(!this.isFilterChange){
+            this.selectedAccounts.forEach(accountId => {
+                if (!this.alreadySelectedRows.includes(accountId)) {
+                    this.alreadySelectedRows.push(accountId);
+                }
+            });
+        }
+        console.log('already '+this.alreadySelectedRows);
+        
+    }
+    */
+    accountSelected(evt) {
+        // console.log('Filter change:', this.isFilterChange);
+    
+        // Skip processing if a filter change is happening
+        if (this.isFilterChange) {
+            return;
+        }
+    
+        // Update `selectedAccounts` with the currently selected row IDs
         if (evt.detail.selectedRows) {
             this.selectedAccounts = evt.detail.selectedRows.map(item => item.Id);
         }
+        console.log('selectedAccount '+this.selectedAccounts);
+        const dataIds = new Set(this.data.map(item => item.Id)); // Extract IDs from `data`
+        let sublist = this.alreadySelectedRows.filter(id => !dataIds.has(id)); 
+        let updatedAlreadySelectedRows = [...sublist, ...this.selectedAccounts];
+        this.alreadySelectedRows = updatedAlreadySelectedRows;
+        this.selectedAccountCount = this.alreadySelectedRows.length;
+        this.isSelectedAccounts = (this.selectedAccountCount > 0);
     }
-
+    
     handleResponse(respList) {
         let hasError = false;
         let errObj = {rows: []};
@@ -711,8 +758,8 @@ export default class AssignAccount extends LightningElement {
     handleAssignmentButtonClick(evt) {
         if(!this.disabledAssignmentButton) {
             let typeSet = new Set();
-            let dataMap = new Map(this.data.map(item => [item.Id, item]));
-            this.selectedAccounts.forEach(accId => {
+            let dataMap = new Map(this.accList.map(item => [item.Id, item]));
+            this.alreadySelectedRows.forEach(accId => {
                 let _type = dataMap.get(accId)?.actionType;
                 if(_type) {
                     typeSet.add(_type);
@@ -723,7 +770,7 @@ export default class AssignAccount extends LightningElement {
                 if(this.selectedUserName) {
                     if(_type == 'assign') {
                         let showStartDateError = false;
-                        this.selectedAccounts.forEach(accId => {
+                        this.alreadySelectedRows.forEach(accId => {
                             if(dataMap.get(accId)?.StartDate == dataMap.get(accId)?.originalStartDate) {
                                 showStartDateError = true;
                             }
@@ -736,7 +783,7 @@ export default class AssignAccount extends LightningElement {
                             }));
                         }
                         else {
-                            let newAssignmentList = this.selectedAccounts.map(accId => {
+                            let newAssignmentList = this.alreadySelectedRows.map(accId => {
                                 let entry = dataMap.get(accId);
                                 return {
                                     accountId: entry.Id, 
@@ -763,7 +810,7 @@ export default class AssignAccount extends LightningElement {
                     else if(_type == 'reassign') {
                         let showStartDateError = false;
                         let showEndDateError = false;
-                        this.selectedAccounts.forEach(accId => {
+                        this.alreadySelectedRows.forEach(accId => {
                             let account = dataMap.get(accId);
                             if (account) {
                                 console.log(account.StartDate, account.EndDate);
@@ -800,7 +847,7 @@ export default class AssignAccount extends LightningElement {
                             }
                         }
                         else {
-                            let assignmentList = this.selectedAccounts.map(accId => {
+                            let assignmentList = this.alreadySelectedRows.map(accId => {
                                 let entry = dataMap.get(accId);
                                 return {
                                     assignmentId: entry.mostRecentAssignmentId,  
@@ -821,7 +868,7 @@ export default class AssignAccount extends LightningElement {
                     }
                     else if(_type == 'unassign') {
                         let showEndDateError = false;
-                        this.selectedAccounts.forEach(accId => {
+                        this.alreadySelectedRows.forEach(accId => {
                             let date = dataMap.get(accId)?.EndDate;
                             if(!date) {
                                 showEndDateError = true;
@@ -835,7 +882,7 @@ export default class AssignAccount extends LightningElement {
                             }));
                         }
                         else {
-                            let existingAssignmentList = this.selectedAccounts.map(accId => {
+                            let existingAssignmentList = this.alreadySelectedRows.map(accId => {
                                 let entry = dataMap.get(accId);
                                 return {
                                     assignmentId: entry.mostRecentAssignmentId,
@@ -860,7 +907,31 @@ export default class AssignAccount extends LightningElement {
             }
         }
     }
-
+    showSelectedAccounts() {
+        let selectedIds = new Set(this.alreadySelectedRows);
+        // Separate selected rows and unselected rows
+        let selectedRows = this.accList.filter(item => selectedIds.has(item.Id));
+        let unselectedRows = this.data.filter(item => !selectedIds.has(item.Id));
+        let allunselectedRow = this.accList.filter(item => !selectedIds.has(item.Id));
+        if (this.isFilterChange) {
+            return;
+        }
+        const dataIds = new Set(this.data.map(item => item.Id)); // Extract IDs from `data`
+        let sublist = this.alreadySelectedRows.filter(id => !dataIds.has(id)); 
+        let updatedAlreadySelectedRows = [...sublist, ...this.selectedAccounts];
+        this.alreadySelectedRows = updatedAlreadySelectedRows;
+        this.selectedAccountCount = this.alreadySelectedRows.length;
+        this.isSelectedAccounts = (this.selectedAccountCount > 0);
+        this.selectedAccounts = this.alreadySelectedRows;
+        // Update `data` to display selected rows at the top
+        this.data = [...selectedRows, ...unselectedRows];
+        this.accList = [...selectedRows, ...allunselectedRow];
+    }
+    get selectedAccount() {
+        if(this.alreadySelectedRows.length == 1)
+            return 'Selected Account';
+        return 'Selected Accounts';
+    }
     showSpinnerDuring(callback, params) {
         this.showSpinner = true;
         if (!params) {

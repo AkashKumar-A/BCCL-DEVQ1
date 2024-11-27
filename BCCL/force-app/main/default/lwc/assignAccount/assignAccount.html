@@ -89,6 +89,11 @@
                     onclick={handleAssignmentButtonClick}
                 ></lightning-button>
             </lightning-layout-item>
+            <lightning-layout-item alignment-bump="right" padding="horizontal-small">
+                <div class="hyperlink-text" if:true={isSelectedAccounts} onclick={showSelectedAccounts}>
+                    {selectedAccount}: {selectedAccountCount}
+                </div>
+            </lightning-layout-item>            
             <lightning-layout-item alignment-bump="left" padding="horizontal-small" lwc:if={accountsAvailable}>
                 <lightning-combobox
                     label="Select Filter"
