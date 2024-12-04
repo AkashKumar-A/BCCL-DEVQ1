@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>Copy_1_of_Amount_greater_than_5L</name>
+        <label>Copy 1 of Amount greater than 5L</label>
+        <locationX>50</locationX>
+        <locationY>575</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>emailBody</name>
+            <value>
+                <elementReference>EmailNotification</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailAddresses</name>
+            <value>
+                <elementReference>Sendemailaddress</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>sendRichBody</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailSubject</name>
+            <value>
+                <elementReference>Subject</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>emailSimple</nameSegment>
+        <versionSegment>1</versionSegment>
+    </actionCalls>
+    <apiVersion>57.0</apiVersion>
+    <assignments>
+        <name>Copy_1_of_Assigned_send_email</name>
+        <label>Copy 1 of Assigned send email</label>
+        <locationX>50</locationX>
+        <locationY>455</locationY>
+        <assignmentItems>
+            <assignToReference>Sendemailaddress</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>TestOwneremail</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Copy_1_of_Amount_greater_than_5L</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <name>is_Valid</name>
+        <label>is Valid</label>
+        <locationX>182</locationX>
+        <locationY>335</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Valid</name>
+            <conditionLogic>(1 AND 2 AND 3 AND 4 AND 5 AND 6 AND 7) OR 8</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Branch__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue>DELHI</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Branch__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue>DELHI1</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Branch__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue>DELHI2</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Branch__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue>MUMBAI</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Branch__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue>MUMBAI1</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Branch__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue>MUMBAI2</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Branch__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue>BANGALORE</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.bccl_Projection_Week_1__c</leftValueReference>
+                <operator>GreaterThan</operator>
+                <rightValue>
+                    <numberValue>25.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Copy_1_of_Assigned_send_email</targetReference>
+            </connector>
+            <label>Valid</label>
+        </rules>
+    </decisions>
+    <environments>Default</environments>
+    <formulas>
+        <name>PercentageDifference</name>
+        <dataType>String</dataType>
+        <expression>if({!$Record.bccl_Projection_Week_1__c} &gt; {!$Record__Prior.bccl_Projection_Week_1__c}, &apos;&apos;, &apos;-&apos; ) &amp;  TEXT(ROUND(ABS({!$Record.bccl_Projection_Week_1__c} - {!$Record__Prior.bccl_Projection_Week_1__c} ) * 100 / {!$Record__Prior.bccl_Projection_Week_1__c},2))</expression>
+    </formulas>
+    <formulas>
+        <name>Subject</name>
+        <dataType>String</dataType>
+        <expression>&apos;Current Month - Change in Projection Amount (In lacs) - &apos;+ TEXT(TODAY())</expression>
+    </formulas>
+    <formulas>
+        <name>TestOwneremail</name>
+        <dataType>String</dataType>
+        <expression>{!$Record.bccl_Owner__r.Email}</expression>
+    </formulas>
+    <formulas>
+        <name>TotalCalculation</name>
+        <dataType>Currency</dataType>
+        <expression>{!$Record.bccl_Non_Print_1__c} +{!$Record.bccl_Projection_Week_1__c} + {!$Record.bccl_Created_1__c}</expression>
+        <scale>2</scale>
+    </formulas>
+    <interviewLabel>Projection amount &gt;5 lacs {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Projection amount &gt; 10 Lacs</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>56</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>is_Valid</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>bccl_Projection_Week_1__c</field>
+            <operator>IsChanged</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>bccl_Projection_Week_1__c</field>
+            <operator>GreaterThan</operator>
+            <value>
+                <numberValue>10.0</numberValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Percent_Change__c</field>
+            <operator>GreaterThan</operator>
+            <value>
+                <numberValue>10.0</numberValue>
+            </value>
+        </filters>
+        <object>bccl_Account_Projection__c</object>
+        <recordTriggerType>Update</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <textTemplates>
+        <description>An email alert to be triggered if projection amount is updated to a value that is greater than 5 lacs</description>
+        <name>EmailNotification</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text>Hi {!$Record.Owner_Name__c},
+&lt;br/&gt;
+&lt;br/&gt;A projection &lt;a href=&quot;https://bcclresponse--qa1.sandbox.lightning.force.com/{!$Record.Id}&quot;&gt;record&lt;/a&gt; has been updated.
+&lt;br/&gt;
+&lt;br/&gt;The Print (In lacs) amount has changed from {!$Record__Prior.bccl_Projection_Week_1__c} Lacs to {!$Record.bccl_Projection_Week_1__c} Lacs for the following projection record -
+&lt;br/&gt;
+&lt;br/&gt;Name - {!$Record.Name}
+&lt;br/&gt;Account Name - {!$Record.bccl_Account_Name__c}
+&lt;br/&gt;Old Value - {!$Record__Prior.bccl_Projection_Week_1__c} Lacs
+&lt;br/&gt;New Value - {!$Record.bccl_Projection_Week_1__c} Lacs
+&lt;br/&gt;Percentage Change = {!PercentageDifference}%
+&lt;br/&gt;Vertical - {!$Record.bccl_Vertical__r.Name}
+&lt;br/&gt;Role - {!$Record.bccl_Role__r.Name}
+&lt;br/&gt;Date - {!$Record.Last_Updated_Date__c}
+&lt;br/&gt;Month - {!$Record.bccl_Month__c}</text>
+    </textTemplates>
+    <variables>
+        <name>Sendemailaddress</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>Total</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+        <scale>2</scale>
+    </variables>
+</Flow>
