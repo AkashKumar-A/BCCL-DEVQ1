@@ -1,33 +1,55 @@
 <template>
     <lightning-card>
         <div class="slds-grid slds-grid_align-start slds-p-around_medium" style="margin-top: -17px;padding-bottom:0.4rem;padding-top:0.4rem;">
-            <h1 style="font-size: 1rem; font-weight:bold;">Summarized view Till Last Month (Current Trimester)</h1>
+            <h1 style="font-size: 1rem; font-weight:bold;">Response Incentive Plan</h1>
         </div>
+
         <table style="margin-bottom:10px;"
             class="slds-table slds-table_cell-buffer slds-no-row-hover slds-table_bordered">
             <tbody>
                 <tr style="font-weight: bold; background: #f3f3f3;">
+                    <td>Time Period</td>
                     <td>User Target <br />(In Lacs)</td>
-                    <td>Scheduled to Print<br />(In Lacs)</td>
+                    <td>Scheduled<br />(In Lacs)</td>
                     <td>Published <br />(In Lacs)</td>
-                    <td>Pipeline P+S <br />(In Lacs)</td>
-                    <td>% ACHV P+S <br /> </td>
-                    <td>Invoice Billed<br />(In Lacs)</td>
-                    <td>%ACHV <br /> </td>
-                    <td>Fixed Incentive<br /> Payout %</td>
-                    <td>Projected Incentive<br /> Payout %</td>
+                    <td>Invoiced<br />(In Lacs)</td>
+                    <td>Pipeline P+S+I <br />(In Lacs)</td>
+                    <td>% ACHV P+S+I <br /> </td>
+                    <td>Incentive<br/> Payout (%)</td>
+                    <td>Incentive Payout <br/> (In Ruppes)</td>
+                    <td>Eligibily (@ 100%)<br/>(Ruppes) </td>
+                    <td>Eligibily (@ 120%)<br/>(Ruppes) </td>
                 </tr>
-                <tr>
-                    <td>{previousUserWiseRevenue.roleTarget} </td>
-                    <td>{previousUserWiseRevenue.scheduledtoPrint} </td>
-                    <td>{previousUserWiseRevenue.published} </td>
-                    <td>{previousUserWiseRevenue.committedPipline} </td>
-                    <td>{previousUserWiseRevenue.preCommittedAchievement}</td>
-                    <td>{previousUserWiseRevenue.invoiceBilled} </td>
-                    <td>{previousUserWiseRevenue.perFixedAchievement}</td>
-                    <td>{previousUserWiseRevenue.fixedIncentivePayout}</td>
-                    <td>{previousUserWiseRevenue.projectedIncentivePayout}</td>
-                </tr>
+                <template for:each={trimesterWise} for:item="item">
+                    <tr key={item}>
+                        <td>{item.trimesterName}</td>
+                        <td>{item.roleTarget} </td>
+                        <td>{item.scheduledtoPrint} </td>
+                        <td>{item.published} </td>
+                        <td>{item.invoiceBilled} </td>
+                        <td>{item.PSI}</td>
+                        <td>{item.prePSI}</td>
+                        <td>{item.responseIncentive}</td>
+                        <td>{item.assignedIncentive}</td>
+                        <td>{item.fullIncentive}</td>
+                        <td>{item.extraIncentive}</td>
+                    </tr>
+                </template>
+                <template for:each={previousUserWiseRevenue1} for:item="item">
+                    <tr key={item} style="font-weight: bold;">
+                        <td>{item.trimesterName}</td>
+                        <td>{item.roleTarget} </td>
+                        <td>{item.scheduledtoPrint} </td>
+                        <td>{item.published} </td>
+                        <td>{item.invoiceBilled} </td>
+                         <td>{item.PSI}</td>
+                       <td>{item.prePSI}</td>
+                        <td>{item.responseIncentive}</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                </template>
             </tbody>
         </table>
         <div class="slds-grid slds-grid_align-start slds-p-around_medium"
@@ -44,31 +66,29 @@
             <tbody>
                 <tr style="font-weight: bold; background: #f3f3f3;">
                     <td>User Target <br />(In Lacs)</td>
-                    <td>Scheduled to Print<br />(In Lacs)</td>
+                    <td>Scheduled<br />(In Lacs)</td>
                     <td>Published <br />(In Lacs)</td>
-                    <td>Pipeline P+S <br />(In Lacs)</td>
-                    <td>% ACHV P+S <br /></td>
-                    <td>Invoice Billed<br />(In Lacs)</td>
-                    <td>% ACHV <br /> </td>
-                    <td>Fixed Incentive<br /> Payout %</td>
-                    <td>Projected Incentive<br /> Payout %</td>
+                    <td>Invoiced<br />(In Lacs)</td>
+                    <td>Pipeline P+S+I <br />(In Lacs)</td> 
+                    <td>% ACHV P+S+I <br /></td>
+                    <td>Incentive <br/>Payout (%)</td>
+                    <td>Period Earnings <br/> (In Lacs)</td>
                 </tr>
                 <template for:each={userWiseRevenue} for:item="item">
                     <tr key={item}>
                         <td>{item.roleTarget} </td>
                         <td>{item.scheduledtoPrint} </td>
                         <td>{item.published} </td>
-                        <td>{item.committedPipline} </td>
-                        <td>{item.preCommittedAchievement}</td>
                         <td>{item.invoiceBilled} </td>
-                        <td>{item.perFixedAchievement}</td>
-                        <td>{item.fixedIncentivePayout}</td>
-                        <td>{item.projectedIncentivePayout}</td>
+                        <td>{item.PSI}</td>
+                        <td>{item.prePSI}</td>
+                        <td>{item.responseIncentive}</td>
+                        <td>0.00</td>
                     </tr>
                 </template>
             </tbody>
         </table>
-        <div style="height: 40vh;">
+        <div style="height: calc(100vh - 488px);">
             <lightning-datatable key-field="id" data={roleWiseRevenue} columns={tableColumns}
                 hide-checkbox-column="true">
             </lightning-datatable>

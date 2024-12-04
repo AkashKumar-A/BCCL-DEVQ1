@@ -14,7 +14,7 @@ public class UserPublicGroupMembershipHelper {
             GrpName.put(gName.Name, gName.id);
         }
         
-        roleList = [select id, name, rsp_Current_User__c, rsp_Current_User__r.name, rsp_Geography__r.Name, rsp_Geography__r.rsp_Branch_Name__c, rsp_horizontal__c, rsp_horizontal__r.name,rsp_Vertical__r.rsp_Vertical_Short_Code__c from rsp_Role__c where id IN :oldMapRole.keyset()];
+        roleList = [select id, name, rsp_Current_User__c, rsp_Current_User__r.name, rsp_Geography__r.Name, rsp_Geography__r.rsp_Branch_Name__c, rsp_Geography__r.rsp_Branch__c, rsp_Vertical__r.Name, rsp_horizontal__c, rsp_horizontal__r.name,rsp_Vertical__r.rsp_Vertical_Short_Code__c from rsp_Role__c where id IN :oldMapRole.keyset()];
         system.debug('roleList' +roleList);
         for(rsp_Role__c r:roleList){
             
@@ -25,6 +25,13 @@ public class UserPublicGroupMembershipHelper {
                     if(r.rsp_Geography__r.rsp_Branch_Name__c!=null && r.rsp_Geography__r.rsp_Branch_Name__c!='' && r.rsp_horizontal__c == null  && r.rsp_Vertical__r.rsp_Vertical_Short_Code__c!=null)
                     {
                         string GeoHorizontal = r.rsp_Geography__r.rsp_Branch_Name__c +' - '+ r.rsp_Vertical__r.rsp_Vertical_Short_Code__c;
+                        if(GrpName.containsKey(GeoHorizontal) && oldMapRole.get(r.id).rsp_Current_User__c!=null)
+                        {
+                            setGroupId.add(GrpName.get(GeoHorizontal));
+                            setUserOrGroupId.add(oldMapRole.get(r.id).rsp_Current_User__c);
+                        }
+                        //New Code 
+                        GeoHorizontal = r.rsp_Geography__r.rsp_Branch__c +' '+ r.rsp_Vertical__r.Name;
                         if(GrpName.containsKey(GeoHorizontal) && oldMapRole.get(r.id).rsp_Current_User__c!=null)
                         {
                             setGroupId.add(GrpName.get(GeoHorizontal));
@@ -65,7 +72,7 @@ public class UserPublicGroupMembershipHelper {
         
         if(roleIds!=null && roleIds.size()>0)
         {
-            roleList = [select id, name, rsp_Current_User__c, rsp_Geography__r.Name, rsp_Geography__r.rsp_Branch_Name__c, rsp_horizontal__c, rsp_horizontal__r.name,rsp_Vertical__r.rsp_Vertical_Short_Code__c from rsp_Role__c where id IN :roleIds];
+            roleList = [select id, name, rsp_Current_User__c, rsp_Geography__r.Name, rsp_Geography__r.rsp_Branch_Name__c, rsp_Geography__r.rsp_Branch__c, rsp_horizontal__c, rsp_horizontal__r.name,rsp_Vertical__r.rsp_Vertical_Short_Code__c, rsp_Vertical__r.Name from rsp_Role__c where id IN :roleIds];
         }
         
         for(rsp_Role__c r:roleList){
@@ -77,6 +84,15 @@ public class UserPublicGroupMembershipHelper {
             if(r.rsp_Geography__r.rsp_Branch_Name__c!=null && r.rsp_Geography__r.rsp_Branch_Name__c!='' && r.rsp_horizontal__c == null && r.rsp_Vertical__r.rsp_Vertical_Short_Code__c!=null)
             {
                 string GeoHorizontal = r.rsp_Geography__r.rsp_Branch_Name__c +' - '+ r.rsp_Vertical__r.rsp_Vertical_Short_Code__c;
+                if(GrpName.containsKey(GeoHorizontal) && r.rsp_Current_User__c!=null)
+                {
+                    GroupMember gm= new GroupMember(); 
+                    gm.GroupId = GrpName.get(GeoHorizontal);
+                    gm.UserOrGroupId = r.rsp_Current_User__c;
+                    gpMember.add(gm);
+                }
+                //New Code added
+                GeoHorizontal = r.rsp_Geography__r.rsp_Branch__c +' '+ r.rsp_Vertical__r.Name;
                 if(GrpName.containsKey(GeoHorizontal) && r.rsp_Current_User__c!=null)
                 {
                     GroupMember gm= new GroupMember(); 

@@ -1,4 +1,4 @@
-global class ProductivitySummaryCalculationBatch implements Database.Batchable<SObject> {
+global class ProductivitySummaryCalculationBatch implements Database.Batchable<SObject>, Schedulable {
     public Boolean isYearly = false;
     public Date monthStartDate;
     public Date monthEndDate;
@@ -19,6 +19,10 @@ global class ProductivitySummaryCalculationBatch implements Database.Batchable<S
     public ProductivitySummaryCalculationBatch(Id usrId, Date monthDate) {
         userId = usrId;
         setMonthDate(monthDate);
+    }
+    global void execute(SchedulableContext sc) {
+        Date defaultMonth = Date.today();
+        Database.executeBatch(new ProductivitySummaryCalculationBatch(), 1);
     }
     global Database.QueryLocator start(Database.BatchableContext BC) {
         String query = 'SELECT Id, isActive, Name FROM User WHERE isActive = true';
@@ -78,38 +82,6 @@ global class ProductivitySummaryCalculationBatch implements Database.Batchable<S
             listToUpsertOfProductivity.add(productObj);
             
         }
-        /*for(String evt :monthWiseEvent.keySet()) {
-            List<Event> eventList = monthWiseEvent.get(evt);
-            Integer totalWorkingDays = getWorkingDaysInMonth(evt);
-            Decimal totalLeave = monthWiseNoOfLeave.containsKey(evt)? monthWiseNoOfLeave.get(evt):0;
-            Decimal totalEffectiveDays = (totalWorkingDays ?? 0) - (totalLeave ?? 0);
-            Productivity_Summary__c productObj = new Productivity_Summary__c();
-            if(monthToProd.containsKey(evt)) {
-                productObj = monthToProd.get(evt);
-            }
-            productObj.No_Of_Working_Days__c = totalWorkingDays;
-            productObj.No_Of_Leave__c = monthWiseNoOfLeave.containsKey(evt)? monthWiseNoOfLeave.get(evt):0;
-            productObj.Name = userIds[0]?.Name +'-'+evt;
-            productObj.Month_Name__c = evt;
-            productObj.Total_Event_Count__c = eventList != null ?eventList.size() :0;
-            Decimal totalFieldVist = 0;
-            Decimal totalEffVisit = 0;
-            if(eventList != null && eventList.size() >0 ){
-                for(Event each :eventList) {
-                    if(each?.RecordType.Name == 'Field Visit') {
-                        totalFieldVist++;
-                    }
-                }
-            }
-            productObj.User__c = userIds[0]?.Id;
-            productObj.Total_Fields_Visit_Count__c = totalFieldVist;
-            productObj.Effective_Field_Visit_Count__c = (totalFieldVist)/((totalEffectiveDays != 0 && totalEffectiveDays != null)?totalEffectiveDays:1 );
-            productObj.Effective_Event_Count__c = ((productObj.Total_Event_Count__c) ?? 0) /((totalEffectiveDays != 0 && totalEffectiveDays != null)?totalEffectiveDays:1 ); 
-            productObj.Start_Date__c = getFirstDateFromKey(evt);
-            productObj.End_Date__c = Date.newInstance((productObj.Start_Date__c).year(), (productObj.Start_Date__c).month(), Date.daysInMonth((productObj.Start_Date__c).year(), (productObj.Start_Date__c).month()));
-            listToUpsertOfProductivity.add(productObj);
-            //}
-        }*/
         System.debug('listToUpsertOfProductivity '+listToUpsertOfProductivity);
         if(listToUpsertOfProductivity != null && listToUpsertOfProductivity.size() > 0 ) {
             try {

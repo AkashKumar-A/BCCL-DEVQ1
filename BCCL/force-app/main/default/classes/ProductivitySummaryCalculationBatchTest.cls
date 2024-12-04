@@ -3,6 +3,7 @@ public class ProductivitySummaryCalculationBatchTest {
 
     @testSetup
     static void setupData() {
+        Date tomorrow = Date.today().addDays(1);
         Profile p = [SELECT Id FROM Profile WHERE Name = 'Standard User' LIMIT 1];
         User testUser = new User(
             FirstName = 'Test',
@@ -21,21 +22,24 @@ public class ProductivitySummaryCalculationBatchTest {
         RecordType eventRecordType = [SELECT Id FROM RecordType WHERE SObjectType = 'Event' AND Name = 'Field Visit' LIMIT 1];
 
         Event evt1 = new Event(
+            Subject = 'Field Visit',
             OwnerId = testUser.Id,
             RecordTypeId = eventRecordType.Id,
-            StartDateTime = DateTime.newInstance(2024, 10, 1, 8, 0, 0),
-            EndDateTime = DateTime.newInstance(2024, 10, 1, 17, 0, 0)
+            StartDateTime = DateTime.newInstance(tomorrow.year(), tomorrow.month(), tomorrow.day(), 8, 0, 0), // Start time at 8 AM tomorrow
+            EndDateTime = DateTime.newInstance(tomorrow.year(), tomorrow.month(), tomorrow.day(), 17, 0, 0).addDays(1) // End time at 5 PM the day after tomorrow
         );
         insert evt1;
 
         Event evt2 = new Event(
+            Subject = 'Field Visit',
             OwnerId = testUser.Id,
             RecordTypeId = eventRecordType.Id,
-            StartDateTime = DateTime.newInstance(2024, 10, 15, 8, 0, 0),
-            EndDateTime = DateTime.newInstance(2024, 10, 15, 17, 0, 0)
+            StartDateTime = DateTime.newInstance(tomorrow.year(), tomorrow.month(), tomorrow.day(), 8, 0, 0), // Start time at 8 AM tomorrow
+            EndDateTime = DateTime.newInstance(tomorrow.year(), tomorrow.month(), tomorrow.day(), 17, 0, 0).addDays(1) 
         );
         insert evt2;
         Individual_Leave__c leave1 = new Individual_Leave__c(
+            ownerId = testUser.Id,
             User_On_Leave__c = testUser.Id,
             StartDateTime__c = Date.newInstance(2024, 10, 10),
             EndDateTime__c = Date.newInstance(2024, 10, 11)

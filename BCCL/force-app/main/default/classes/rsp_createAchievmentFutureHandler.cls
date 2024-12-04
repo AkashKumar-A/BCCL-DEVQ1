@@ -2,8 +2,7 @@
 
 public class rsp_createAchievmentFutureHandler
 {
-    public static Date NEW_NVH_START_DATE;
-    public static Date NEW_HORIZONTAL_PRESIDENT_START_DATE;
+    public static Date NEW_LOGIC_START_DATE;
     public static void CallFutureHandler(String newMap,String newlist, Set<String> triggeredOrders)
     {
         if(system.label.CALL_FUTURE_METHOD == 'CALL_FUTURE_METHOD')
@@ -24,14 +23,41 @@ public class rsp_createAchievmentFutureHandler
     } 
     
     public static void cretaeAchievementFuture(String newMap,String newlist, Set<String> triggeredOrders) {
+        
         List<OrderItem> orderItemList = new List<OrderItem>();
         Map<String, OrderItem> triggerOldMap = new Map<String, OrderItem>();
         if(newlist != null && newlist != '')
             orderItemList=  (List<OrderItem>)JSON.deserialize(newList,List<OrderItem>.class);
         if(newMap != null && newMap != '')
-            triggerOldMap = (Map<String, OrderItem>)JSON.deserialize(newMap,Map<String, OrderItem>.class); 
-        
-        
+            triggerOldMap = (Map<String, OrderItem>)JSON.deserialize(newMap,Map<String, OrderItem>.class);
+        List<OrderItem> listOfOrderItem = new List<OrderItem>();
+        for (OrderItem oItem :orderItemList) {
+                Boolean isInsert = (
+                    triggerOldMap == NULL && 
+                    String.isNotBlank(oItem.rsp_Status__c) && 
+                    oItem.rsp_Status__c.equalsIgnoreCase(rsp_ResponseConstants.ORDER_ITEM_BILLED) && 
+                    !rsp_ResponseConstants.ORDER_DISTRIBUTION_CHANNEL.contains(oItem.rsp2_Distribution_Channel__c)  
+                );
+                                    
+                Boolean isUpdate = (
+                    triggerOldMap != NULL && 
+                    String.isNotBlank(oItem.rsp_Status__c) && 
+                    oItem.rsp_Status__c.equalsIgnoreCase(rsp_ResponseConstants.ORDER_ITEM_BILLED) && 
+                    !rsp_ResponseConstants.ORDER_DISTRIBUTION_CHANNEL.contains(oItem.rsp2_Distribution_Channel__c) && (
+                        oItem.rsp_Status__c != triggerOldMap.get(oItem.id).rsp_Status__c || 
+                        triggeredOrders.contains(oItem.rsp_Order_Number__c)
+                    )
+                );
+                                  
+                if(isUpdate || isInsert) {
+                    listOfOrderItem.add(OItem);
+                }
+        }
+        if(!listOfOrderItem.isEmpty())
+            cretaeAchievement(listOfOrderItem);
+    } 
+    public static void cretaeAchievement(List<OrderItem> orderItemList) {
+
         try{
             Set<Id> billedOrderItemIdSet = new Set<Id>();
             //User for sharing
@@ -112,30 +138,11 @@ public class rsp_createAchievmentFutureHandler
             Set<String> keySet_autoAssignments = new Set<String>(autoAssignAchievements.split('\\s*,\\s*'));
 
             String newNvhRollupLogicStartsFrom = (DEV_SF_DEVELOPER_METADATA__mdt.getInstance('New_NVH_Rollup_Starts_From')?.DEV_VALUE__c ?? '2024-06-01');
-            String newHorizontalPresedintStartsFrom = (DEV_SF_DEVELOPER_METADATA__mdt.getInstance('New_President_Start_Date')?.DEV_VALUE__c ?? '2024-07-22');
-            NEW_NVH_START_DATE = Date.valueOf(newNvhRollupLogicStartsFrom);
-            NEW_HORIZONTAL_PRESIDENT_START_DATE = Date.valueOf(newHorizontalPresedintStartsFrom);
+            NEW_LOGIC_START_DATE = Date.valueOf(newNvhRollupLogicStartsFrom);
             
             //Find out valid orderLineItems & orders
             for (OrderItem oItem :orderItemList) {
-                Boolean isInsert = (
-                    triggerOldMap == NULL && 
-                    String.isNotBlank(oItem.rsp_Status__c) && 
-                    oItem.rsp_Status__c.equalsIgnoreCase(rsp_ResponseConstants.ORDER_ITEM_BILLED) && 
-                    !rsp_ResponseConstants.ORDER_DISTRIBUTION_CHANNEL.contains(oItem.rsp2_Distribution_Channel__c)  
-                );
-                                    
-                Boolean isUpdate = (
-                    triggerOldMap != NULL && 
-                    String.isNotBlank(oItem.rsp_Status__c) && 
-                    oItem.rsp_Status__c.equalsIgnoreCase(rsp_ResponseConstants.ORDER_ITEM_BILLED) && 
-                    !rsp_ResponseConstants.ORDER_DISTRIBUTION_CHANNEL.contains(oItem.rsp2_Distribution_Channel__c) && (
-                        oItem.rsp_Status__c != triggerOldMap.get(oItem.id).rsp_Status__c || 
-                        triggeredOrders.contains(oItem.rsp_Order_Number__c)
-                    )
-                );
-                                  
-                if(isUpdate || isInsert) {
+                
                     billedOrderItemIdSet.add(oItem.Id);
                     billedOrderIds.add(oItem.OrderId);
                     geographyIds.add(oItem.rsp_Owner_Role_Geography_Id__c);
@@ -177,8 +184,6 @@ public class rsp_createAchievmentFutureHandler
                         
                         
                     }
-                    
-                } 
             }
             
             System.debug('===billedOrderItemIdSet=== '+billedOrderItemIdSet);
@@ -676,21 +681,7 @@ public class rsp_createAchievmentFutureHandler
                     FROM OrderItem WHERE 
                     Id IN :billedOrderItemIdSet AND 
                     order.opportunity.rsp_role__c != NULL
-                ]) {    
-                    Boolean CREATE_VERTICAL_ACHIEVEMENTS = true;
-                    Set<String> HORIZONTAL_NAME_LIST = new Set<String>{
-                        'CSR', 'ET', 'ET AFP', 'IBCE', 'INNOVATION'
-                    };
-                    Set<String> orderLineItemHorizontals = new Set<String>(
-                        oItem.rsp_Horizontals__c?.split('\\s*[;,]\\s*') ?? new List<String>()
-                    );
-            
-                    if (
-                        oItem.Publishing_Date__c >= NEW_HORIZONTAL_PRESIDENT_START_DATE && 
-                        orderLineItemHorizontals.removeAll(HORIZONTAL_NAME_LIST)
-                    ) {
-                        CREATE_VERTICAL_ACHIEVEMENTS = false;
-                    }
+                ]) {               
                     //CASE 1                 
                     //Identify if opportunity owner is a vertical user             
                     Boolean isVerticalUser = false;
@@ -765,7 +756,7 @@ public class rsp_createAchievmentFutureHandler
                     System.debug('===activeGeographyVerticalOrHorizontalRole=== '+activeGeographyVerticalOrHorizontalRole);
                     
                     // Create Achievements for Owner Role
-                    if (isVerticalUser && CREATE_VERTICAL_ACHIEVEMENTS) 
+                    if (isVerticalUser) 
                     {                 
                         // If Opportunity is direct Opportunity, Then create Open Achievement for BVH
                         if (isOwnerBVH && oItem.order.opportunity.rsp_Is_Direct_Order_Opportunity__c) 
@@ -934,7 +925,7 @@ public class rsp_createAchievmentFutureHandler
                     if (String.isNotBlank(oItem.rsp_Horizontals__c)) {
                         for (String horizonName :oItem.rsp_Horizontals__c.split(';')) {
                             horizonName = horizonName.toLowercase();
-                            if (horizonName.startsWith('key account') && oItem.Publishing_Date__c >= NEW_NVH_START_DATE) {
+                            if (horizonName.startsWith('key account') && oItem.Publishing_Date__c >= NEW_LOGIC_START_DATE) {
                                 continue;
                             }
                             System.debug('====horizonName==== '+horizonName);
@@ -1218,28 +1209,68 @@ public class rsp_createAchievmentFutureHandler
                     
                 System.debug('===allAchievements=== '+allAchievements);
                 Database.SaveResult[] results = Database.insert(allAchievements);
-                   
+                Set<Id> achievementIdSet = new Set<Id>();  
                 // Check results.
                 for (Integer i = 0; i < results.size(); i++)
                 {
                     if (results[i].isSuccess()) 
                     {
                         System.debug('Successfully created ID: '+ results[i].getId());
+                        Id recordId = results[i].getId();
+                        if(recordId.getSObjectType().getDescribe().getName() == 'rsp_Achievement__c') {
+                            achievementIdSet.add(recordId);
+                        }
+                        
                     }
                     else
                     {
                         System.debug('Error: could not create sobject '+ 'for array element ' + i + '.');
                         System.debug('The error reported was: '+ results[i].getErrors()[0].getMessage() + '\n');
                     }
-                }  
+                }
+                if(ORG_FLAG__mdt.getInstance('Achievement_New_Logic').Flag__c ?? false) {
+                    Set<Id> orderItemSet = new Set<Id>();
+                    List<OrderItem> orderItemlistToUpdate = new List<OrderItem>();
+                    List<rsp_Achievement__c> achievementList = [
+                        SELECT Id, rsp_Order_Line_Item__c 
+                        FROM rsp_Achievement__c WHERE 
+                        Id IN :achievementIdSet
+                    ];
+                    for(rsp_Achievement__c each :achievementList) {
+                        orderItemSet.add(each.rsp_Order_Line_Item__c);
+                    }
+                    for(OrderItem oItem :orderItemList) {
+                        if(orderItemSet.contains(oItem.Id)) {
+                            oItem.Is_Achievement_Created__c = false;
+                            oItem.Is_Error__c = false;
+                            OItem.Is_Cancelled__c = false;
+                            orderItemlistToUpdate.add(oItem);
+                        }
+                    }
+                    if(!orderItemlistToUpdate.isEmpty()) {
+                        update orderItemlistToUpdate;
+                    }
+                }
             } 
             System.debug('====SHARING====orderItemIdToBHHUserIdSet==== '+orderItemIdToBHHUserIdSet);
             System.debug('====SHARING====orderItemIdToAccountIdSet==== '+orderItemIdToAccountIdSet);
-               
+            
             //Share Accounts to BHH  
             if (!orderItemIdToBHHUserIdSet.isEmpty())
                 shareAccountsToBHH(JSON.serialize(orderItemIdToBHHUserIdSet),JSON.serialize(orderItemIdToAccountIdSet));        
-        } catch(Exception ex){ rsp_Error_Log__c errObj = new rsp_Error_Log__c();
+        } catch(Exception ex){ 
+            List<OrderItem> orderItemlistToUpdate = new List<OrderItem>();            
+            for(orderItem oItem :orderItemlist) {
+                oItem.Error_Message__c = ex.getMessage();
+                oItem.Is_Error__c = true;
+                orderItemlistToUpdate.add(oItem);
+            }
+            
+            if(!orderItemListToUpdate.isEmpty() && (ORG_FLAG__mdt.getInstance('Achievement_New_Logic').Flag__c ?? false)){
+               	update orderItemlistToUpdate;
+            }
+            
+            rsp_Error_Log__c errObj = new rsp_Error_Log__c();
             errObj.rsp_Error_Log__c = ex.getMessage();
             if(JSON.serialize(orderItemList).length()>=131070)
                               errObj.rsp_Error_Stack_Trace__c = JSON.serialize(orderItemList).substring(0, 131070);
@@ -1248,8 +1279,7 @@ public class rsp_createAchievmentFutureHandler
             errObj.rsp_Module_Name__c = 'Achievement Creation Functionality';
             insert errObj;
         }   
-    } 
-
+    }
     public static void shareAccountsToBHH(String orderItemIdToBHHUserIdSetSerialized, String orderItemIdToAccountIdSetSerialized) {
         Map<Id,Set<Id>> orderItemIdToBHHUserIdSet = (Map<Id, Set<Id>>)JSON.deserialize(orderItemIdToBHHUserIdSetSerialized, Map<Id, Set<Id>>.class);
         Map<Id,Id> orderItemIdToAccountIdSet = (Map<Id,Id>)JSON.deserialize(orderItemIdToAccountIdSetSerialized, Map<Id,Id>.class);
@@ -2219,20 +2249,7 @@ public class rsp_createAchievmentFutureHandler
 
     private static Boolean createBranchSalesAchievements(OrderItem oItem) {
         Boolean createAchievements = true;
-        Set<String> HORIZONTAL_NAME_LIST = new Set<String>{
-            'CSR', 'ET', 'ET AFP', 'IBCE', 'INNOVATION'
-        };
-        Set<String> orderLineItemHorizontals = new Set<String>(
-            oItem.rsp_Horizontals__c?.split('\\s*[;,]\\s*') ?? new List<String>()
-        );
-
-        if (
-            oItem.Publishing_Date__c >= NEW_HORIZONTAL_PRESIDENT_START_DATE && 
-            orderLineItemHorizontals.removeAll(HORIZONTAL_NAME_LIST)
-        ) {
-            createAchievements = false;
-        }
-        else if (oItem.Publishing_Date__c >= NEW_NVH_START_DATE) {
+        if (oItem.Publishing_Date__c >= NEW_LOGIC_START_DATE) {
             if (
                 (
                     oItem.Order.Opportunity.Vertical__r.Name == 'GOVERNMENT' ||

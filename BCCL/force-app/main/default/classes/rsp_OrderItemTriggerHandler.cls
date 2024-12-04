@@ -16,9 +16,38 @@ public class rsp_OrderItemTriggerHandler {
         if(triggeredOrders != null && triggeredOrders.size() > 0) {
             triggeredOrderNumberSet = triggeredOrders;
         }
-        rsp_createAchievmentFutureHandler.CallFutureHandler(oldMap, newlist, triggeredOrderNumberSet);
+         if(!ORG_FLAG__mdt.getInstance('Achievement_New_Logic').Flag__c)
+        	rsp_createAchievmentFutureHandler.CallFutureHandler(oldMap, newlist, triggeredOrderNumberSet);
     }
-
+	
+    public void markAsCreateAchievments(Map<Id,OrderItem> triggerOldMap, List<OrderItem> orderItemList) {
+        Set<String> triggeredOrderNumberSet = new Set<String>();    
+        if(triggeredOrders != null && triggeredOrders.size() > 0) {
+            triggeredOrderNumberSet = triggeredOrders;
+        }
+        for (OrderItem oItem :orderItemList) {
+                Boolean isInsert = (
+                    triggerOldMap == NULL && 
+                    String.isNotBlank(oItem.rsp_Status__c) && 
+                    oItem.rsp_Status__c.equalsIgnoreCase(rsp_ResponseConstants.ORDER_ITEM_BILLED) && 
+                    !rsp_ResponseConstants.ORDER_DISTRIBUTION_CHANNEL.contains(oItem.rsp2_Distribution_Channel__c)  
+                );
+                                    
+                Boolean isUpdate = (
+                    triggerOldMap != NULL && 
+                    String.isNotBlank(oItem.rsp_Status__c) && 
+                    oItem.rsp_Status__c.equalsIgnoreCase(rsp_ResponseConstants.ORDER_ITEM_BILLED) && 
+                    !rsp_ResponseConstants.ORDER_DISTRIBUTION_CHANNEL.contains(oItem.rsp2_Distribution_Channel__c) && (
+                        oItem.rsp_Status__c != triggerOldMap.get(oItem.id).rsp_Status__c || 
+                        triggeredOrders.contains(oItem.rsp_Order_Number__c)
+                    )
+                );
+                                  
+                if(isUpdate || isInsert) {
+                    OItem.Is_Achievement_Created__c = true;
+                }
+        }
+    }
     public void updateBilledDate(List<OrderItem> orderItemList) {
         for(OrderItem oItem : orderItemList) {
             if(String.isNotBlank(oItem.rsp_Status__c) && oItem.rsp_Status__c.equalsIgnoreCase(rsp_ResponseConstants.ORDER_ITEM_BILLED)) {
@@ -72,7 +101,28 @@ public class rsp_OrderItemTriggerHandler {
                 update achievementsToCancelList;
             }
     }*/
-
+    public void markOrderItemIsCancelled(Map<Id,OrderItem> triggerOldMap, List<OrderItem> orderItemList) {
+        //Find out valid orderLineItems & orders
+        for (OrderItem oItem :orderItemList) {
+            if((
+                String.isNotBlank(oItem.rsp_Status__c) && 
+                oItem.rsp_Status__c != triggerOldMap.get(oItem.id).rsp_Status__c && (
+                    triggerOldMap.get(oItem.id).rsp_Status__c == rsp_ResponseConstants.ORDER_ITEM_BILLED && 
+                    oItem.rsp_Status__c == rsp_ResponseConstants.ORDER_ITEM_CANCELLED
+                )
+            ) || (
+                oItem!= triggerOldMap.get(oItem.id) && (
+                    oItem.rsp_Horizontals__c== null || 
+                    !oItem.rsp_Horizontals__c.contains('KEY ACCOUNT')
+                ) && 
+                triggerOldMap.get(oItem.id).rsp_Horizontals__c!=null &&  
+                triggerOldMap.get(oItem.id).rsp_Horizontals__c.contains('KEY ACCOUNT')
+            )) { 
+                oItem.Is_Cancelled__c = true;
+                System.debug('cancelled');
+            }        
+        }
+    }
     public void createNeagtiveAchievedTargets (Map<Id,OrderItem> triggerOldMap, List<OrderItem> orderItemList) {
         //Test class covergae
         
