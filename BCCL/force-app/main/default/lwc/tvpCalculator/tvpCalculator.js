@@ -24,6 +24,7 @@ export default class CommittedFixedTabs extends LightningElement {
     @track previousUserWiseRevenue1 = [];
     @track trimesterWise = [];
     currentIncentive = {};
+    fetchButton = false;
 
     monthOptions;
 
@@ -64,6 +65,18 @@ export default class CommittedFixedTabs extends LightningElement {
                 // console.log(JSON.stringify(res, null, 2));
                 this.previousUserWiseRevenue1 = res.userWise;
                 this.trimesterWise = res.roleWise;
+                this.trimesterWise = res.roleWise.map(item => {
+                    let assignedIncentive = item.assignedIncentive || 0;
+                    let fullIncentive = item.fullIncentive || 0;
+                    let extraIncentive = item.extraIncentive || 0;
+    
+                    return {
+                        ...item,
+                        assignedIncentive: assignedIncentive && parseFloat(assignedIncentive) !== 0 ? assignedIncentive : "-",
+                        fullIncentive: fullIncentive && parseFloat(fullIncentive) !== 0 ? fullIncentive : "-",
+                        extraIncentive: extraIncentive && parseFloat(extraIncentive) !== 0 ? extraIncentive : "-"
+                    };
+                });
             })
             .catch(error => {
                 console.log(error);
@@ -92,101 +105,13 @@ export default class CommittedFixedTabs extends LightningElement {
                 this.userWiseRevenue = res.userWise;
                 this.roleWiseRevenue = res.roleWise;
                 
-
+                this.spinner = false;
             })
             .catch(error => {
                 this.spinner = false;
                 console.log(JSON.stringify(error, null, 2));
 
             })
-        setTimeout(() => {
-            // Create the TrimesterWrapper-like object
-            const trimesterWrapper = {
-                T1: 'T1',
-                t1value: 0,
-                T2: 'T2',
-                t2value: 0,
-                T3: 'T3',
-                t3value: 0
-            };
-
-            // Populate the TrimesterWrapper object based on trimesterWise
-            this.trimesterWise.forEach(item => {
-                if (item.trimesterName.includes('T1')) {
-                    console.log(item.trimesterName, 't111');
-
-                    trimesterWrapper.t1value = item.responseIncentive || 0;
-                } else if (item.trimesterName.includes('T2')) {
-                    console.log(item.trimesterName, 't22');
-                    trimesterWrapper.t2value = item.responseIncentive || 0;
-                } else if (item.trimesterName.includes('T3')) {
-                    console.log(item.trimesterName, 't3');
-                    trimesterWrapper.t3value = item.responseIncentive || 0;
-                }
-            });
-
-            // Log the original list to confirm it's unchanged
-            console.log("Original List:");
-            console.log(this.trimesterWise);
-
-            // Log the new TrimesterWrapper object
-            console.log("TrimesterWrapper Object:");
-            console.log(trimesterWrapper);
-            const trimesterWrapperJson = JSON.stringify(trimesterWrapper);
-
-            // Call the Apex method, passing the serialized string
-            getPayout({ trimester: trimesterWrapperJson })
-                .then((res) => {
-                // Format the response values to 2 decimal places
-                this.currentIncentive = {
-                    t1value: (res.t1value || 0).toFixed(2),
-                    t2value: (res.t2value || 0).toFixed(2),
-                    t3value: (res.t3value || 0).toFixed(2),
-                    t1fullPayout: (res.t1fullPayout || 0).toFixed(2),
-                    t2fullPayout: (res.t2fullPayout || 0).toFixed(2),
-                    t3fullPayout: (res.t3fullPayout || 0).toFixed(2),
-                    t1extraPayout: (res.t1extraPayout || 0).toFixed(2),
-                    t2extraPayout: (res.t2extraPayout || 0).toFixed(2),
-                    t3extraPayout: (res.t3extraPayout || 0).toFixed(2),
-                    
-                };
-                this.trimesterWise = this.trimesterWise.map(item => {
-                    let assignedIncentive = 0;
-                    let fullIncentive = 0;
-                    let extraIncentive = 0;
-        
-                    // Assign the appropriate incentive value based on the trimester
-                    if (item.trimesterName.includes('T1')) {
-                        assignedIncentive = this.currentIncentive.t1value;
-                        fullIncentive = this.currentIncentive.t1fullPayout;
-                        extraIncentive = this.currentIncentive.t1extraPayout;
-                    } else if (item.trimesterName.includes('T2')) {
-                        assignedIncentive = this.currentIncentive.t2value;
-                        fullIncentive = this.currentIncentive.t2fullPayout;
-                        extraIncentive = this.currentIncentive.t2extraPayout;
-                    } else if (item.trimesterName.includes('T3')) {
-                        assignedIncentive = this.currentIncentive.t3value;
-                        fullIncentive = this.currentIncentive.t3fullPayout;
-                        extraIncentive = this.currentIncentive.t3extraPayout;
-                    }
-        
-                    // Return the modified item with assignedIncentive field
-                    return { ...item, assignedIncentive, fullIncentive , extraIncentive };
-                });
-        
-                this.spinner = false;
-                })
-                .catch((error) => {
-                    this.spinner = false;
-                    console.error('Error calling Apex method:', error);
-                    this.dispatchEvent(new ShowToastEvent({
-                        title: "Error!",
-                        message: error.body.message,
-                        variant: "error"
-                    }));
-                });
-        }, 3000);
-
     }
 
 
@@ -223,6 +148,80 @@ export default class CommittedFixedTabs extends LightningElement {
                 console.log(JSON.stringify(error, null, 2));
 
             })
+    }
+    fetchIncentivePlan() {
+            this.spinner = true;
+            this.fetchButton = true;
+            const trimesterWrapper = {
+                T1: 'T1',
+                t1value: 0,
+                T2: 'T2',
+                t2value: 0,
+                T3: 'T3',
+                t3value: 0
+            };
+            this.trimesterWise.forEach(item => {
+                if (item.trimesterName.includes('T1')) {
+                    trimesterWrapper.t1value = item.responseIncentive || 0;
+                } else if (item.trimesterName.includes('T2')) {
+                    trimesterWrapper.t2value = item.responseIncentive || 0;
+                } else if (item.trimesterName.includes('T3')) {
+                    trimesterWrapper.t3value = item.responseIncentive || 0;
+                }
+            });
+            const trimesterWrapperJson = JSON.stringify(trimesterWrapper);
+            getPayout({ trimester: trimesterWrapperJson })
+                .then((res) => {
+                this.currentIncentive = {
+                    t1value: (res.t1value || 0).toFixed(2),
+                    t2value: (res.t2value || 0).toFixed(2),
+                    t3value: (res.t3value || 0).toFixed(2),
+                    t1fullPayout: (res.t1fullPayout || 0).toFixed(2),
+                    t2fullPayout: (res.t2fullPayout || 0).toFixed(2),
+                    t3fullPayout: (res.t3fullPayout || 0).toFixed(2),
+                    t1extraPayout: (res.t1extraPayout || 0).toFixed(2),
+                    t2extraPayout: (res.t2extraPayout || 0).toFixed(2),
+                    t3extraPayout: (res.t3extraPayout || 0).toFixed(2),
+                    
+                };
+                this.trimesterWise = this.trimesterWise.map(item => {
+                    let assignedIncentive = 0;
+                    let fullIncentive = 0;
+                    let extraIncentive = 0;
+                    if (item.trimesterName.includes('T1')) {
+                        assignedIncentive = this.currentIncentive.t1value;
+                        fullIncentive = this.currentIncentive.t1fullPayout;
+                        extraIncentive = this.currentIncentive.t1extraPayout;
+                    } else if (item.trimesterName.includes('T2')) {
+                        assignedIncentive = this.currentIncentive.t2value;
+                        fullIncentive = this.currentIncentive.t2fullPayout;
+                        extraIncentive = this.currentIncentive.t2extraPayout;
+                    } else if (item.trimesterName.includes('T3')) {
+                        assignedIncentive = this.currentIncentive.t3value;
+                        fullIncentive = this.currentIncentive.t3fullPayout;
+                        extraIncentive = this.currentIncentive.t3extraPayout;
+                    }
+                    // return { ...item, assignedIncentive, fullIncentive , extraIncentive };
+                    return { 
+                        ...item, 
+                        assignedIncentive: assignedIncentive && parseFloat(assignedIncentive) !== 0 ? assignedIncentive : "-", 
+                        fullIncentive: fullIncentive && parseFloat(fullIncentive) !== 0 ? fullIncentive : "-", 
+                        extraIncentive: extraIncentive && parseFloat(extraIncentive) !== 0 ? extraIncentive : "-" 
+                    };
+                });
+        
+                this.spinner = false;
+                })
+                .catch((error) => {
+                    this.spinner = false;
+                    this.fetchButton = false;
+                    console.error('Error calling Apex method:', error);
+                    this.dispatchEvent(new ShowToastEvent({
+                        title: "Error!",
+                        message: error.body.message,
+                        variant: "error"
+                    }));
+                });
     }
     generateMonthOptions() {
         const today = new Date();

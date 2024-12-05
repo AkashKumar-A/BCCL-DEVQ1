@@ -271,9 +271,7 @@ public class rsp_TargetTriggerHandler
                 oldTargetMap.get(target.Id).Total_Achieved_TIL_Revenue__c != target.Total_Achieved_TIL_Revenue__c || 
                 oldTargetMap.get(target.Id).Total_Collected_Amount__c != target.Total_Collected_Amount__c || 
                 oldTargetMap.get(target.Id).Total_Collected_Resp_Rev_Amount__c != target.Total_Collected_Resp_Rev_Amount__c || 
-                oldTargetMap.get(target.Id).Total_Key_Account_Revenue__c != target.Total_Key_Account_Revenue__c ||
-                oldTargetMap.get(target.Id).Total_MT_Revenue__c != target.Total_MT_Revenue__c ||
-                oldTargetMap.get(target.Id).Total_NBT_Revenue__c != target.Total_NBT_Revenue__c ||
+                oldTargetMap.get(target.Id).Total_Key_Account_Revenue__c != target.Total_Key_Account_Revenue__c || 
                 target.Is_Triggered__c == true  
             ) {
                 if (target.rsp_Parent_Target__c != null) {
@@ -288,8 +286,7 @@ public class rsp_TargetTriggerHandler
                 SELECT Id, (
                     SELECT Id, rsp_Total_Value_Achieved__c, rsp_Total_Volume_Achieved__c, 
                     Total_Response_Revenue_Print__c, Total_Achieved_TIL_Revenue__c, 
-                    Total_Collected_Amount__c, Total_Collected_Resp_Rev_Amount__c, Total_Key_Account_Revenue__c,
-                    Total_NBT_Revenue__c, Total_MT_Revenue__c
+                    Total_Collected_Amount__c, Total_Collected_Resp_Rev_Amount__c, Total_Key_Account_Revenue__c 
                     FROM Targets__r
                 ) 
                 FROM rsp_Target__c WHERE 
@@ -302,8 +299,6 @@ public class rsp_TargetTriggerHandler
                 Decimal teamCollectedAmount = 0;
                 Decimal teamCollectedRespRevAmount = 0;
                 Decimal teamKeyAccountAmount = 0;
-                Decimal totalMTRevAmount = 0;
-                Decimal totalNBTRevAmount = 0;
                 for(rsp_Target__c childTarget :target.Targets__r) {
                     System.debug('===childTarget === '+childTarget );
                     teamAchievedValue += (childTarget.rsp_Total_Value_Achieved__c ?? 0);
@@ -313,8 +308,6 @@ public class rsp_TargetTriggerHandler
                     teamCollectedAmount += (childTarget.Total_Collected_Amount__c ?? 0);
                     teamCollectedRespRevAmount += (childTarget.Total_Collected_Resp_Rev_Amount__c ?? 0);
                     teamKeyAccountAmount += (childTarget.Total_Key_Account_Revenue__c ?? 0);
-                    totalMTRevAmount += (childTarget.Total_MT_Revenue__c ?? 0);
-                    totalNBTRevAmount += (childTarget.Total_NBT_Revenue__c ?? 0);
                 }                
                 
                 //Final Parent Target
@@ -325,8 +318,6 @@ public class rsp_TargetTriggerHandler
                 target.Team_s_Collected_Amount__c = teamCollectedAmount;
                 target.Team_s_Collected_Resp_Rev_Amount__c = teamCollectedRespRevAmount;
                 target.Team_s_Key_Account_Revenue__c = teamKeyAccountAmount;
-                target.Team_s_MT_Revenue__c = totalMTRevAmount;
-                target.Team_s_NBT_Revenue__c = totalNBTRevAmount;
                 targetToUpdate.add(target);
             }
         }

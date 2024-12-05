@@ -1,7 +1,16 @@
 <template>
     <lightning-card>
         <div class="slds-grid slds-grid_align-start slds-p-around_medium" style="margin-top: -17px;padding-bottom:0.4rem;padding-top:0.4rem;">
-            <h1 style="font-size: 1rem; font-weight:bold;">Response Incentive Plan</h1>
+            <h1 style="font-size: 20px; font-weight:bold;">Response Incentive Plan</h1>
+            <div class="slds-col_bump-left">
+                <lightning-button 
+                    variant="base" 
+                    label="Fetch Incentive Plan"  
+                    onclick={fetchIncentivePlan} 
+                    class="slds-m-right_x-small" 
+                    disabled={fetchButton}>
+                </lightning-button>
+            </div>
         </div>
 
         <table style="margin-bottom:10px;"
@@ -16,9 +25,9 @@
                     <td>Pipeline P+S+I <br />(In Lacs)</td>
                     <td>% ACHV P+S+I <br /> </td>
                     <td>Incentive<br/> Payout (%)</td>
-                    <td>Incentive Payout <br/> (In Ruppes)</td>
-                    <td>Eligibily (@ 100%)<br/>(Ruppes) </td>
-                    <td>Eligibily (@ 120%)<br/>(Ruppes) </td>
+                    <td>Incentive Payout <br/> (In Rupees)</td>
+                    <td>Eligibily (@ 100%)<br/>(In Rupees) </td>
+                    <td>Eligibily (@ 120%)<br/>(In Rupees) </td>
                 </tr>
                 <template for:each={trimesterWise} for:item="item">
                     <tr key={item}>

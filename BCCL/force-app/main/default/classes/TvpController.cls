@@ -626,22 +626,73 @@ public class TvpController {
 				percentage = Decimal.valueOf(System.Label.Team_Leaders_Percentage);
 			}
 			// System.debug('percentage '+percentage);
-			Decimal totalpayout = Decimal.valueOf(employeeDetails.BETRG_TVP) ?? 0;
+            //Decimal totalpayout = Decimal.valueOf(employeeDetails.BETRG_TVP ?? '') ?? 0;
+            Decimal totalpayout = (employeeDetails != null && employeeDetails.BETRG_TVP != null && String.isNotEmpty(employeeDetails.BETRG_TVP)) 
+                ? Decimal.valueOf(employeeDetails.BETRG_TVP) 
+                : 0;
+            
 			// System.debug('totalPayout '+ totalPayout);
 			Decimal perTrimester = (( totalpayout ?? 0) * (percentage ?? 0))/100;
 			TrimesterWrapper respones = new TrimesterWrapper();
 			respones.T1 = 'T1';
-			respones.t1value = 	(Decimal.valueOf(employeeDetails.BETRG_TVP_PAID_A) != null && Decimal.valueOf(employeeDetails.BETRG_TVP_PAID_A) != 0) ? Decimal.valueOf(employeeDetails.BETRG_TVP_PAID_A) :(((trimesterResponce.t1value ?? 0) * perTrimester) ?? 0)/100;
+            /*respones.t1value = 	(Decimal.valueOf(employeeDetails.BETRG_TVP_PAID_A) != null && Decimal.valueOf(employeeDetails.BETRG_TVP_PAID_A) != 0) ? Decimal.valueOf(employeeDetails.BETRG_TVP_PAID_A) :(((trimesterResponce.t1value ?? 0) * perTrimester) ?? 0)/100;
 			respones.T2 = 'T2';
 			respones.t2value = 	(Decimal.valueOf(employeeDetails.BETRG_TVP_PAID_B) != null && Decimal.valueOf(employeeDetails.BETRG_TVP_PAID_B) != 0) ? Decimal.valueOf(employeeDetails.BETRG_TVP_PAID_B) :(((trimesterResponce.t2value ?? 0) * perTrimester) ?? 0)/100;
 			respones.T3 = 'T3';
-			respones.t3value = 	(Decimal.valueOf(employeeDetails.BETRG_TVP_PAID_C) != null && Decimal.valueOf(employeeDetails.BETRG_TVP_PAID_C) != 0) ? Decimal.valueOf(employeeDetails.BETRG_TVP_PAID_C) :(((trimesterResponce.t3value ?? 0) * perTrimester) ?? 0)/100;
-			respones.t1fullPayout = (Decimal.valueOf(employeeDetails.BETRG_TVP_PAID_A) != null && Decimal.valueOf(employeeDetails.BETRG_TVP_PAID_A) != 0) ? 0: perTrimester;
+respones.t3value = 	(Decimal.valueOf(employeeDetails.BETRG_TVP_PAID_C) != null && Decimal.valueOf(employeeDetails.BETRG_TVP_PAID_C) != 0) ? Decimal.valueOf(employeeDetails.BETRG_TVP_PAID_C) :(((trimesterResponce.t3value ?? 0) * perTrimester) ?? 0)/100;*/
+            respones.t1value = 
+                (employeeDetails != null && String.isNotEmpty(employeeDetails.BETRG_TVP_PAID_A) && Decimal.valueOf(employeeDetails.BETRG_TVP_PAID_A) != 0) 
+                ? Decimal.valueOf(employeeDetails.BETRG_TVP_PAID_A) 
+                : (((trimesterResponce != null && trimesterResponce.t1value != null ? trimesterResponce.t1value : 0) * (perTrimester != null ? perTrimester : 0)) / 100);
+                    
+            respones.T2 = 'T2';
+            respones.t2value = 
+                (employeeDetails != null && String.isNotEmpty(employeeDetails.BETRG_TVP_PAID_B) && Decimal.valueOf(employeeDetails.BETRG_TVP_PAID_B) != 0) 
+                ? Decimal.valueOf(employeeDetails.BETRG_TVP_PAID_B) 
+                : (((trimesterResponce != null && trimesterResponce.t2value != null ? trimesterResponce.t2value : 0) * (perTrimester != null ? perTrimester : 0)) / 100);
+                    
+                    respones.T3 = 'T3';
+            respones.t3value = 
+                (employeeDetails != null && String.isNotEmpty(employeeDetails.BETRG_TVP_PAID_C) && Decimal.valueOf(employeeDetails.BETRG_TVP_PAID_C) != 0) 
+                ? Decimal.valueOf(employeeDetails.BETRG_TVP_PAID_C) 
+                : (((trimesterResponce != null && trimesterResponce.t3value != null ? trimesterResponce.t3value : 0) * (perTrimester != null ? perTrimester : 0)) / 100);
+                    
+                    /*respones.t1fullPayout = (Decimal.valueOf(employeeDetails.BETRG_TVP_PAID_A) != null && Decimal.valueOf(employeeDetails.BETRG_TVP_PAID_A) != 0) ? 0: perTrimester;
 			respones.t2fullPayout = (Decimal.valueOf(employeeDetails.BETRG_TVP_PAID_B) != null && Decimal.valueOf(employeeDetails.BETRG_TVP_PAID_B) != 0) ? 0: perTrimester;
 			respones.t3fullPayout = (Decimal.valueOf(employeeDetails.BETRG_TVP_PAID_C) != null && Decimal.valueOf(employeeDetails.BETRG_TVP_PAID_C) != 0) ? 0: perTrimester;
 			respones.t1extraPayout = (Decimal.valueOf(employeeDetails.BETRG_TVP_PAID_A) != null && Decimal.valueOf(employeeDetails.BETRG_TVP_PAID_A) != 0) ? 0:((perTrimester ?? 0) * 120 )/100;
 			respones.t2extraPayout = (Decimal.valueOf(employeeDetails.BETRG_TVP_PAID_B) != null && Decimal.valueOf(employeeDetails.BETRG_TVP_PAID_B) != 0) ? 0:((perTrimester ?? 0) * 120 )/100;
-			respones.t3extraPayout = (Decimal.valueOf(employeeDetails.BETRG_TVP_PAID_C) != null && Decimal.valueOf(employeeDetails.BETRG_TVP_PAID_C) != 0) ? 0:((perTrimester ?? 0) * 120 )/100;
+respones.t3extraPayout = (Decimal.valueOf(employeeDetails.BETRG_TVP_PAID_C) != null && Decimal.valueOf(employeeDetails.BETRG_TVP_PAID_C) != 0) ? 0:((perTrimester ?? 0) * 120 )/100;*/
+                    respones.t1fullPayout = 
+                    (employeeDetails != null && String.isNotEmpty(employeeDetails.BETRG_TVP_PAID_A) && Decimal.valueOf(employeeDetails.BETRG_TVP_PAID_A) != 0) 
+                    ? 0 
+                    : (perTrimester != null ? perTrimester : 0);
+                        
+                        respones.t2fullPayout = 
+                        (employeeDetails != null && String.isNotEmpty(employeeDetails.BETRG_TVP_PAID_B) && Decimal.valueOf(employeeDetails.BETRG_TVP_PAID_B) != 0) 
+                        ? 0 
+                        : (perTrimester != null ? perTrimester : 0);
+                            
+                            respones.t3fullPayout = 
+                            (employeeDetails != null && String.isNotEmpty(employeeDetails.BETRG_TVP_PAID_C) && Decimal.valueOf(employeeDetails.BETRG_TVP_PAID_C) != 0) 
+                            ? 0 
+                            : (perTrimester != null ? perTrimester : 0);
+                                
+                                respones.t1extraPayout = 
+                                (employeeDetails != null && String.isNotEmpty(employeeDetails.BETRG_TVP_PAID_A) && Decimal.valueOf(employeeDetails.BETRG_TVP_PAID_A) != 0) 
+                                ? 0 
+                                : (((perTrimester != null ? perTrimester : 0) * 120) / 100);
+                                    
+                                    respones.t2extraPayout = 
+                                    (employeeDetails != null && String.isNotEmpty(employeeDetails.BETRG_TVP_PAID_B) && Decimal.valueOf(employeeDetails.BETRG_TVP_PAID_B) != 0) 
+                                    ? 0 
+                                    : (((perTrimester != null ? perTrimester : 0) * 120) / 100);
+                                        
+                                        respones.t3extraPayout = 
+                                        (employeeDetails != null && String.isNotEmpty(employeeDetails.BETRG_TVP_PAID_C) && Decimal.valueOf(employeeDetails.BETRG_TVP_PAID_C) != 0) 
+                                        ? 0 
+                                        : (((perTrimester != null ? perTrimester : 0) * 120) / 100);
+                                            
         	// System.debug('Role with Highest Target: ' + roleMap.get(highestTargetRoleId).Name + ' with target: ' + highestTarget);
 			// System.debug('respones '+respones);
 			return respones;

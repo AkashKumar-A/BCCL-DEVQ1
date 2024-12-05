@@ -78,8 +78,7 @@ global class rsp_IncentiveRoleAchievementBatch1 implements Database.Batchable<SO
                 rsp_Role__r.rsp_BRANCH__c, rsp_Role__r.rsp_Geography__c, rsp_Role__r.rsp_Geography__r.Name, 
                 rsp_Role__r.rsp_Vertical__c, rsp_Role__r.rsp_Vertical__r.Name, 
                 rsp_Role__r.rsp_Horizontal__c, rsp_Role__r.rsp_Horizontal__r.Name, rsp_Role__r.rsp_Profile__r.Name, 
-                Total_Collected_Resp_Rev_Amount__c, Total_Collected_Amount__c,
-                rsp_Role__r.Horizontal_Sub_category__c, Total_MT_Revenue__c, Total_NBT_Revenue__c
+                Total_Collected_Resp_Rev_Amount__c, Total_Collected_Amount__c
                 FROM rsp_Target__c WHERE 
                 rsp_Role__c IN: lstRole AND 
                 rsp_Approval_Status__c = 'Approved' AND 
@@ -141,8 +140,7 @@ global class rsp_IncentiveRoleAchievementBatch1 implements Database.Batchable<SO
 
         String newNvhRollupLogicStartsFrom = (DEV_SF_DEVELOPER_METADATA__mdt.getInstance('New_NVH_Rollup_Starts_From')?.DEV_VALUE__c ?? '2024-06-01');
         Date NEW_LOGIC_START_DATE = Date.valueOf(newNvhRollupLogicStartsFrom);
-        String newMTNBTRollupStart = (DEV_SF_DEVELOPER_METADATA__mdt.getInstance('MT_NBT_Rollup_Starts_From')?.DEV_VALUE__c ?? '2024-10-31');
-        Date MT_NBT_ROLLUP = Date.valueOf(newMTNBTRollupStart);
+
         Map<String, Schema.SObjectField> fieldApiNames = rsp_Role_Achievement__c.SObjectType.getDescribe().fields.getMap();
 
         Map<Id, List<rsp_Achieved_Target__c>> mapTargetToAT = new Map<Id, List<rsp_Achieved_Target__c>>();
@@ -213,14 +211,6 @@ global class rsp_IncentiveRoleAchievementBatch1 implements Database.Batchable<SO
                         Decimal printRevenue = objTarget.Total_Response_Revenue_Print__c ?? 0;
                         if (objTarget.rsp_Role__r.rsp_Profile__r.Name == 'National Vertical Head' && objTarget.rsp_Start_Date__c >= NEW_LOGIC_START_DATE) {
                             printRevenue = objTarget.Total_Key_Account_Revenue__c ?? 0;
-                        }
-                        if(ORG_FLAG__mdt.getInstance('MT_NBT_LOGIC_START_STOP')?.Flag__c ?? false) {
-                            if (objTarget.rsp_Role__r.rsp_Profile__r.Name == 'National Horizontal Head' && objTarget.rsp_role__r.Horizontal_Sub_category__c == 'MT' && objTarget.rsp_Start_Date__c >= MT_NBT_ROLLUP) {
-                                printRevenue = objTarget.Total_MT_Revenue__c ?? 0;
-                            }
-                            if (objTarget.rsp_Role__r.rsp_Profile__r.Name == 'National Horizontal Head' && objTarget.rsp_role__r.Horizontal_Sub_category__c == 'NBT' && objTarget.rsp_Start_Date__c >= MT_NBT_ROLLUP) {
-                                printRevenue = objTarget.Total_NBT_Revenue__c ?? 0;
-                            }
                         }
                         roleAchieveObj.Response_Revenue_Print__c = printRevenue;
                         if (roleAchieveObj.rsp_Revenue_Target__c <= 10) {
