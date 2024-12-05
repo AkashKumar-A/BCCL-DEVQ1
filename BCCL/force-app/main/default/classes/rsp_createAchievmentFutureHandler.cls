@@ -2150,6 +2150,7 @@ public class rsp_createAchievmentFutureHandler
                         achievedRevenueTarget.rsp_Approval_Status__c = rsp_ResponseConstants.ACHIEVED_TARGET_APPROVED;
                         //achievedRevenueTarget.rsp_Role_Assigned__c = objRole.Id;
                         
+                        
                         List<rsp_Role_Assignment__c> assignmentsMember = new List<rsp_Role_Assignment__c>();
                         assignmentsMember = objRole.Role_Assignment__r;            
                         if (assignmentsMember.size() > 0) 
