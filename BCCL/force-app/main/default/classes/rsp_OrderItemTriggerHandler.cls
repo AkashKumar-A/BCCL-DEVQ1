@@ -10,7 +10,7 @@ public class rsp_OrderItemTriggerHandler {
 
     public void createAchievments (Map<Id,OrderItem> triggerOldMap, List<OrderItem> orderItemList) {
         String newlist = JSON.serialize(orderItemList);
-        String oldMap = JSON.serialize(triggerOldMap);
+        String oldMap = JSON.serialize(triggerOldMap) ;
         Set<String> triggeredOrderNumberSet = new Set<String>();
         //rsp_createAchievmentFutureHandler.cretaeAchievementFuture(oldMap,newlist);    
         if(triggeredOrders != null && triggeredOrders.size() > 0) {
