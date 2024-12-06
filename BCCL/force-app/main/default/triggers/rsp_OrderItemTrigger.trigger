@@ -11,7 +11,7 @@ trigger rsp_OrderItemTrigger on OrderItem (before insert,before update, after in
                 * Description  :   update the Billed Date field on Order Line item to Today, when status is populated or changed to 'Invoiced / billed'
                 * Task         :   BR-850
                 */
-                triggerHandler.updateBilledDate(Trigger.New);
+                triggerHandler.updateBilledDate(Trigger.New) ;
                 if(ORG_FLAG__mdt.getInstance('Achievement_New_Logic').Flag__c) {
                     triggerHandler.markAsCreateAchievments(Trigger.oldMap, Trigger.new);
                 }
