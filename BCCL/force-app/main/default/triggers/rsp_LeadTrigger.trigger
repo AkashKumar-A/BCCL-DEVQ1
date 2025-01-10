@@ -14,7 +14,8 @@ trigger rsp_LeadTrigger on Lead (before insert, before update,after insert, afte
             objTH.changeGeography(trigger.new, trigger.oldMap);
             objTH.autoPopulateFields(trigger.new, trigger.oldmap);
             objTH.rsp_populateOwnerRole(trigger.new, trigger.oldmap);
-			objTH.setImageLogoInLead(trigger.new);            
+			objTH.setImageLogoInLead(trigger.new);
+			objTH.validateOwnership(trigger.New, trigger.oldMap);            
         }
         else if(trigger.isAfter && trigger.isInsert){
             objTH.rsp_ShareLeadToBVH(trigger.new, null);

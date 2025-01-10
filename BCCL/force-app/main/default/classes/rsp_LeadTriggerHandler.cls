@@ -680,4 +680,210 @@ public class rsp_LeadTriggerHandler {
             system.debug('Error Message : '+e.getMessage());
         }
     }
+    
+    public void validateOwnership(List<Lead> triggerNew, Map<Id,Lead> oldMap) {
+        if(!(ORG_FLAG__mdt.getInstance('Lead_Assignment_New_logic').Flag__c ?? False)) return;
+        List<Lead> listOfLead =  new List<Lead>();
+        List<Lead> leadStatusChangeList = new List<Lead>();
+        Set<Id> verticalIdSet = new Set<Id>();
+        Set<Id> horizontalIdSet = new Set<Id>();
+        Set<Id> branchIdSet = new Set<Id>();
+        Set<Id> ownerIdSet = new Set<Id>();
+        List<rsp_Role__c> userRoleList = new List<rsp_Role__c>();
+        List<rsp_Role__c> childRoleList = new List<rsp_Role__c>();
+        Map<Id, Set<String>> userToKeyMap = new Map<Id, Set<String>>();
+        Map<String, rsp_Role__c> verHroGeoToRoleMap = new Map<String, rsp_Role__c>();
+        Map<String, rsp_Role__c> verHorGeoToRoleMapofOwner = new Map<String, rsp_Role__c>();
+        Map<String, rsp_Role__c> geoToRoleMapOfOwner = new Map<String,rsp_Role__c>();
+        if(userInfo.getProfileId() == label.System_Admin_ProfileId) {
+            for(Lead lead :triggerNew) {
+                if(lead.Status == 'Open' && lead.Status != oldMap.get(lead.Id).Status && lead.Status != 'Converted') {
+                    leadStatusChangeList.add(lead);
+                    if (lead.rsp_Vertical__c != null) verticalIdSet.add(lead.rsp_Vertical__c);
+                    if (lead.rsp_Horizontal__c != null) horizontalIdSet.add(lead.rsp_Horizontal__c);
+                    if (lead.rsp_Branch__c != null) branchIdSet.add(lead.rsp_Branch__c);
+                }
+            }
+            if(leadStatusChangeList != null && leadStatusChangeList.size() > 0)
+            	assignLeaToBVH(verticalIdSet, horizontalIdSet, branchIdSet, leadStatusChangeList);
+        }
+        for(Lead lead :triggerNew) {
+            if(lead.ownerId != oldMap.get(lead.Id)?.OwnerId) 
+            {	
+                ownerIdSet.add(lead.OwnerId);
+                listOfLead.add(lead);
+            }
+        }
+        if(listOfLead == null || listOfLead.isEmpty()) return;
+        userRoleList = [SELECT id, rsp_Vertical__c, rsp_Hierarchy_Type__c,rsp_Geography__c, rsp_Current_User__c,Parent_Role__c, rsp_Profile__r.rsp_Code__c, Name, rsp_Horizontal__c 
+                        FROM rsp_Role__c WHERE
+                        rsp_Current_User__c = :userInfo.getUserId()
+                       ];
+        List<rsp_Role__c> ownerRoleList = [SELECT id, rsp_Vertical__c,rsp_Geography__c, rsp_Hierarchy_Type__c , rsp_Current_User__c,Parent_Role__c, rsp_Profile__r.rsp_Code__c, Name, rsp_Horizontal__c 
+                        FROM rsp_Role__c WHERE
+                        rsp_Current_User__c IN :ownerIdSet
+                       ];
+        For(rsp_Role__c role : ownerRoleList) {
+            System.debug(role.rsp_Geography__c + '-' + role.rsp_Vertical__c + '-' +role.rsp_Current_User__c +' ' + role.Name);
+        }
+        if(ownerRoleList != null && ownerRoleList.size() > 0) {
+            for(rsp_Role__c role :ownerRoleList) {
+                geoToRoleMapOfOwner.put(role.rsp_Geography__c , role);
+                String key = (role.rsp_Hierarchy_Type__c == 'Horizontal'
+                    ? role.rsp_Geography__c + '-' + role.rsp_Horizontal__c
+                    : role.rsp_Geography__c + '-' + role.rsp_Vertical__c) + '-' + role.rsp_Current_User__c;
+                verHorGeoToRoleMapofOwner.put(key, role);
+            }
+        }
+        if(userRoleList != null && userRoleList.size() > 0) {
+            for(rsp_Role__c role :userRoleList) {
+                String key = (role.rsp_Hierarchy_Type__c == 'Horizontal'
+                    ? role.rsp_Geography__c + '-' + role.rsp_Horizontal__c
+                    : role.rsp_Geography__c + '-' + role.rsp_Vertical__c) + '-' + role.rsp_Current_User__c;
+                verHroGeoToRoleMap.put(key,role);
+            }
+        }
+        System.debug('verHroGeoToRoleMap '+verHroGeoToRoleMap);
+        if(userRoleList != null && userRoleList.size() > 0) {
+            childRoleList = [SELECT id, rsp_Vertical__c,rsp_Hierarchy_Type__c ,rsp_Geography__c, rsp_Current_User__c,Parent_Role__c, rsp_Profile__r.rsp_Code__c, Name, rsp_Horizontal__c 
+                             FROM rsp_Role__c WHERE
+                             Parent_Role__c IN :userRoleList
+                            ];
+        }
+        if(childRoleList != null && childRoleList.size() > 0) {
+            for(rsp_Role__c role :childRoleList) {
+                if(role.rsp_Current_User__c != null) {
+                    if(!userToKeyMap.containsKey(role.rsp_Current_User__c)) {
+                        userToKeyMap.put(role.rsp_Current_User__c,new Set<String>());
+                    }
+                    String key = role.rsp_Current_User__c + '-' + (role.rsp_Vertical__c != null ? role.rsp_Vertical__c : role.rsp_Horizontal__c) + '-' + role.rsp_Geography__c; 
+                    userToKeyMap.get(role.rsp_Current_User__c).add(key);
+                }
+            }  
+        }
+        
+        for(Lead lead :listOfLead) {
+            String checkSTM = '';
+            if(lead.rsp_Vertical__c != null) checkSTM = lead.rsp_Branch__c + '-' + lead.rsp_Vertical__c + '-' + lead.OwnerId;
+            if(lead.rsp_Horizontal__c != null) checkSTM = lead.rsp_Branch__c + '-' + lead.rsp_Horizontal__c + '-' + lead.OwnerId;
+			if((verHroGeoToRoleMap.containsKey(checkSTM) && verHroGeoToRoleMap.get(checkSTM).rsp_Profile__r.rsp_Code__c == 'STM')) {
+                lead.addError('You do not have access to change the owner of the lead.');
+            }
+            if(userToKeyMap.containsKey(lead.OwnerId)){
+                String key = lead.OwnerId + '-' + (lead.rsp_Vertical__c != null ? lead.rsp_Vertical__c : lead.rsp_Horizontal__c) + '-' + lead.rsp_Branch__c;
+                if(!userToKeyMap.get(lead.OwnerId).contains(key)) {
+                    System.debug('1');
+                    lead.addError('The selected user does not have the appropriate role to own this lead.');
+                }
+                else{
+                    lead.Status = 'Working';
+                }
+            }
+            else {
+               String key = '';
+                if(lead.rsp_Vertical__c != null) {
+                   key = lead.rsp_Branch__c + '-' + lead.rsp_Vertical__c + '-' + lead.OwnerId;
+                }
+                if(lead.rsp_Horizontal__c != null) {
+                    key = lead.rsp_Branch__c + '-' + lead.rsp_Horizontal__c + '-' + lead.OwnerId;
+                }
+                System.debug('key '+key);
+                System.debug('debug 1' +verHroGeoToRoleMap.containsKey(key));
+                System.debug('userInfo.getProfileId() '+userInfo.getProfileId());
+                System.debug('Profile '+label.System_Admin_ProfileId);
+                System.debug('debug 2 admin '+userInfo.getProfileId() == label.System_Admin_ProfileId);
+                if((verHroGeoToRoleMap.containsKey(key) && verHroGeoToRoleMap.get(key).rsp_Profile__r.rsp_Code__c == 'BH') || userInfo.getProfileId() == label.System_Admin_ProfileId) {
+                    if(!verHorGeoToRoleMapofOwner.containskey(key) && !((geoToRoleMapOfOwner.containsKey(lead.rsp_Branch__c) && geoToRoleMapOfOwner.get(lead.rsp_Branch__c).rsp_Profile__r.rsp_Code__c == 'BH')))
+                    {	
+                        System.debug('2');
+                        lead.addError('The selected user does not have the appropriate role to own this lead.');
+                    }
+                }
+                else {
+                    System.debug('3');
+                    lead.addError('The selected user does not have the appropriate role to own this lead.');
+                }
+            }
+        }	
+    }
+    
+    private void assignLeaToBVH(Set<Id> verticalId, Set<Id> horizontalId, Set<Id> branch, List<Lead> triggerNew) {
+        Map<String, List<rsp_Role__c>> mapProfileToRole = new Map<String, List<rsp_Role__c>>();
+        List<rsp_Role__c> listOfRole = [
+            SELECT Id, Name, rsp_Vertical__c, rsp_Horizontal__c, rsp_Geography__c, rsp_Current_User__c, rsp_Profile__c, rsp_Profile__r.rsp_Code__c
+            FROM rsp_Role__c
+            WHERE (
+                (rsp_Profile__r.rsp_Code__c IN ('BVH', 'BHH') AND 
+                 ((rsp_Vertical__c IN :verticalId AND rsp_Vertical__c != null) OR 
+                  (rsp_Horizontal__c IN :horizontalId AND rsp_Horizontal__c != null))
+                )
+                OR 
+                (rsp_Profile__r.rsp_Code__c = 'BH' AND rsp_Geography__c IN :branch)
+            )
+            AND rsp_Geography__c IN :branch
+            AND rsp_Current_User__c != null
+        ];
+
+        System.debug('listOfRole '+listOfRole);
+        if (listOfRole != null && listOfRole.size() > 0) {
+            for (rsp_Role__c role : listOfRole) {
+                if (!mapProfileToRole.containsKey(role.rsp_Profile__r.rsp_Code__c)) {
+                    mapProfileToRole.put(role.rsp_Profile__r.rsp_Code__c, new List<rsp_Role__c>());
+                }
+                mapProfileToRole.get(role.rsp_Profile__r.rsp_Code__c).add(role);
+            }
+        }
+        System.debug('mapProfileToRole '+mapProfileToRole);
+        if (mapProfileToRole != null) {
+            for (Lead lead : triggerNew) {
+                Boolean isAssigned = false;
+                // Check for BVH (Vertical)
+                if (!isAssigned && lead.rsp_Vertical__c != null) {
+                    List<rsp_Role__c> roleList = mapProfileToRole.get('BVH');
+                    System.debug('roleList '+roleList);
+                    if (roleList != null && roleList.size() > 0) {
+                        // Check for BVGH priority
+                        for (rsp_Role__c role : roleList) {
+                            if (role.Name.startsWith('BVGH')) {
+                                lead.OwnerId = role.rsp_Current_User__c; // Assign owner
+                                isAssigned = true;
+                                break;
+                            }
+                        }
+                        if (!isAssigned) {
+                            lead.OwnerId = roleList[0].rsp_Current_User__c;
+                            isAssigned = true;
+                        }
+                    }
+                }
+                // Check for BHH (Horizontal)
+                if (!isAssigned && lead.rsp_Horizontal__c != null) {
+                    List<rsp_Role__c> roleList = mapProfileToRole.get('BHH');
+                    System.debug('roleList2 '+roleList);
+                    if (roleList != null && roleList.size() > 0) {
+                        // Check for BHGH priority
+                        for (rsp_Role__c role : roleList) {
+                            if (role.Name.startsWith('BHGH')) {
+                                lead.OwnerId = role.rsp_Current_User__c; // Assign owner
+                                isAssigned = true;
+                                break;
+                            }
+                        }
+                        if (!isAssigned) {
+                            lead.OwnerId = roleList[0].rsp_Current_User__c;
+                            isAssigned = true;
+                        }
+                    }
+                }
+                // Default to BH
+                if (!isAssigned) {
+                    List<rsp_Role__c> roleList = mapProfileToRole.get('BH');
+                    System.debug('roleList3 '+roleList);
+                    if (roleList != null && roleList.size() > 0) {
+                        lead.OwnerId = roleList[0].rsp_Current_User__c; // Assign to first BH role
+                    }
+                }
+            }
+        }
+    }
 }
