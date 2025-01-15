@@ -7,14 +7,11 @@ trigger rsp_LeadTrigger on Lead (before insert, before update,after insert, afte
             objTH.autoPopulateFields(trigger.new, trigger.oldmap);
             objTH.leadAssignment(trigger.new, trigger.oldmap);
             objTH.rsp_populateOwnerRole(trigger.new, trigger.oldmap);
-            objTH.setImageLogoInLead(trigger.new);
         }
         else if(trigger.isbefore && trigger.isUpdate){
             objTH.mapLeadFields(trigger.new, trigger.oldMap);
-            objTH.changeGeography(trigger.new, trigger.oldMap);
             objTH.autoPopulateFields(trigger.new, trigger.oldmap);
             objTH.rsp_populateOwnerRole(trigger.new, trigger.oldmap);
-			objTH.setImageLogoInLead(trigger.new);
 			objTH.validateOwnership(trigger.New, trigger.oldMap);            
         }
         else if(trigger.isAfter && trigger.isInsert){
@@ -22,7 +19,6 @@ trigger rsp_LeadTrigger on Lead (before insert, before update,after insert, afte
         }
         else if(trigger.isAfter && trigger.isUpdate){
             objTH.rsp_ShareLeadToBVH(trigger.new, trigger.oldmap);
-            
         }
     }
 }
