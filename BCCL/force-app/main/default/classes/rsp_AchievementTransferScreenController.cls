@@ -2,6 +2,7 @@
 
 public class rsp_AchievementTransferScreenController {
     //Check the discrepency of Opportunity vertical with  
+    public static boolean createAchievement = false; 
     @AuraEnabled
     public static string checkVerticalDiscrepency(String strOppId)
     {
@@ -603,6 +604,7 @@ public class rsp_AchievementTransferScreenController {
                     }
                     else {
                         System.debug('Calling through old logic');
+                        createAchievement = true;
                         rsp_OrderItemTriggerHandler triggerHandler = new rsp_OrderItemTriggerHandler();
                         triggerHandler.createAchievments(mapOrderItemOldMapforTrigger, lstOrderItemNew);
                     }
