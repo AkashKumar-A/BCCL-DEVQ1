@@ -99,33 +99,6 @@ public class rsp2CmpBehaviouralTargetController{
 
             Set<Id> userAchIdSet = new Set<Id>();
             Map<String, List<rsp_Role_Achievement__c>> month_RoleAchievements = new Map<String, List<rsp_Role_Achievement__c>>();
-            Set<String> additionalKPIFields = new Set<String>();
-
-            List<Soft_Target_Configuration__mdt> confList = [
-                SELECT Id, DeveloperName, Soft_Target_Name__c, Achievement_Field_Name__c, Target_Field_Name__c
-                FROM Soft_Target_Configuration__mdt WHERE
-                Active__c = true
-            ];
-
-            Map<String, Schema.SObjectField> RAfieldApiNames = rsp_Role_Achievement__c.SObjectType.getDescribe().fields.getMap();
-            Map<String, Schema.SObjectField> UAfieldApiNames = rsp_User_Achievement__c.SObjectType.getDescribe().fields.getMap();
-            Map<String, Schema.SObjectField> UIPDfieldApiNames = rsp_User_Incentive_Payout_Details__c.SObjectType.getDescribe().fields.getMap();
-
-            for(Soft_Target_Configuration__mdt conf: confList) {
-                if(RAfieldApiNames.containsKey(conf.Target_Field_Name__c)) {
-                    additionalKPIFields.add(conf.Target_Field_Name__c);
-                }
-                if(RAfieldApiNames.containsKey(conf.Achievement_Field_Name__c)) {
-                    additionalKPIFields.add(conf.Achievement_Field_Name__c);
-                }
-            }
-
-            String additionalKPIFieldsString = '';
-
-            if(additionalKPIFields.size() > 0) {
-                additionalKPIFieldsString = String.join(new List<String>(additionalKPIFields), ', ');
-                additionalKPIFieldsString += ', ';
-            }
 
             for(rsp_User_Incentive_Payout_Details__c oLUPID : lUPID){
                 setT.add(oLUPID.rsp_Payout_Calculation_Request__r.Duration_Notation__c);
@@ -189,15 +162,9 @@ public class rsp2CmpBehaviouralTargetController{
                     }
                 }
             }
-            String queryString = 'SELECT Id, Name, rsp_Role_Assignment__r.rsp_Role_Name__c, rsp_User_Achievement__r.rsp_Month__c, rsp_Revenue_Target__c, NTC__c, '+ 
-                    'rsp_Revenue_Achievement__c, rsp_Revenue_Achievement_Percent__c, Response_Revenue_Print__c, Response_Revenue_Print_Percent__c, '+ 
-                    'Target_not_Provided_by_AOP__c, Target_not_Submitted_by_User__c, Total_Publications_Achieved_KPI__c, Total_Publications_KPI__c,'+
-                    additionalKPIFieldsString +
-                    'rsp_From_Date__c, rsp_To_Date__c '+
-                    'FROM rsp_Role_Achievement__c WHERE '+ 
-                    'rsp_User_Achievement__c IN :userAchIdSet';
+
             if(userAchIdSet.size() > 0) {
-                for(rsp_Role_Achievement__c objRA: Database.query(queryString)/*[
+                for(rsp_Role_Achievement__c objRA: [
                     SELECT Id, Name, rsp_Role_Assignment__r.rsp_Role_Name__c, rsp_User_Achievement__r.rsp_Month__c, rsp_Revenue_Target__c, NTC__c, 
                     rsp_Revenue_Achievement__c, rsp_Revenue_Achievement_Percent__c, Response_Revenue_Print__c, Response_Revenue_Print_Percent__c, 
                     Target_not_Provided_by_AOP__c, Target_not_Submitted_by_User__c, LANG_KPI__c, Achieved_LANG_KPI__c, MT_KPI__c, Achieved_MT_KPI__c, 
@@ -205,7 +172,7 @@ public class rsp2CmpBehaviouralTargetController{
                     VK_KPI__c, Achieved_VK_KPI__c, rsp_From_Date__c, rsp_To_Date__c
                     FROM rsp_Role_Achievement__c WHERE 
                     rsp_User_Achievement__c IN :userAchIdSet
-                ]*/) {
+                ]) {
                     if(!month_RoleAchievements.containsKey(objRA.rsp_User_Achievement__r.rsp_Month__c)) {
                         month_RoleAchievements.put(objRA.rsp_User_Achievement__r.rsp_Month__c, new List<rsp_Role_Achievement__c>());
                     }
@@ -284,26 +251,6 @@ public class rsp2CmpBehaviouralTargetController{
                             objRAwrap.ntc = objRA.NTC__c;
                             objRAwrap.target = objRA.rsp_Revenue_Target__c ?? 0; // != null ? objRA.rsp_Revenue_Target__c / 100000 : 0;
                             List<KpiWrapper> listOfKpi = new List<KpiWrapper>();
-                            for(Soft_Target_Configuration__mdt conf: confList) {
-                                KpiWrapper kpiObj = new KpiWrapper();
-                                if(RAfieldApiNames.containsKey(conf.Target_Field_Name__c)) {
-                                    String field = conf.Target_Field_Name__c;
-                                    kpiObj.kpiName = conf.Soft_Target_Name__c;
-                                    kpiObj.kpiName = conf.Soft_Target_Name__c;
-                                    kpiObj.assignedKPI = objRA.get(field) != null 
-                                                        ? ((Decimal)objRA.get(field)) / 100000 
-                                                        : 0;
-                                }
-                                if(RAfieldApiNames.containsKey(conf.Achievement_Field_Name__c)) {
-                                    String field = conf.Achievement_Field_Name__c;
-                                    kpiObj.totalAchieved =  objRA.get(field) != null 
-                                                            ? ((Decimal)objRA.get(field)) / 100000 
-                                                            : 0;
-                                }
-                                if(kpiObj.kpiName != null && kpiObj.kpiName != '')
-                                    listOfKpi.add(kpiObj);
-                            }
-                            /*
                             KpiWrapper kpiObj = new KpiWrapper();
                             kpiObj.kpiName = 'LANG KPI';
                             kpiObj.assignedKPI = objRA.LANG_KPI__c/100000 ?? 0;
@@ -328,13 +275,12 @@ public class rsp2CmpBehaviouralTargetController{
                             /*kpiObj5.kpiName = 'Total Publications KPI';
                             kpiObj5.assignedKPI = objRA.Total_Publications_KPI__c ?? 0;
                             kpiObj5.totalAchieved = objRA.Total_Publications_KPI__c ?? 0;
-                            listOfKpi.add(kpiObj5);* /
+                            listOfKpi.add(kpiObj5);*/
                             KpiWrapper kpiObj6 = new KpiWrapper();
                             kpiObj6.kpiName = 'VK KPI';
                             kpiObj6.assignedKPI = objRA.VK_KPI__c/100000 ?? 0;
                             kpiObj6.totalAchieved = objRA.Achieved_VK_KPI__c/100000 ?? 0;
                             listOfKpi.add(kpiObj6);
-                            */
                             if (objRA.Target_not_Provided_by_AOP__c || objRA.Target_not_Submitted_by_User__c) {
                                 objRAwrap.target = 10;
                             }
@@ -868,7 +814,7 @@ public class rsp2CmpBehaviouralTargetController{
                     rsp_KRA_Name__c = 'Revenue' AND 
                     rsp_Approval_Status__c = 'Approved' AND 
                     rsp_start_date__c >= :Date.valueof(objWrapperBehaviouralTarget.objWrapperFinancialYearDetails.dtStartFinancialYear) AND 
-                    rsp_end_date__c <= :(Date.valueof(objWrapperBehaviouralTarget.objWrapperFinancialYearDetails.dtEndFinancialYear).addMonths(-1))
+                    rsp_end_date__c <= :(Date.valueof(objWrapperBehaviouralTarget.objWrapperFinancialYearDetails.dtEndFinancialYear).addMonths(-2))
                 ) OR (
                     rsp_KRA_Assignment__r.rsp_KRA__r.rsp_KRA_Short_Code__c = :rsp_ResponseConstants.BEHAVIOURAL_KRA_SHORTCODE AND 
                     (rsp_Approval_Status__c = 'Submitted for approval' OR rsp_Approval_Status__c = 'Approved') AND 
